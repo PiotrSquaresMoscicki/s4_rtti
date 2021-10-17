@@ -37,10 +37,10 @@ namespace rtti {
         Object call_constructor(Buffer&& buff) const override;
         void delete_object(Object&& obj) const override;
         Buffer call_destructor(Object&& obj) const override;
-        void copy(Object& dst, const Object& src) const override;
-        Object copy_construct(const Object& src) const override;
-        void move(Object& dst, Object&& src) const override;
-        Object move_construct(Object&& src) const override;
+        void copy(ObjectRef& dst, const ObjectRef& src) const override;
+        Object copy_construct(const ObjectRef& src) const override;
+        void move(ObjectRef& dst, ObjectRef& src) const override;
+        Object move_construct(ObjectRef& src) const override;
 
     } // class ClassInstance
 
@@ -67,19 +67,19 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    void ClassInstance::copy(Object& dst, const Object& src) const {}
+    void ClassInstance::copy(ObjectRef& dst, const ObjectRef& src) const {}
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance::copy_construct(const Object& src) const {}
+    Object ClassInstance::copy_construct(const ObjectRef& src) const {}
 
     //*********************************************************************************************
     template <typename CLASS>
-    void ClassInstance::move(Object& dst, Object&& src) const {}
+    void ClassInstance::move(ObjectRef& dst, ObjectRef& src) const {}
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance::move_construct(Object&& src) const {}
+    Object ClassInstance::move_construct(ObjectRef& src) const {}
 
 
 } // namespace rtti

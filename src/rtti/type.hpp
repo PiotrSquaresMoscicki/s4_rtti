@@ -20,10 +20,10 @@ namespace rtti {
         virtual Object call_constructor(Buffer&& buff) const = 0;
         virtual void delete_object(Object&& obj) const = 0;
         virtual Buffer call_destructor(Object&& obj) const = 0;
-        virtual void copy(Object& dst, const Object& src) const = 0;
-        virtual Object copy_construct(const Object& src) const = 0;
-        virtual void move(Object& dst, Object&& src) const = 0;
-        virtual Object move_construct(Object&& src) const = 0;
+        virtual void copy(ObjectRef& dst, const ObjectRef& src) const = 0;
+        virtual Object copy_construct(const ObjectRef& src) const = 0;
+        virtual void move(ObjectRef& dst, ObjectRef& src) const = 0;
+        virtual Object move_construct(ObjectRef& src) const = 0;
 
         virtual const Class* as_class() const = 0;
         virtual const Enum* as_enum() const = 0;
@@ -31,7 +31,7 @@ namespace rtti {
 
     protected:
         void* writable_data(Buffer&) const;
-        void* writable_data(Object&) const;
+        void* writable_data(ObjectRef&) const;
         void* move_data(Buffer&&) const;
         void* move_data(Object&&) const;
 

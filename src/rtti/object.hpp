@@ -7,7 +7,30 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class Object {
+    class ObjectRef {
+    public:
+        friend Type;
+
+        template <typename TYPE>
+        void ObjectRef(TYPE* obj);
+        void ObjectRef(void* obj, const Type* type);
+
+        const Type* type() const;
+        const void* value() const:
+
+        void copy(const Object& src);
+        void move(Object&& src);
+
+    private:
+        const Type* const m_type = nullptr;
+        void* m_data = nullptr;
+
+    }; // class ObjectRef
+
+    //*********************************************************************************************
+    //*********************************************************************************************
+    //*********************************************************************************************
+    class Object : public ObjectRef {
     public:
         friend Type;
 
@@ -15,21 +38,12 @@ namespace rtti {
         void Object(TYPE* obj);
         void Object(void* obj, const Type* type);
 
-        const Type* type() const;
-        const void* data() const:
-
         template <typename TYPE>
-        void set(TYPE* obj);
-        void set(void* obj, const Type* type);
+        void change_pointed_object(TYPE* obj);
+        void change_pointed_object(void* obj, const Type* type);
 
         void delete_object() &&;
         Buffer call_destructor() &&;
-        void copy(const Object& src);
-        void move(Object&& src);
-
-    private:
-        const Type* m_type = nullptr;
-        void* m_data = nullptr;
 
     }; // class Object
 

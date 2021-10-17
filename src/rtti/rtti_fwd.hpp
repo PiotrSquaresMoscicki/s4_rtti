@@ -7,6 +7,7 @@ namespace rtti {
     class Enum;
     class Fundamental;
 
+    class ObjectRef;
     class Object;
     class Buffer;
 
