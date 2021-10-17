@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <vector>
 
 #include "type.hpp"
 #include "buffer.hpp"
@@ -13,7 +14,7 @@ namespace rtti {
     //*********************************************************************************************
     class Class {
     public:
-        Class(std::string name, size_t size) : Type(std::move(name), size) {}
+        Class(std::string name, size_t size, std::unique_ptr<std::vector<Attribute>> attributes) {}
 
         bool is_instance_of_template(const std::string& template_name) const;
         const std::vector<const Member*> members() const;

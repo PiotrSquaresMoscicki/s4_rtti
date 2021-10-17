@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <string>
 
 #include "rtti_fwd.hpp"
@@ -11,10 +12,12 @@ namespace rtti {
     //*********************************************************************************************
     class Type {
     public:
-        Type(std::string name, size_t size) : m_name(std::move(name)), m_size(size) {}
+        Type(std::string name, size_t size, std::unique_ptr<std::vector<Attribute>> attributes);
 
         const std::string& name() const { return m_name; }
-        const size_t size() const { return m_size; }
+        size_t size() const { return m_size; }
+        const std::vector<Attribute>& attributes() const { return *m_attributes; }
+        template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
         virtual Object new_object() const = 0;
         virtual Object call_constructor(Buffer&& buff) const = 0;
@@ -38,6 +41,7 @@ namespace rtti {
     private:
         const std::string m_name;
         const size_t m_size = 0;
+        std::unique_ptr<std::vector<Attribute>> m_attributes;
 
     } // class Type
 
