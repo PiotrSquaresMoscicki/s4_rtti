@@ -12,19 +12,23 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class Class {
+    class Class : public Type {
     public:
-        Class(std::string name, size_t size, std::unique_ptr<std::vector<Attribute>> attributes) {}
+        Class(std::string name, size_t size, Attributes attributes);
 
         bool is_instance_of_template(const std::string& template_name) const;
-        const std::vector<const Member*> members() const;
-        const std::vector<const Method*> methods() const;
+        const std::vector<const Member*>& members() const { return m_members; }
+        const std::vector<const Method*>& methods() const { return m_methods; }
 
         const Class* as_class() const { return this; }
         const Enum* as_enum() const { return nullptr; }
         const Fundamental* as_fundamental() { return nullptr; }
 
-    } // class Class
+    private:
+        std::vector<const Member*> m_members;
+        std::vector<const Method*> m_methods;
+
+    }; // class Class
 
     //*********************************************************************************************
     //*********************************************************************************************
@@ -32,7 +36,8 @@ namespace rtti {
     template <typename CLASS>
     class ClassInstance : public Class {
     public:
-        ClassInstance(std::string name) : Class(std::move(name), sizeof(CLASS)) {}
+        ClassInstance(std::string name);
+        ClassInstance(std::string name, Attributes attributes);
 
         Object new_object() const override;
         Object call_constructor(Buffer&& buff) const override;
@@ -43,44 +48,63 @@ namespace rtti {
         void move(ObjectRef& dst, ObjectRef& src) const override;
         Object move_construct(ObjectRef& src) const override;
 
-    } // class ClassInstance
+    }; // class ClassInstance
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance::new_object() const {
+    ClassInstance<CLASS>::ClassInstance(std::string name)
+        : Class(std::move(name), sizeof(CLASS), {}) 
+    {}
+
+    //*********************************************************************************************
+    template <typename CLASS>
+    ClassInstance<CLASS>::ClassInstance(std::string name, Attributes attributes)
+        : Class(std::move(name), sizeof(CLASS), std::move(attributes)) 
+    {}
+
+    //*********************************************************************************************
+    template <typename CLASS>
+    Object ClassInstance<CLASS>::new_object() const {
         return Object(new CLASS());
     }
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance::call_constructor(Buffer&& buff) const {
+    Object ClassInstance<CLASS>::call_constructor(Buffer&& buff) const {
         assert(buff.size() == size());
-        return Object(new(move_data(buff)) CLASS);
+        //return Object(new(move_data(buff)) CLASS);
+        return {};
     }
 
     //*********************************************************************************************
     template <typename CLASS>
-    void ClassInstance::delete_object(Object&& obj) const {}
+    void ClassInstance<CLASS>::delete_object(Object&& obj) const {}
 
     //*********************************************************************************************
     template <typename CLASS>
-    Buffer ClassInstance::call_destructor(Object&& obj) const {}
+    Buffer ClassInstance<CLASS>::call_destructor(Object&& obj) const {
+        return {};
+    }
 
     //*********************************************************************************************
     template <typename CLASS>
-    void ClassInstance::copy(ObjectRef& dst, const ObjectRef& src) const {}
+    void ClassInstance<CLASS>::copy(ObjectRef& dst, const ObjectRef& src) const {}
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance::copy_construct(const ObjectRef& src) const {}
+    Object ClassInstance<CLASS>::copy_construct(const ObjectRef& src) const {
+        return {};
+    }
 
     //*********************************************************************************************
     template <typename CLASS>
-    void ClassInstance::move(ObjectRef& dst, ObjectRef& src) const {}
+    void ClassInstance<CLASS>::move(ObjectRef& dst, ObjectRef& src) const {}
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance::move_construct(ObjectRef& src) const {}
+    Object ClassInstance<CLASS>::move_construct(ObjectRef& src) const {
+        return {};
+    }
 
 
 } // namespace rtti

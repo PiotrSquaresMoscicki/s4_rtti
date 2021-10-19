@@ -16,7 +16,12 @@ namespace rtti {
     class Property;
     class Method;
 
+    class Attributes;
+
     template <typename TYPE>
-    const Type* get_type();
+    inline const Type* static_type() { return TYPE::static_type(); }
+    
+    template <typename CLASS>
+    inline const Type* dynamic_type(CLASS& obj) { return obj.dynamic_type(); }
 
 } // namespace rtti

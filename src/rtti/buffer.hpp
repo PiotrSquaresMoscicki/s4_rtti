@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include "rtti_fwd.hpp"
 
 namespace rtti {

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <memory>
 
 #include "rtti_fwd.hpp"
+#include "attributes.hpp"
 
 namespace rtti {
 
@@ -12,11 +13,11 @@ namespace rtti {
     //*********************************************************************************************
     class Type {
     public:
-        Type(std::string name, size_t size, std::unique_ptr<std::vector<Attribute>> attributes);
+        Type(std::string name, size_t size, Attributes attributes);
 
         const std::string& name() const { return m_name; }
         size_t size() const { return m_size; }
-        const std::vector<Attribute>& attributes() const { return *m_attributes; }
+        const Attributes& attributes() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
         virtual Object new_object() const = 0;
@@ -33,16 +34,16 @@ namespace rtti {
         virtual const Fundamental* as_fundamental() = 0;
 
     protected:
-        void* writable_data(Buffer&) const;
-        void* writable_data(ObjectRef&) const;
-        void* move_data(Buffer&&) const;
-        void* move_data(Object&&) const;
+        void* writable_data(Buffer& buff) const;
+        void* writable_data(ObjectRef& obj) const;
+        void* move_data(Buffer&& buff) const;
+        void* move_data(ObjectRef&& obj) const;
 
     private:
         const std::string m_name;
         const size_t m_size = 0;
-        std::unique_ptr<std::vector<Attribute>> m_attributes;
+        const Attributes m_attributes;
 
-    } // class Type
+    }; // class Type
 
 } // namespace rtti
