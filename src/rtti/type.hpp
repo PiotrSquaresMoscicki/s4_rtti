@@ -31,7 +31,7 @@ namespace rtti {
 
         virtual const Class* as_class() const = 0;
         virtual const Enum* as_enum() const = 0;
-        virtual const Fundamental* as_fundamental() = 0;
+        virtual const Fundamental* as_fundamental() const = 0;
 
     protected:
         void* writable_data(Buffer& buff) const;
@@ -40,9 +40,9 @@ namespace rtti {
         void* move_data(ObjectRef&& obj) const;
 
     private:
-        const std::string m_name;
-        const size_t m_size = 0;
-        const Attributes m_attributes;
+        std::string m_name;
+        size_t m_size = 0;
+        Attributes m_attributes;
 
     }; // class Type
 

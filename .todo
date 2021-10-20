@@ -1,0 +1,12 @@
+As a user I have to:
+[ ] Save and compare class, enum and fundamental types
+[ ] Access and modify members of given class
+[ ] Access and call methods of given class
+[ ] Access and enumerate on enum values
+[ ] Get type by name
+[ ] Link rtti library dynamically because I want to have a type defined in one dynamic library to be 
+    accessible from another
+[ ] Check if given type is an instantiation of given template
+
+As a user I'd like to
+[ ] Instantiate a template with provided type

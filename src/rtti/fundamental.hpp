@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cassert>
-#include <vector>
 
 #include "type.hpp"
 #include "buffer.hpp"
@@ -12,33 +11,24 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class Class : public Type {
+    class Fundamental : public Type {
     public:
-        Class(std::string name, size_t size, Attributes attributes) 
-            : Type(std::move(name), size, std::move(attributes)) {}
+        Fundamental(std::string name, size_t size)
+            : Type(std::move(name), size, {}) {}
 
-        bool is_instance_of_template(const std::string& template_name) const;
-        const std::vector<const Member*>& members() const { return m_members; }
-        const std::vector<const Method*>& methods() const { return m_methods; }
-
-        const Class* as_class() const override { return this; }
+        const Class* as_class() const override { return nullptr; }
         const Enum* as_enum() const override { return nullptr; }
-        const Fundamental* as_fundamental() const override { return nullptr; }
+        const Fundamental* as_fundamental() const override { return this; }
 
-    private:
-        std::vector<const Member*> m_members;
-        std::vector<const Method*> m_methods;
-
-    }; // class Class
+    }; // class Fundamental
 
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    template <typename CLASS>
-    class ClassInstance : public Class {
+    template <typename FUNDAMENTAL>
+    class FundamentalInstance : public Fundamental {
     public:
-        ClassInstance(std::string name);
-        ClassInstance(std::string name, Attributes attributes);
+        FundamentalInstance(std::string name);
 
         Object new_object() const override;
         Object call_constructor(Buffer&& buff) const override;
@@ -49,61 +39,55 @@ namespace rtti {
         void move(ObjectRef& dst, ObjectRef& src) const override;
         Object move_construct(ObjectRef& src) const override;
 
-    }; // class ClassInstance
+    }; // class FundamentalInstance
 
     //*********************************************************************************************
-    template <typename CLASS>
-    ClassInstance<CLASS>::ClassInstance(std::string name)
-        : Class(std::move(name), sizeof(CLASS), {}) 
+    template <typename FUNDAMENTAL>
+    FundamentalInstance<FUNDAMENTAL>::FundamentalInstance(std::string name)
+        : Fundamental(std::move(name), sizeof(FUNDAMENTAL)) 
     {}
 
     //*********************************************************************************************
-    template <typename CLASS>
-    ClassInstance<CLASS>::ClassInstance(std::string name, Attributes attributes)
-        : Class(std::move(name), sizeof(CLASS), std::move(attributes)) 
-    {}
-
-    //*********************************************************************************************
-    template <typename CLASS>
-    Object ClassInstance<CLASS>::new_object() const {
-        return Object(new CLASS());
+    template <typename FUNDAMENTAL>
+    Object FundamentalInstance<FUNDAMENTAL>::new_object() const {
+        return Object(new FUNDAMENTAL());
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Object ClassInstance<CLASS>::call_constructor(Buffer&& buff) const {
+    template <typename FUNDAMENTAL>
+    Object FundamentalInstance<FUNDAMENTAL>::call_constructor(Buffer&& buff) const {
         assert(buff.size() == size());
-        //return Object(new(move_data(buff)) CLASS);
+        //return Object(new(move_data(buff)) FUNDAMENTAL);
         return {};
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    void ClassInstance<CLASS>::delete_object(Object&&) const {}
+    template <typename FUNDAMENTAL>
+    void FundamentalInstance<FUNDAMENTAL>::delete_object(Object&&) const {}
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Buffer ClassInstance<CLASS>::call_destructor(Object&&) const {
+    template <typename FUNDAMENTAL>
+    Buffer FundamentalInstance<FUNDAMENTAL>::call_destructor(Object&&) const {
         return {};
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    void ClassInstance<CLASS>::copy(ObjectRef&, const ObjectRef&) const {}
+    template <typename FUNDAMENTAL>
+    void FundamentalInstance<FUNDAMENTAL>::copy(ObjectRef&, const ObjectRef&) const {}
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Object ClassInstance<CLASS>::copy_construct(const ObjectRef&) const {
+    template <typename FUNDAMENTAL>
+    Object FundamentalInstance<FUNDAMENTAL>::copy_construct(const ObjectRef&) const {
         return {};
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    void ClassInstance<CLASS>::move(ObjectRef&, ObjectRef&) const {}
+    template <typename FUNDAMENTAL>
+    void FundamentalInstance<FUNDAMENTAL>::move(ObjectRef&, ObjectRef&) const {}
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Object ClassInstance<CLASS>::move_construct(ObjectRef&) const {
+    template <typename FUNDAMENTAL>
+    Object FundamentalInstance<FUNDAMENTAL>::move_construct(ObjectRef&) const {
         return {};
     }
 

@@ -19,9 +19,12 @@ namespace rtti {
     class Attributes;
 
     template <typename TYPE>
-    inline const Type* static_type() { return TYPE::static_type(); }
+    inline const Type* static_type() { return TYPE::static_class(); }
+
+    template <typename CLASS>
+    inline const Class* static_class() { return CLASS::static_class(); }
     
     template <typename CLASS>
-    inline const Type* dynamic_type(CLASS& obj) { return obj.dynamic_type(); }
+    inline const Class* dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
 
 } // namespace rtti
