@@ -1,13 +1,14 @@
-set(EXAMPLE_INCLUDE ${CMAKE_CURRENT_LIST_DIR})
+set(S4_RTTI_EXAMPLE_INCLUDE ${CMAKE_CURRENT_LIST_DIR})
 
 # gather source files list
-file(GLOB_RECURSE EXAMPLE_SRCS RELATIVE ${CMAKE_CURRENT_LIST_DIR}
-    ${EXAMPLE_INCLUDE}/*.cpp 
-    ${EXAMPLE_INCLUDE}/*.hpp 
-    ${EXAMPLE_INCLUDE}/*.hpp)
-GenerateSourceGoups("${EXAMPLE_SRCS}")
+file(GLOB_RECURSE S4_RTTI_EXAMPLE_SRCS RELATIVE ${CMAKE_CURRENT_LIST_DIR}
+    ${S4_RTTI_EXAMPLE_INCLUDE}/*.cpp 
+    ${S4_RTTI_EXAMPLE_INCLUDE}/*.hpp 
+    ${S4_RTTI_EXAMPLE_INCLUDE}/*.hpp)
+GenerateSourceGoups("${S4_RTTI_EXAMPLE_SRCS}")
 
-add_executable(${EXAMPLE_TARGET} ${EXAMPLE_SRCS})
-target_compile_features(${EXAMPLE_TARGET} PUBLIC cxx_std_20)
-target_include_directories(${EXAMPLE_TARGET} PUBLIC ${EXAMPLE_INCLUDE})
-target_link_libraries(${EXAMPLE_TARGET} PUBLIC ${S4_RTTI_TARGET})
+add_executable(${S4_RTTI_EXAMPLE_TARGET} ${S4_RTTI_EXAMPLE_SRCS})
+target_compile_features(${S4_RTTI_EXAMPLE_TARGET} PUBLIC cxx_std_20)
+target_include_directories(${S4_RTTI_EXAMPLE_TARGET} PUBLIC ${S4_RTTI_EXAMPLE_INCLUDE})
+
+target_link_libraries(${S4_RTTI_EXAMPLE_TARGET} PRIVATE ${S4_RTTI_TARGET})

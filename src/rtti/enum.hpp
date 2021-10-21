@@ -1,8 +1,11 @@
 #pragma once
 
 #include <vector>
+#include <cassert>
 
 #include "type.hpp"
+#include "object.hpp"
+#include "buffer.hpp"
 
 namespace rtti {
 
