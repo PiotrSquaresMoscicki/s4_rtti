@@ -18,6 +18,7 @@ endfunction()
 # Start
 ##
 project(s4_rtti VERSION "1.0.0")
+enable_testing()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -51,3 +52,6 @@ set(EXAMPLE_TARGET example)
 # Subdirectories
 add_subdirectory(src)
 add_subdirectory(example)
+
+# Tests
+add_test(example "../dist/example")
