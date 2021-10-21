@@ -3,9 +3,9 @@
 namespace rtti {
 
     class Type;
-    class Class;
     class Enum;
     class Fundamental;
+    class Class;
 
     class ObjectRef;
     class Object;

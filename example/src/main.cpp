@@ -1,6 +1,6 @@
 #include "rtti/rtti.hpp"
 
-FUNDAMENTAL(bool)
+REGISTER_FUNDAMENTAL(bool)
 
 namespace ecs {
 
@@ -10,8 +10,6 @@ namespace ecs {
         FASTER,
         FASTEST,
     };
-
-    //ENUM(ecs::ETimeSpeed, )
 
     class Entity {
         CLASS(ecs::Entity)
@@ -24,6 +22,13 @@ namespace ecs {
 
 } // namespace ecs
 
+REGISTER_ENUM(ecs::ETimeSpeed)
+    ENUM_VALUE(NORMAL)
+    ENUM_VALUE(FAST)
+    ENUM_VALUE(FASTER)
+    ENUM_VALUE(FASTEST)
+END_ENUM
+
 //****************************************************************************
 int main() {
     const rtti::Type* bool_type = rtti::static_type<bool>();
@@ -32,4 +37,6 @@ int main() {
 
     assert(bool_type != entity_type);
     assert(entity_class == entity_type);
+
+    return 0;
 }
