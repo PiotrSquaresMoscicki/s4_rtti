@@ -21,9 +21,9 @@ namespace rtti {
         const std::vector<const Member*>& members() const { return m_members; }
         const std::vector<const Method*>& methods() const { return m_methods; }
 
-        const Class* as_class() const override { return this; }
-        const Enum* as_enum() const override { return nullptr; }
         const Fundamental* as_fundamental() const override { return nullptr; }
+        const Enum* as_enum() const override { return nullptr; }
+        const Class* as_class() const override { return this; }
 
     private:
         std::vector<const Member*> m_members;

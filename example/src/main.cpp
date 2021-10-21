@@ -3,13 +3,22 @@
 FUNDAMENTAL(bool)
 
 namespace ecs {
+
+    enum class ETimeSpeed {
+        NORMAL,
+        FAST,
+        FASTER,
+        FASTEST,
+    };
+
+    //ENUM(ecs::ETimeSpeed, )
+
     class Entity {
         CLASS(ecs::Entity)
 
     public:
         bool m_bool = false;
         FIELD(m_bool)
-
 
     }; // class Entity
 

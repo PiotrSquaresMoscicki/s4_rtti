@@ -29,9 +29,9 @@ namespace rtti {
         virtual void move(ObjectRef& dst, ObjectRef& src) const = 0;
         virtual Object move_construct(ObjectRef& src) const = 0;
 
-        virtual const Class* as_class() const = 0;
-        virtual const Enum* as_enum() const = 0;
         virtual const Fundamental* as_fundamental() const = 0;
+        virtual const Enum* as_enum() const = 0;
+        virtual const Class* as_class() const = 0;
 
     protected:
         void* writable_data(Buffer& buff) const;

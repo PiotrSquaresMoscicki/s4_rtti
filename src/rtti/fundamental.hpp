@@ -16,9 +16,9 @@ namespace rtti {
         Fundamental(std::string name, size_t size)
             : Type(std::move(name), size, {}) {}
 
-        const Class* as_class() const override { return nullptr; }
-        const Enum* as_enum() const override { return nullptr; }
         const Fundamental* as_fundamental() const override { return this; }
+        const Enum* as_enum() const override { return nullptr; }
+        const Class* as_class() const override { return nullptr; }
 
     }; // class Fundamental
 
