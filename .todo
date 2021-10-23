@@ -7,6 +7,7 @@ As a user I have to:
 [ ] Link rtti library dynamically because I want to have a type defined in one dynamic library to be 
     accessible from another
 [ ] Check if given type is an instantiation of given template
+[ ] Check if a variable is const or volatile
 
 As a user I'd like to
 [ ] Instantiate a template with provided type

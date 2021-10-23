@@ -18,7 +18,7 @@ endfunction()
 # Start
 ##
 project(s4_rtti VERSION "1.0.0")
-#enable_testing()
+enable_testing()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -49,13 +49,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${S4_RTTI_PROJECT_FULL_DIST_DIR})
 include(FetchContent)
 FetchContent_Declare(
   Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG v2.13.7
+  GIT_REPOSITORY "https://github.com/catchorg/Catch2.git"
+  GIT_TAG "v3.0.0-preview3"
 )
 
 FetchContent_MakeAvailable(Catch2)
-
-find_package(Catch2 2 REQUIRED)
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
 # Target names
 set(S4_RTTI_TARGET s4_rtti)
@@ -67,5 +66,4 @@ add_subdirectory(src)
 add_subdirectory(example)
 add_subdirectory(test)
 
-# Tests
-#add_test(example "../dist/test")
+list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")

@@ -1,12 +1,32 @@
-#include "catch.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <rtti/rtti.hpp>
 
-unsigned int Factorial( unsigned int number ) {
-    return number <= 1 ? number : Factorial(number-1)*number;
+using namespace rtti;
+
+//*************************************************************************************************
+TEST_CASE( "Compare fundamental types", "[Fundamental]" ) {
+    REQUIRE( static_type<bool>() == static_type<bool>() );
+    REQUIRE( static_type<int>() != static_type<float>() );
 }
 
-TEST_CASE( "Factorials are computed", "[factorial]" ) {
-    REQUIRE( Factorial(1) == 1 );
-    REQUIRE( Factorial(2) == 2 );
-    REQUIRE( Factorial(3) == 6 );
-    REQUIRE( Factorial(10) == 3628800 );
+//*************************************************************************************************
+TEST_CASE( "Get names of fundamental types", "[Fundamental]" ) {
+    REQUIRE( static_type<bool>()->name() == "bool" );
+    REQUIRE( static_type<double>()->name() == "double" );
 }
+
+//*************************************************************************************************
+TEST_CASE( "Get as fundamental", "[Fundamental]" ) {
+    REQUIRE( static_type<bool>()->as_fundamental() == static_type<bool>() );
+}
+
+//*************************************************************************************************
+TEST_CASE( "Get as enum", "[Fundamental]" ) {
+    REQUIRE( static_type<bool>()->as_enum() == nullptr );
+}
+
+//*************************************************************************************************
+TEST_CASE( "Get as class", "[Fundamental]" ) {
+    REQUIRE( static_type<bool>()->as_class() == nullptr );
+}
+

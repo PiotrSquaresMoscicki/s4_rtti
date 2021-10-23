@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 #include "rtti_fwd.hpp"
 
 namespace rtti {
@@ -13,11 +15,12 @@ namespace rtti {
 
         ObjectRef() = default;
         template <typename TYPE>
-        ObjectRef(TYPE* obj);
+        ObjectRef(TYPE* obj) : ObjectRef(reinterpret_cast<void*>(obj), static_type<TYPE>()) {}
         ObjectRef(void* obj, const Type* type);
 
-        const Type* type() const;
-        const void* value() const;
+        bool is_valid() const { return m_value && m_type; }
+        const void* value() const { assert(is_valid()); return m_value; }
+        const Type* type() const { assert(is_valid()); return m_type; }
 
         void copy(const ObjectRef& src);
         void move(ObjectRef&& src);

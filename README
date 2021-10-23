@@ -1,0 +1,16 @@
+Setup guide
+
+1. Clone the repo
+'''git clone https://github.com/PiotrMoscicki/s4_rtti.git'''
+2. Change dircectory
+'''cd s4_rtti'''
+3. Create the build dircectory
+'''mkdir build'''
+4. Change dircectory
+''' cd build'''
+5. Generate build files (example is for make)
+'''cmake ..'''
+6. Build the project
+'''make'''
+7. Run tests
+'''make test'''

@@ -1,6 +1,4 @@
-#include "rtti/rtti.hpp"
-
-REGISTER_FUNDAMENTAL(bool)
+#include <rtti/rtti.hpp>
 
 namespace ecs {
 

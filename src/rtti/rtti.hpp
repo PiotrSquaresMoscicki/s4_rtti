@@ -80,3 +80,30 @@
 
 //*************************************************************************************************
 #define METHOD(NAME, PARAMS_NAMES, ATTRS)
+
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+REGISTER_FUNDAMENTAL(bool)
+
+REGISTER_FUNDAMENTAL(signed char)
+REGISTER_FUNDAMENTAL(unsigned char)
+REGISTER_FUNDAMENTAL(char)
+REGISTER_FUNDAMENTAL(wchar_t)
+REGISTER_FUNDAMENTAL(char16_t)
+REGISTER_FUNDAMENTAL(char32_t)
+REGISTER_FUNDAMENTAL(char8_t)
+
+REGISTER_FUNDAMENTAL(short int)
+REGISTER_FUNDAMENTAL(unsigned short int)
+REGISTER_FUNDAMENTAL(int)
+REGISTER_FUNDAMENTAL(unsigned int)
+REGISTER_FUNDAMENTAL(long int)
+REGISTER_FUNDAMENTAL(unsigned long int)
+REGISTER_FUNDAMENTAL(long long int)
+REGISTER_FUNDAMENTAL(unsigned long long int)
+
+REGISTER_FUNDAMENTAL(float)
+REGISTER_FUNDAMENTAL(double)
+REGISTER_FUNDAMENTAL(long double)
+
