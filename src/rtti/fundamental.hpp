@@ -63,7 +63,12 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    void FundamentalInstance<FUNDAMENTAL>::delete_object(Object&&) const {}
+    void FundamentalInstance<FUNDAMENTAL>::delete_object(Object&& obj) const {
+        assert(obj.type() == this);
+        delete reinterpret_cast<FUNDAMENTAL*>(obj.m_value);
+        obj.m_value = nullptr;
+        obj.m_type = nullptr;
+    }
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>

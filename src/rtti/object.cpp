@@ -1,5 +1,7 @@
 #include "object.hpp"
 
+#include "type.hpp"
+
 using namespace rtti;
 
 //*************************************************************************************************
@@ -19,4 +21,10 @@ Object::Object(void* obj, const Type* type)
     : ObjectRef(obj, type) 
 {
 
+}
+
+//*************************************************************************************************
+Object::~Object() {
+    if (is_valid())
+        m_type->delete_object(std::move(*this));
 }

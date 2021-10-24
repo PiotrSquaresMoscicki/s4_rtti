@@ -10,23 +10,3 @@ Type::Type(std::string name, size_t size, Attributes attributes)
     , m_size(size)
     , m_attributes(std::move(attributes))
 {}
-
-//*************************************************************************************************
-void* Type::writable_data(Buffer&) const {
-    return {};
-}
-
-//*************************************************************************************************
-void* Type::writable_data(ObjectRef&) const {
-    return {};
-}
-
-//*************************************************************************************************
-void* Type::move_data(Buffer&&) const {
-    return {};
-}
-
-//*************************************************************************************************
-void* Type::move_data(ObjectRef&&) const {
-    return {};
-}

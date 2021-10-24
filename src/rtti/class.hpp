@@ -79,7 +79,12 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    void ClassInstance<CLASS>::delete_object(Object&&) const {}
+    void ClassInstance<CLASS>::delete_object(Object&& obj) const {
+        assert(obj.type() == this);
+        delete reinterpret_cast<CLASS*>(obj.m_value);
+        obj.m_value = nullptr;
+        obj.m_type = nullptr;
+    }
 
     //*********************************************************************************************
     template <typename CLASS>

@@ -33,12 +33,6 @@ namespace rtti {
         virtual const Enum* as_enum() const = 0;
         virtual const Class* as_class() const = 0;
 
-    protected:
-        void* writable_data(Buffer& buff) const;
-        void* writable_data(ObjectRef& obj) const;
-        void* move_data(Buffer&& buff) const;
-        void* move_data(ObjectRef&& obj) const;
-
     private:
         std::string m_name;
         size_t m_size = 0;

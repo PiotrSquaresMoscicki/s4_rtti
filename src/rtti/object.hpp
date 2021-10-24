@@ -11,7 +11,9 @@ namespace rtti {
     //*********************************************************************************************
     class ObjectRef {
     public:
-        friend Type;
+        template <typename FUNDAMENTAL> friend class FundamentalInstance;
+        template <typename ENUM> friend class EnumInstance;
+        template <typename CLASS> friend class ClassInstance;
 
         ObjectRef() = default;
         template <typename TYPE>
@@ -22,12 +24,12 @@ namespace rtti {
         const void* value() const { assert(is_valid()); return m_value; }
         const Type* type() const { assert(is_valid()); return m_type; }
 
-        void copy(const ObjectRef& src);
-        void move(ObjectRef&& src);
+        void copy_assign(const ObjectRef& src);
+        void move_assign(ObjectRef&& src);
 
     protected:
         void* m_value = nullptr;
-        const Type* const m_type = nullptr;
+        const Type* m_type = nullptr;
 
     }; // class ObjectRef
 
@@ -36,12 +38,15 @@ namespace rtti {
     //*********************************************************************************************
     class Object : public ObjectRef {
     public:
-        friend Type;
+        template <typename FUNDAMENTAL> friend class FundamentalInstance;
+        template <typename ENUM> friend class EnumInstance;
+        template <typename CLASS> friend class ClassInstance;
 
         Object() = default;
         template <typename TYPE>
-        Object(TYPE* obj);
+        Object(TYPE* obj) : ObjectRef(reinterpret_cast<void*>(obj), static_type<TYPE>()) {}
         Object(void* obj, const Type* type);
+        ~Object();
 
         template <typename TYPE>
         void change_pointed_object(TYPE* obj);
@@ -51,10 +56,6 @@ namespace rtti {
         Buffer call_destructor() &&;
 
     }; // class Object
-
-    //*********************************************************************************************
-    template <typename TYPE>
-    Object::Object(TYPE* obj) : Object(static_cast<void*>(obj), static_type<TYPE>()) {}
 
     //*********************************************************************************************
     template <typename TYPE>

@@ -13,6 +13,8 @@ namespace ecs {
         CLASS(ecs::Entity)
 
     public:
+        virtual ~Entity() = default;
+
         bool m_bool = false;
         FIELD(m_bool)
 
