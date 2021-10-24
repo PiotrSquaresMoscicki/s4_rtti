@@ -24,7 +24,12 @@ namespace rtti {
         const void* value() const { assert(is_valid()); return m_value; }
         const Type* type() const { assert(is_valid()); return m_type; }
 
+        template <typename TYPE>
+        void copy_assign(const TYPE& value) { copy_assign(ObjectRef(&value)); }
         void copy_assign(const ObjectRef& src);
+
+        template <typename TYPE>
+        void move_assign(TYPE&& value) { move_assign(ObjectRef(&value)); }
         void move_assign(ObjectRef&& src);
 
     protected:

@@ -32,7 +32,8 @@ TEST_CASE( "Get as class", "[Fundamental]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "Create new object", "[Fundamental]" ) {
-    //Object obj = static_type<float>()->new_object();
-    REQUIRE( static_type<bool>()->as_class() == nullptr );
+    Object obj = static_type<float>()->new_object();
+    REQUIRE( obj.type() == static_type<float>() );
+    REQUIRE( obj.is_valid() == true );
 }
 
