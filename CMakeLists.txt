@@ -66,6 +66,7 @@ add_subdirectory(src)
 add_subdirectory(example)
 add_subdirectory(test)
 
+install(FILES src/s4_rtti-config.cmake DESTINATION lib)
 install(EXPORT ${S4_RTTI_TARGET} DESTINATION lib)
 
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
