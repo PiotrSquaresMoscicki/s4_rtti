@@ -9,7 +9,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class ObjectRef {
+    class S4_RTTI_EXPORT ObjectRef {
     public:
         template <typename FUNDAMENTAL> friend class FundamentalInstance;
         template <typename ENUM> friend class EnumInstance;
@@ -41,7 +41,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class Object : public ObjectRef {
+    class S4_RTTI_EXPORT Object : public ObjectRef {
     public:
         template <typename FUNDAMENTAL> friend class FundamentalInstance;
         template <typename ENUM> friend class EnumInstance;

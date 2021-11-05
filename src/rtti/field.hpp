@@ -8,7 +8,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class Field : public Member {
+    class S4_RTTI_EXPORT Field : public Member {
     public:
         Field(std::string name, const Type* type, const Class* declaring_class
             , Attributes attributes) 
@@ -22,7 +22,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     template <typename CLASS, typename FIELD>
-    class FieldInstance : public Field {
+    class S4_RTTI_EXPORT FieldInstance : public Field {
     public:
         FieldInstance(std::string name, FIELD CLASS::*const field);
         FieldInstance(std::string name, FIELD CLASS::*const field, Attributes attributes);

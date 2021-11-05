@@ -1,5 +1,7 @@
 #pragma once
 
+#include "src/s4_rtti_export.h"
+
 namespace rtti {
 
     class Type;
@@ -19,12 +21,12 @@ namespace rtti {
     class Attributes;
 
     template <typename TYPE>
-    inline const Type* static_type() { return TYPE::static_class(); }
+    S4_RTTI_EXPORT inline const Type* static_type() { return TYPE::static_class(); }
 
     template <typename CLASS>
-    inline const Class* static_class() { return CLASS::static_class(); }
+    S4_RTTI_EXPORT inline const Class* static_class() { return CLASS::static_class(); }
     
     template <typename CLASS>
-    inline const Class* dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
+    S4_RTTI_EXPORT inline const Class* dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
 
 } // namespace rtti

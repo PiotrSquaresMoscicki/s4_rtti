@@ -11,7 +11,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class Fundamental : public Type {
+    class S4_RTTI_EXPORT Fundamental : public Type {
     public:
         Fundamental(std::string name, size_t size)
             : Type(std::move(name), size, {}) {}
@@ -26,7 +26,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    class FundamentalInstance : public Fundamental {
+    class S4_RTTI_EXPORT FundamentalInstance : public Fundamental {
     public:
         FundamentalInstance(std::string name);
 

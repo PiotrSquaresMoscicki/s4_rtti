@@ -12,7 +12,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class Class : public Type {
+    class S4_RTTI_EXPORT Class : public Type {
     public:
         Class(std::string name, size_t size, Attributes attributes) 
             : Type(std::move(name), size, std::move(attributes)) {}
@@ -35,7 +35,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     template <typename CLASS>
-    class ClassInstance : public Class {
+    class S4_RTTI_EXPORT ClassInstance : public Class {
     public:
         ClassInstance(std::string name);
         ClassInstance(std::string name, Attributes attributes);
