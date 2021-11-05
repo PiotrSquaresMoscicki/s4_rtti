@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.16)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ##
@@ -65,5 +65,7 @@ set(S4_RTTI_TEST_TARGET s4_rtti_test)
 add_subdirectory(src)
 add_subdirectory(example)
 add_subdirectory(test)
+
+install(EXPORT ${S4_RTTI_TARGET} DESTINATION lib)
 
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
