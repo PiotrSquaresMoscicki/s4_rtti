@@ -52,8 +52,13 @@ FetchContent_Declare(
   GIT_REPOSITORY "https://github.com/catchorg/Catch2.git"
   GIT_TAG "v3.0.0-preview3"
 )
+FetchContent_Declare(
+  s4_core
+  GIT_REPOSITORY "https://github.com/PiotrMoscicki/s4_core.git"
+  GIT_TAG "main"
+)
 
-FetchContent_MakeAvailable(Catch2)
+FetchContent_MakeAvailable(Catch2 s4_core)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
 # Target names
@@ -66,7 +71,5 @@ add_subdirectory(src)
 add_subdirectory(example)
 add_subdirectory(test)
 
-install(FILES src/s4_rtti-config.cmake DESTINATION lib)
-install(EXPORT ${S4_RTTI_TARGET} DESTINATION lib)
-
-list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+#install(FILES src/s4_rtti-config.cmake DESTINATION lib)
+#install(EXPORT ${S4_RTTI_TARGET} DESTINATION lib)
