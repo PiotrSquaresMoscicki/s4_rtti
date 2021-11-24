@@ -21,9 +21,9 @@ namespace rtti {
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
         virtual Object new_object() const = 0;
-        virtual Object call_constructor(Buffer&& buff) const = 0;
+        virtual Object call_constructor(BufferRef&& buff) const = 0;
         virtual void delete_object(Object&& obj) const = 0;
-        virtual Buffer call_destructor(Object&& obj) const = 0;
+        virtual BufferRef call_destructor(Object&& obj) const = 0;
         virtual void copy(ObjectRef& dst, const ObjectRef& src) const = 0;
         virtual Object copy_construct(const ObjectRef& src) const = 0;
         virtual void move(ObjectRef& dst, ObjectRef& src) const = 0;

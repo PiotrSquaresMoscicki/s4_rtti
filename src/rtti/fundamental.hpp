@@ -31,9 +31,9 @@ namespace rtti {
         FundamentalInstance(std::string name);
 
         Object new_object() const override;
-        Object call_constructor(Buffer&& buff) const override;
+        Object call_constructor(BufferRef&& buff) const override;
         void delete_object(Object&& obj) const override;
-        Buffer call_destructor(Object&& obj) const override;
+        BufferRef call_destructor(Object&& obj) const override;
         void copy(ObjectRef& dst, const ObjectRef& src) const override;
         Object copy_construct(const ObjectRef& src) const override;
         void move(ObjectRef& dst, ObjectRef& src) const override;
@@ -55,7 +55,7 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    Object FundamentalInstance<FUNDAMENTAL>::call_constructor(Buffer&& buff) const {
+    Object FundamentalInstance<FUNDAMENTAL>::call_constructor(BufferRef&& buff) const {
         assert(buff.size() == size());
         return Object(new(buff.data()) FUNDAMENTAL);
     }
@@ -71,7 +71,7 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    Buffer FundamentalInstance<FUNDAMENTAL>::call_destructor(Object&&) const {
+    BufferRef FundamentalInstance<FUNDAMENTAL>::call_destructor(Object&&) const {
         return {};
     }
 

@@ -59,7 +59,7 @@ namespace rtti {
         void change_pointed_object(void* obj, const Type* type);
 
         void delete_object() &&;
-        Buffer call_destructor() &&;
+        BufferRef call_destructor() &&;
 
     }; // class Object
 

@@ -41,9 +41,9 @@ namespace rtti {
         ClassInstance(std::string name, Attributes attributes);
 
         Object new_object() const override;
-        Object call_constructor(Buffer&& buff) const override;
+        Object call_constructor(BufferRef&& buff) const override;
         void delete_object(Object&& obj) const override;
-        Buffer call_destructor(Object&& obj) const override;
+        BufferRef call_destructor(Object&& obj) const override;
         void copy(ObjectRef& dst, const ObjectRef& src) const override;
         Object copy_construct(const ObjectRef& src) const override;
         void move(ObjectRef& dst, ObjectRef& src) const override;
@@ -71,7 +71,7 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance<CLASS>::call_constructor(Buffer&& buff) const {
+    Object ClassInstance<CLASS>::call_constructor(BufferRef&& buff) const {
         assert(buff.size() == size());
         //return Object(new(move_data(buff)) CLASS);
         return {};
@@ -88,7 +88,7 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    Buffer ClassInstance<CLASS>::call_destructor(Object&&) const {
+    BufferRef ClassInstance<CLASS>::call_destructor(Object&&) const {
         return {};
     }
 
