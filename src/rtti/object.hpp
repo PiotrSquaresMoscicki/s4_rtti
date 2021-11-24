@@ -21,6 +21,7 @@ namespace rtti {
         ObjectRef(void* obj, const Type* type);
 
         bool is_valid() const { return m_value && m_type; }
+        void* value() { assert(is_valid()); return m_value; }
         const void* value() const { assert(is_valid()); return m_value; }
         const Type* type() const { assert(is_valid()); return m_type; }
 

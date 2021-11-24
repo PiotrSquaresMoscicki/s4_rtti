@@ -57,8 +57,7 @@ namespace rtti {
     template <typename FUNDAMENTAL>
     Object FundamentalInstance<FUNDAMENTAL>::call_constructor(Buffer&& buff) const {
         assert(buff.size() == size());
-        //return Object(new(move_data(buff)) FUNDAMENTAL);
-        return {};
+        return Object(new(buff.data()) FUNDAMENTAL);
     }
 
     //*********************************************************************************************
@@ -78,7 +77,10 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    void FundamentalInstance<FUNDAMENTAL>::copy(ObjectRef&, const ObjectRef&) const {}
+    void FundamentalInstance<FUNDAMENTAL>::copy(ObjectRef& dst, const ObjectRef& src) const {
+        *reinterpret_cast<FUNDAMENTAL*>(dst.value()) 
+            = *reinterpret_cast<const FUNDAMENTAL*>(src.value());
+    }
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
