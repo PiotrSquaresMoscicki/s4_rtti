@@ -10,7 +10,25 @@ using namespace rtti;
 ObjectRef::ObjectRef(void* obj, const Type* type)
     : m_value(obj)
     , m_type(type)
-{
+{}
+
+//*************************************************************************************************
+Res<void*, ErrValue> ObjectRef::value() {
+
+}
+
+//*************************************************************************************************
+Res<const void*, ErrValue> ObjectRef::value() const {
+
+}
+
+//*************************************************************************************************
+Res<void*, ErrValue> ObjectRef::steal_value() && {
+
+}
+
+//*************************************************************************************************
+Res<const Type*, ErrType> ObjectRef::type() const {
 
 }
 

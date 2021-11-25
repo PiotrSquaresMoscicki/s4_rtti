@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+#include <core/util/res.hpp>
+
 #include "rtti_fwd.hpp"
 
 namespace rtti {
@@ -11,6 +13,14 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT ObjectRef {
     public:
+        enum class ErrValue {
+            INVALID_OBJECT
+        };
+
+        enum class ErrType {
+            INVALID_OBJECT
+        };
+
         template <typename FUNDAMENTAL> friend class FundamentalInstance;
         template <typename ENUM> friend class EnumInstance;
         template <typename CLASS> friend class ClassInstance;
@@ -19,11 +29,13 @@ namespace rtti {
         template <typename TYPE>
         ObjectRef(TYPE* obj) : ObjectRef(reinterpret_cast<void*>(obj), static_type<TYPE>()) {}
         ObjectRef(void* obj, const Type* type);
+        virtual ~ObjectRef() = default;
 
         bool is_valid() const { return m_value && m_type; }
-        void* value() { assert(is_valid()); return m_value; }
-        const void* value() const { assert(is_valid()); return m_value; }
-        const Type* type() const { assert(is_valid()); return m_type; }
+        Res<void*, ErrValue> value();
+        Res<const void*, ErrValue> value() const;
+        Res<void*, ErrValue> steal_value() &&;
+        Res<const Type*, ErrType> type() const;
 
         template <typename TYPE>
         void copy_assign(const TYPE& value) { copy_assign(ObjectRef(&value)); }
@@ -31,7 +43,7 @@ namespace rtti {
 
         template <typename TYPE>
         void move_assign(TYPE&& value) { move_assign(ObjectRef(&value)); }
-        void move_assign(ObjectRef&& src);
+        void move_assign(ObjectRef& src);
 
     protected:
         void* m_value = nullptr;

@@ -3,35 +3,66 @@
 #include <cstddef>
 #include <cassert>
 
+#include <core/util/res.hpp>
+
 #include "rtti_fwd.hpp"
 
 namespace rtti {
+
+    using namespace core::util;
 
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
     class S4_RTTI_EXPORT BufferRef {
     public:
+        enum class ErrData {
+            INVALID_BUFFER
+        };
+
+        enum class ErrSize {
+            INVALID_BUFFER
+        };
+
         template <typename FUNDAMENTAL> friend class FundamentalInstance;
         template <typename ENUM> friend class EnumInstance;
         template <typename CLASS> friend class ClassInstance;
 
         BufferRef() = default;
-        BufferRef(size_t size);
+        BufferRef(void* data, size_t size);
+        virtual ~BufferRef() = default;
 
         bool is_valid() const { return m_data && m_size; }
-        const void* data() const { assert(is_valid()); return m_data; }
-        void* data() { assert(is_valid()); return m_data; }
-        size_t size() const { assert(is_valid()); return m_size; }
+        Res<const void*, ErrData> data() const;
+        Res<void*, ErrData> data();
+        Res<void*, ErrData> steal_data() &&;
+        Res<size_t, ErrSize> size() const;
 
-        virtual Object call_constructor(const Type* type) &&;
-        virtual void copy(const BufferRef& src);
-        virtual void move(BufferRef&& src);
+        void copy(const BufferRef& src);
 
-    private:
+    protected:
         void* m_data = nullptr;
         size_t m_size = 0;
 
     }; // class BufferRef
+
+    //*********************************************************************************************
+    //*********************************************************************************************
+    //*********************************************************************************************
+    class S4_RTTI_EXPORT Buffer : public BufferRef {
+    public:
+        template <typename FUNDAMENTAL> friend class FundamentalInstance;
+        template <typename ENUM> friend class EnumInstance;
+        template <typename CLASS> friend class ClassInstance;
+
+        Buffer(size_t size);
+        ~Buffer();
+
+        void change_buffer_size(size_t new_size);
+
+        void release_buffer() &&;
+        Object call_constructor(const Type* type) &&;
+
+    }; // class Buffer
 
 } // namespace rtti

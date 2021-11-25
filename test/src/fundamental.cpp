@@ -30,9 +30,12 @@ TEST_CASE( "rtti::Fundamental::new_object", "[rtti::Fundamental]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::call_constructor", "[rtti::Fundamental]" ) {
-    //BufferRef buf
-    //REQUIRE( obj.type() == static_type<float>() );
-    //REQUIRE( obj.is_valid() == true );
+    Buffer buf(static_type<long>()->size());
+    const void* data = buf.data().ok();
+    Object obj = static_type<long>()->call_constructor(std::move(buf));
+    REQUIRE( buf.value())
+    REQUIRE( obj.type() == static_type<long>() );
+    REQUIRE( obj.value() == data );
 }
 
 //*************************************************************************************************

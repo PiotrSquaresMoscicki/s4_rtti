@@ -57,7 +57,7 @@ namespace rtti {
     template <typename FUNDAMENTAL>
     Object FundamentalInstance<FUNDAMENTAL>::call_constructor(BufferRef&& buff) const {
         assert(buff.size() == size());
-        return Object(new(buff.data()) FUNDAMENTAL);
+        return Object(new(buff.data().ok()) FUNDAMENTAL);
     }
 
     //*********************************************************************************************
