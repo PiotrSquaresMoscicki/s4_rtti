@@ -1,19 +1,41 @@
 #include "object.hpp"
 
-#include "type.hpp"
-
 using namespace rtti;
 
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-ObjectRef::ObjectRef(void* obj, const Type* type)
+ObjectRef::ObjectRef(void* obj, const Type* type, size_t size)
     : m_value(obj)
     , m_type(type)
+    , m_size(size)
 {}
 
 //*************************************************************************************************
-Res<void*, ErrValue> ObjectRef::value() {
+ObjectRef::ObjectRef(ObjectRef&& other)
+    : m_value(other.m_value)
+    , m_type(other.m_type)
+    , m_size(other.m_size)
+{
+    other.m_value = nullptr;
+    other.m_type = nullptr;
+    other.m_size = 0;
+}
+
+//*************************************************************************************************
+ObjectRef& ObjectRef::operator=(ObjectRef&& other)
+{
+    m_value = other.m_value;
+    m_type = other.m_type;
+    m_size = other.m_size;
+    other.m_value = nullptr;
+    other.m_type = nullptr;
+    other.m_size = 0;
+    return *this;
+}
+
+//*************************************************************************************************
+Res<void*, ObjectRef::ErrValue> ObjectRef::value() {
     if (is_valid())
         return Ok(m_value);
     else
@@ -21,7 +43,7 @@ Res<void*, ErrValue> ObjectRef::value() {
 }
 
 //*************************************************************************************************
-Res<const void*, ErrValue> ObjectRef::value() const {
+Res<const void*, ObjectRef::ErrValue> ObjectRef::value() const {
     if (is_valid())
         return Ok(const_cast<const void*>(m_value));
     else
@@ -29,30 +51,35 @@ Res<const void*, ErrValue> ObjectRef::value() const {
 }
 
 //*************************************************************************************************
-Res<void*, ErrValue> ObjectRef::steal_value() && {
+Res<void*, ObjectRef::ErrValue> ObjectRef::steal_value() && {
     if (!is_valid())
         return Err(ErrValue::INVALID_OBJECT);
 
     void* res = m_value;
     m_value = nullptr;
     m_type = nullptr;
+    m_size = 0;
     return Ok(res);
 }
 
 //*************************************************************************************************
-Res<const Type*, ErrType> ObjectRef::type() const {
+Res<const Type*, ObjectRef::ErrType> ObjectRef::type() const {
+    if (is_valid())
+        return Ok(m_type);
+    else
+        return Err(ErrType::INVALID_OBJECT);
+}
 
+//*************************************************************************************************
+Res<size_t, ObjectRef::ErrSize> ObjectRef::size() const {
+    if (is_valid())
+        return Ok(m_size);
+    else
+        return Err(ErrSize::INVALID_OBJECT);
 }
 
 //*************************************************************************************************
 //*************************************************************************************************
-//*************************************************************************************************
-Object::Object(void* obj, const Type* type) 
-    : ObjectRef(obj, type) 
-{
-
-}
-
 //*************************************************************************************************
 Object::~Object() {
     if (is_valid())

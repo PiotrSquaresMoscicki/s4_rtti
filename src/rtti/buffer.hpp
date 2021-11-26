@@ -29,6 +29,11 @@ namespace rtti {
         template <typename CLASS> friend class ClassInstance;
 
         BufferRef() = default;
+        BufferRef(const BufferRef& other) = delete;
+        BufferRef(BufferRef&& other);
+        BufferRef& operator=(const BufferRef& other) = delete;
+        BufferRef& operator=(BufferRef&& other);
+
         BufferRef(void* data, size_t size);
         virtual ~BufferRef() = default;
 
@@ -55,6 +60,13 @@ namespace rtti {
         template <typename ENUM> friend class EnumInstance;
         template <typename CLASS> friend class ClassInstance;
 
+        Buffer() = default;
+        Buffer(const Buffer& other) = delete;
+        Buffer(Buffer&& other) = default;
+        Buffer& operator=(const Buffer& other) = delete;
+        Buffer& operator=(Buffer&& other) = default;
+
+        using BufferRef::BufferRef;
         Buffer(size_t size);
         ~Buffer();
 

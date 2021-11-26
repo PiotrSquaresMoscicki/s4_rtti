@@ -13,6 +13,25 @@ BufferRef::BufferRef(void* data, size_t size)
 {}
 
 //*************************************************************************************************
+BufferRef::BufferRef(BufferRef&& other)
+    : m_data(other.m_data)
+    , m_size(other.m_size)
+{
+    other.m_data = nullptr;
+    other.m_size = 0;
+}
+
+//*************************************************************************************************
+BufferRef& BufferRef::operator=(BufferRef&& other)
+{
+    m_data = other.m_data;
+    m_size = other.m_size;
+    other.m_data = nullptr;
+    other.m_size = 0;
+    return *this;
+}
+
+//*************************************************************************************************
 Res<const void*, BufferRef::ErrData> BufferRef::data() const { 
     if (is_valid()) 
         return Ok(const_cast<const void*>(m_data)); 

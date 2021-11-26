@@ -72,7 +72,7 @@ namespace rtti {
     //*********************************************************************************************
     template <typename CLASS>
     Object ClassInstance<CLASS>::call_constructor(BufferRef&& buff) const {
-        assert(buff.size() == size());
+        assert(buff.size().ok() == size());
         //return Object(new(move_data(buff)) CLASS);
         return {};
     }
@@ -80,7 +80,7 @@ namespace rtti {
     //*********************************************************************************************
     template <typename CLASS>
     void ClassInstance<CLASS>::delete_object(Object&& obj) const {
-        assert(obj.type() == this);
+        assert(obj.type().ok() == this);
         delete reinterpret_cast<CLASS*>(obj.m_value);
         obj.m_value = nullptr;
         obj.m_type = nullptr;

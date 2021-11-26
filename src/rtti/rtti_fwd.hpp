@@ -12,6 +12,7 @@ namespace rtti {
     class ObjectRef;
     class Object;
     class BufferRef;
+    class Buffer;
 
     class Member;
     class Field;
