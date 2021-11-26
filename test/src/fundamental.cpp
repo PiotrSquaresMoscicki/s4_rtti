@@ -22,17 +22,17 @@ TEST_CASE( "rtti::Fundamental::size", "[rtti::Fundamental]" ) {
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Fundamental::Get as fundamental", "[rtti::Fundamental]" ) {
+TEST_CASE( "rtti::Fundamental::as_fundamental", "[rtti::Fundamental]" ) {
     REQUIRE( static_type<bool>()->as_fundamental() == static_type<bool>() );
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Fundamental::Get as enum", "[rtti::Fundamental]" ) {
+TEST_CASE( "rtti::Fundamental::as_enum", "[rtti::Fundamental]" ) {
     REQUIRE( static_type<bool>()->as_enum() == nullptr );
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Fundamental::Get as class", "[Fundamental]" ) {
+TEST_CASE( "rtti::Fundamental::as_class", "[Fundamental]" ) {
     REQUIRE( static_type<bool>()->as_class() == nullptr );
 }
 
