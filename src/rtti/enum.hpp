@@ -46,8 +46,6 @@ namespace rtti {
         const Enum* declaring_enum() const { return m_declaring_enum; }
 
     private:
-        void set_declaring_enum(const Enum* declaring_enum) { m_declaring_enum = declaring_enum; }
-
         std::string m_name;
         size_t m_value = 0;
         const Enum* m_declaring_enum = 0;

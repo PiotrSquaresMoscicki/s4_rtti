@@ -20,9 +20,9 @@ REGISTER_ENUM(test::TestEnum1)
 END_ENUM
     
 enum class TestEnum2 : long {
-    VAL_4,
-    VAL_5,
-    VAL_6
+    VAL_4 = 0,
+    VAL_5 = 234,
+    VAL_6 = 333
 };
 
 REGISTER_ENUM(TestEnum2)
@@ -32,6 +32,22 @@ REGISTER_ENUM(TestEnum2)
 END_ENUM
 
 using namespace test;
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Enum::values", "[rtti::Enum]" ) {
+    const std::vector<const EnumValue*>& values = static_type<TestEnum2>()->as_enum()->values();
+
+    REQUIRE( values.size() == 3 );
+    REQUIRE( values[0]->name() == "VAL_4" );
+    REQUIRE( values[0]->value() == 0 );
+    REQUIRE( values[0]->declaring_enum() == static_type<TestEnum2>() );
+    REQUIRE( values[1]->name() == "VAL_5" );
+    REQUIRE( values[1]->value() == 234 );
+    REQUIRE( values[1]->declaring_enum() == static_type<TestEnum2>() );
+    REQUIRE( values[2]->name() == "VAL_6" );
+    REQUIRE( values[2]->value() == 333 );
+    REQUIRE( values[2]->declaring_enum() == static_type<TestEnum2>() );
+}
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Enum::==", "[rtti::Enum]" ) {

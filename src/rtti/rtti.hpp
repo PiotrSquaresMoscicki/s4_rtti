@@ -35,10 +35,9 @@
         return &result; \
     }\
 
-/*
-// *************************************************************************************************
-// *************************************************************************************************
-// *************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
 #define CLASS(ARG_CLASS, ...)\
     public:\
         using This = ::ARG_CLASS;\
@@ -48,33 +47,37 @@
         static inline const ::rtti::ClassInstance<This> m_rtti_class_impl\
             = ::rtti::ClassInstance<This>(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);
         
-// *************************************************************************************************
-#define REGISTER_CLASS(ARG_CLASS, ...)\
-    class ARG_CLASS##TypeImpl_internal;\
-    \
-    template<>\
-    const Type* ::rtti::static_type<::CLASS>() {\
-        return ::rtti::static_type<ARG_CLASS##TypeImpl_internal>();\
-    }\
-    template<>\
-    const Type* ::rtti::static_class<::CLASS>() {\
-        return ::rtti::static_type<ARG_CLASS##TypeImpl_internal>();\
+//*************************************************************************************************
+#define REGISTER_CLASS(NAMESPACE, ARG_CLASS, ...)\
+    namespace NAMESPACE {\
+        class ARG_CLASS##TypeImpl_internal;\
     }\
     \
-    class ARG_CLASS##TypeImpl_internal {\
-        CLASS(ARG_CLASS __VA_OPT__(,) __VA_ARGS__);
+    template<>\
+    const Type* ::rtti::static_type<::NAMESPACE::ARG_CLASS>() {\
+        return ::rtti::static_type<::NAMESPACE::ARG_CLASS##TypeImpl_internal>();\
+    }\
+    template<>\
+    const Class* ::rtti::static_class<::NAMESPACE::ARG_CLASS>() {\
+        return ::rtti::static_class<::NAMESPACE::ARG_CLASS##TypeImpl_internal>();\
+    }\
+    \
+    namespace NAMESPACE {\
+        class ARG_CLASS##TypeImpl_internal {\
+            CLASS(NAMESPACE::ARG_CLASS __VA_OPT__(,) __VA_ARGS__)
 
-// *************************************************************************************************
+//*************************************************************************************************
 #define END_CLASS\
-    };
-    */
+        };\
+    } // namespace NAMESPACE
     
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
 #define FIELD(ARG_NAME, ...)\
-    static inline const ::rtti::FieldInstance<This, decltype(ARG_NAME)> ARG_NAME##_field_info = \
-        ::rtti::FieldInstance<This, decltype(ARG_NAME)>\
+    static inline const ::rtti::FieldInstance<This, decltype(This::ARG_NAME)> \
+        ARG_NAME##_field_info = \
+        ::rtti::FieldInstance<This, decltype(This::ARG_NAME)>\
             (#ARG_NAME, &This::ARG_NAME __VA_OPT__(,) __VA_ARGS__);
 
 //*************************************************************************************************
