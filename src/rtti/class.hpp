@@ -14,10 +14,11 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT Class : public Type {
     public:
+        template <typename C, typename D, typename F> friend class FieldInstance;
+
         Class(std::string name, size_t size, Attributes attributes) 
             : Type(std::move(name), size, std::move(attributes)) {}
 
-        bool is_instance_of_template(const std::string& template_name) const;
         const std::vector<const Member*>& members() const { return m_members; }
         const std::vector<const Method*>& methods() const { return m_methods; }
 

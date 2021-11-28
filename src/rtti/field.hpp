@@ -21,7 +21,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    template <typename CLASS, typename FIELD>
+    template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
     class S4_RTTI_EXPORT FieldInstance : public Field {
     public:
         FieldInstance(std::string name, FIELD CLASS::*const field);
@@ -33,35 +33,38 @@ namespace rtti {
 
     private:
         FIELD CLASS::*const m_field = nullptr;
+
     }; // class FieldInstance
 
     //*********************************************************************************************
-    template <typename CLASS, typename FIELD>
-    FieldInstance<CLASS, FIELD>::FieldInstance(std::string name, FIELD CLASS::*const)
+    template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
+    FieldInstance<CLASS, DECLARING_CLASS, FIELD>::FieldInstance(std::string name, FIELD CLASS::*const)
         : Field(std::move(name), static_type<FIELD>(), static_class<CLASS>(), {}) 
-    {}
+    {
+        const_cast<Class*>(DECLARING_CLASS::static_class())->m_members.push_back(this);
+    }
 
     //*********************************************************************************************
-    template <typename CLASS, typename FIELD>
-    FieldInstance<CLASS, FIELD>::FieldInstance(std::string name, FIELD CLASS::*const
+    template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
+    FieldInstance<CLASS, DECLARING_CLASS, FIELD>::FieldInstance(std::string name, FIELD CLASS::*const
         , Attributes attributes)
         : Field(std::move(name), static_type<FIELD>(), static_class<CLASS>(), std::move(attributes)) 
     {}
 
     //*********************************************************************************************
-    template <typename CLASS, typename FIELD>
-    const ObjectRef FieldInstance<CLASS, FIELD>::value(const ObjectRef&) const {
+    template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
+    const ObjectRef FieldInstance<CLASS, DECLARING_CLASS, FIELD>::value(const ObjectRef&) const {
         return Object(new CLASS());
     }
 
     //*********************************************************************************************
-    template <typename CLASS, typename FIELD>
-    void FieldInstance<CLASS, FIELD>::copy_assign(ObjectRef&, const ObjectRef&) const {
+    template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
+    void FieldInstance<CLASS, DECLARING_CLASS, FIELD>::copy_assign(ObjectRef&, const ObjectRef&) const {
     }
 
     //*********************************************************************************************
-    template <typename CLASS, typename FIELD>
-    void FieldInstance<CLASS, FIELD>::move_assign(ObjectRef&, ObjectRef&) const {
+    template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
+    void FieldInstance<CLASS, DECLARING_CLASS, FIELD>::move_assign(ObjectRef&, ObjectRef&) const {
     }
 
 } // namespace rtti

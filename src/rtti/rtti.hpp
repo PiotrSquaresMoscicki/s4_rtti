@@ -1,9 +1,11 @@
 #pragma once
 
+#include "attributes.hpp"
 #include "fundamental.hpp"
 #include "enum.hpp"
 #include "class.hpp"
 #include "field.hpp"
+#include "method.hpp"
 
 //*************************************************************************************************
 //*************************************************************************************************
@@ -41,12 +43,15 @@
 #define CLASS(ARG_CLASS, ...)\
     public:\
         using This = ::ARG_CLASS;\
+        using DeclaringClass = ::ARG_CLASS;\
         static const ::rtti::Class* static_class() { return &m_rtti_class_impl; }\
         virtual const ::rtti::Class* dynamic_class() const { return &m_rtti_class_impl; }\
     private:\
         static inline const ::rtti::ClassInstance<This> m_rtti_class_impl\
             = ::rtti::ClassInstance<This>(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);
         
+#define STR(ARG) #ARG
+
 //*************************************************************************************************
 #define REGISTER_CLASS(NAMESPACE, ARG_CLASS, ...)\
     namespace NAMESPACE {\
@@ -64,7 +69,14 @@
     \
     namespace NAMESPACE {\
         class ARG_CLASS##TypeImpl_internal {\
-            CLASS(NAMESPACE::ARG_CLASS __VA_OPT__(,) __VA_ARGS__)
+        public:\
+            using This = ::NAMESPACE::ARG_CLASS;\
+            using DeclaringClass = ARG_CLASS##TypeImpl_internal;\
+            static const ::rtti::Class* static_class() { return &m_rtti_class_impl; }\
+            virtual const ::rtti::Class* dynamic_class() const { return &m_rtti_class_impl; }\
+        private:\
+            static inline const ::rtti::ClassInstance<This> m_rtti_class_impl\
+                = ::rtti::ClassInstance<This>(STR(NAMESPACE::ARG_CLASS) __VA_OPT__(,) __VA_ARGS__);
 
 //*************************************************************************************************
 #define END_CLASS\
@@ -74,21 +86,50 @@
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-#define FIELD(ARG_NAME, ...)\
-    static inline const ::rtti::FieldInstance<This, decltype(This::ARG_NAME)> \
-        ARG_NAME##_field_info = \
-        ::rtti::FieldInstance<This, decltype(This::ARG_NAME)>\
-            (#ARG_NAME, &This::ARG_NAME __VA_OPT__(,) __VA_ARGS__);
+namespace rtti::internal {
+    
+    class StaticInitializer {
+    public:
+        StaticInitializer(void (*fn)()) { fn(); }
+
+    }; // class StaticInitializer
+
+} // namespace rtti::internal
+
+//*************************************************************************************************
+#define REGISTER_FIELD(ARG_NAME, ...)\
+    static inline void ARG_NAME##_init_field_info() {\
+        static ::rtti::FieldInstance<This, DeclaringClass, decltype(This::ARG_NAME)> instance(\
+            #ARG_NAME, &This::ARG_NAME __VA_OPT__(,) __VA_ARGS__);\
+    }\
+    static inline ::rtti::internal::StaticInitializer ARG_NAME##_field_info_initializer\
+        = ::rtti::internal::StaticInitializer(&DeclaringClass::ARG_NAME##_init_field_info);
+
+#define FIELD(ARG_TYPE, ARG_NAME, ...)\
+    REGISTER_FIELD(ARG_NAME __VA_OPT__(,) __VA_ARGS__)\
+    ARG_TYPE ARG_NAME
 
 //*************************************************************************************************
 #define PROPERTY(SETTER, GETTER, ATTRS)
 
 //*************************************************************************************************
-#define METHOD(NAME, PARAMS_NAMES, ATTRS)
+#define REGISTER_METHOD(ARG_NAME, ARG_PARAMS_NAMES, ...)\
+    void ARG_NAME##_init_method_info_helper() {}\
+    static inline void ARG_NAME##_init_method_info() {\
+        static ::rtti::MethodInstance instance(\
+            #ARG_NAME, #ARG_PARAMS_NAMES, &This::ARG_NAME\
+            , &DeclaringClass::ARG_NAME##_init_method_info_helper __VA_OPT__(,) __VA_ARGS__);\
+    }\
+    static inline ::rtti::internal::StaticInitializer ARG_NAME##_method_info_initializer\
+        = ::rtti::internal::StaticInitializer(&DeclaringClass::ARG_NAME##_init_method_info);
 
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
+template <> inline const ::rtti::Type* ::rtti::static_type<void>() {
+    return nullptr;
+}
+
 REGISTER_FUNDAMENTAL(bool)
 
 REGISTER_FUNDAMENTAL(signed char)

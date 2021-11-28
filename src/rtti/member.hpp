@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "attributes.hpp"
 #include "rtti_fwd.hpp"
 
 namespace rtti {
@@ -33,7 +34,7 @@ namespace rtti {
         const std::string m_name;
         const Type* const m_type = nullptr;
         const Class* const m_declaring_class = nullptr;
-        const Attributes m_attributes;
+        const Attributes m_attributes = {};
 
     }; // class member
 
