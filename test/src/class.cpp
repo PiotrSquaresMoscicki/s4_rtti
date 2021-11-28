@@ -60,4 +60,9 @@ TEST_CASE( "rtti::Class::methods", "[rtti::Class]" ) {
     REQUIRE( static_class<TestClass1>()->methods().size() == 1 );
     REQUIRE( static_class<TestClass2>()->methods().size() == 2 );
 }
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::name", "[rtti::Fundamental]" ) {
+    REQUIRE( static_type<TestClass1>()->name() == "test::TestClass1" );
+    REQUIRE( static_type<TestClass2>()->name() == "TestClass2" );
+}
 
