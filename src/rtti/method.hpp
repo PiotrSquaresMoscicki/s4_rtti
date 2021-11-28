@@ -41,10 +41,10 @@ namespace rtti {
         const Attributes& attributes() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
-        // virtual Res<std::optional<ObjectRef>, ErrCall> call(const ObjectRef& self
-        //     , const std::vector<ObjectRef*>& params) const = 0;
-        // virtual Res<std::optional<ObjectRef>, ErrCall> call(ObjectRef& self
-        //     , const std::vector<ObjectRef*>& params) const = 0;
+        virtual Res<ObjectRef, ErrCall> call(const ObjectRef& self
+            , const std::vector<ObjectRef*>& params) const = 0;
+        virtual Res<ObjectRef, ErrCall> call(ObjectRef& self
+            , const std::vector<ObjectRef*>& params) const = 0;
 
     private:
         const std::string m_name;
@@ -84,10 +84,10 @@ namespace rtti {
         MethodInstance(std::string name, const std::string& params_names, MethodType method
             , void(DECLARING_CLASS::*)(), Attributes attributes);
 
-        // Res<ObjectRef, ErrCall> call(const ObjectRef& self
-        //     , const std::vector<ObjectRef*>& params) const override;
-        // Res<ObjectRef, ErrCall> call(ObjectRef& self
-        //     , const std::vector<ObjectRef*>& params) const override;
+        Res<ObjectRef, ErrCall> call(const ObjectRef& self
+            , const std::vector<ObjectRef*>& params) const override;
+        Res<ObjectRef, ErrCall> call(ObjectRef& self
+            , const std::vector<ObjectRef*>& params) const override;
 
     private:
         static std::string generate_name(std::string name, const std::string& params_names);
@@ -133,21 +133,21 @@ namespace rtti {
         return {};
     }
 
-    // //*********************************************************************************************
-    // template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    // Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>
-    //     ::call(const ObjectRef& self, const std::vector<ObjectRef*>& params) const
-    // {
-    //     return Err(ErrCall::INVALID_PARAM_TYPE);
-    // }
+    //*********************************************************************************************
+    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
+    Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>::
+        call(const ObjectRef&, const std::vector<ObjectRef*>&) const
+    {
+        return Err(ErrCall::INVALID_PARAM_TYPE);
+    }
 
-    // //*********************************************************************************************
-    // template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    // Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>
-    //     ::call(ObjectRef& self, const std::vector<ObjectRef*>& params) const
-    // {
-    //     return Err(ErrCall::INVALID_PARAM_TYPE);
-    // }
+    //*********************************************************************************************
+    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
+    Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>
+        ::call(ObjectRef&, const std::vector<ObjectRef*>&) const
+    {
+        return Err(ErrCall::INVALID_PARAM_TYPE);
+    }
 
 //    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
  //   MethodInstance(std::string, const std::string&, RET (CLASS::*)(PARAMS...)) -> MethodInstance
