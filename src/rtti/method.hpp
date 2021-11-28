@@ -114,6 +114,7 @@ namespace rtti {
         , const std::string& params_names, MethodType method, void(DECLARING_CLASS::*dummy)()) 
         : MethodInstance(std::move(name), params_names, method, dummy, Attributes{})
     {
+        const_cast<Class*>(DECLARING_CLASS::static_class())->m_methods.push_back(this);
     }
 
     //*********************************************************************************************
