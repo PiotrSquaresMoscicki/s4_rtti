@@ -1,0 +1,41 @@
+name: main CI
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  linux-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Create build dir
+      run: mkdir build
+    - name: Move to build dir
+      run: cd build
+    - name: Generate make files
+      run: cmake ..
+    - name: Build
+      run: make
+    - name: Test
+      run: ctest --output-on-failure
+      
+  # macos-tests:
+  #   runs-on: macos-latest
+
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
+  #   - name: Run tests
+  #     run: cargo test --verbose
+      
+  # windows-tests:
+  #   runs-on: windows-latest
+
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
+  #   - name: Run tests
+  #     run: cargo test --verbose
