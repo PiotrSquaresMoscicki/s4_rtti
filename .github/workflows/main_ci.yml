@@ -16,7 +16,7 @@ jobs:
         mkdir build
         cd build
         cmake ..
-        make
+        cmake --build .
     - name: Test
       run: |
         cd build
@@ -33,7 +33,7 @@ jobs:
         mkdir build
         cd build
         cmake ..
-        make
+        cmake --build .
     - name: Test
       run: |
         cd build
@@ -50,7 +50,7 @@ jobs:
         mkdir build
         cd build
         cmake ..
-        make -f Makefile
+        cmake --build .
     - name: Test
       run: |
         cd build
