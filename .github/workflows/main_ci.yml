@@ -12,7 +12,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Move to repo dir
-      run: cd s4_rtti
+      run: ls
     - name: Create build dir
       run: mkdir build
     - name: Move to build dir
