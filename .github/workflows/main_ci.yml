@@ -50,7 +50,7 @@ jobs:
         mkdir build
         cd build
         cmake ..
-        make
+        make -f Makefile
     - name: Test
       run: |
         cd build
