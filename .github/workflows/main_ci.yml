@@ -11,6 +11,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+    - name: Move to repo dir
+      run: cd s4_rtti
     - name: Create build dir
       run: mkdir build
     - name: Move to build dir
