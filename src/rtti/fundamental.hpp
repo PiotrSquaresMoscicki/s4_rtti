@@ -57,7 +57,7 @@ namespace rtti {
         ObjectRef move_construct(BufferRef&& buff, ObjectRef& src) const override;
         Object move_construct(Buffer&& buff, ObjectRef& src) const override;
         
-        Res<void, ErrDestruct> can_destruct(const ObjectRef& obj) const;
+        Res<void, ErrDestruct> can_destruct(const ObjectRef& obj) const override;
         BufferRef destruct(ObjectRef&& obj) const override;
         Buffer destruct(Object&& obj) const override;
         
