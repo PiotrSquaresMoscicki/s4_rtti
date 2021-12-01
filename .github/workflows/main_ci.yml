@@ -18,6 +18,7 @@ jobs:
     - name: Move to build dir
       run: cd build
     - name: Generate make files
+      run: ls ..
       run: cmake ..
     - name: Build
       run: make
