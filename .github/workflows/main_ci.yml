@@ -21,6 +21,40 @@ jobs:
       run: |
         cd build
         ctest --output-on-failure
+
+  macos-tests:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+    - name: Test
+      run: |
+        cd build
+        ctest --output-on-failure
+
+  windows-tests:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+    - name: Test
+      run: |
+        cd build
+        ctest --output-on-failure
       
   # macos-tests:
   #   runs-on: macos-latest
