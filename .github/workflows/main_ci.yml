@@ -11,13 +11,11 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Create build dir
-      run: mkdir build
-    - name: Generate make files
-      run: cmake build
     - name: Build
       run: |
+        mkdir build
         cd build
+        cmake ..
         make
     - name: Test
       run: |
