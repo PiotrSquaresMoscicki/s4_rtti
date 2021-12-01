@@ -19,6 +19,7 @@ jobs:
       run: cd build
     - name: Generate make files
       run: ls ..
+    - name: Generate make files
       run: cmake ..
     - name: Build
       run: make
