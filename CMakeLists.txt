@@ -31,7 +31,7 @@ set(S4_RTTI_PROJECT_COMMON_BUILD_DIR "${S4_RTTI_PROJECT_ROOT_DIR}/common_build")
 if(MSVC)
 add_compile_options(/W4 /WX)
 else()
-add_compile_options(-Wall -Wextra -Wpedantic -Werror -Wno-unused-variable)
+add_compile_options(-Wall -Wextra -Werror -Wno-unused-variable)
 endif()
 
 # Output dirs
