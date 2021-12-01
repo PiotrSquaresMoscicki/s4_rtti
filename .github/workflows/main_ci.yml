@@ -13,12 +13,16 @@ jobs:
       uses: actions/checkout@v2
     - name: Move to repo dir
       run: ls
+    - name: Move to repo dir
+      run: pwd
     - name: Create build dir
       run: mkdir build
     - name: Move to build dir
       run: cd build
     - name: Generate make files
-      run: ls ..
+      run: ls
+    - name: Generate make files
+      run: pwd
     - name: Generate make files
       run: cmake ..
     - name: Build
