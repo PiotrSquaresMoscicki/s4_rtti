@@ -1,36 +1,29 @@
 #pragma once
 
-#include <cassert>
-#include <type_traits>
-
-#include "type.hpp"
-#include "buffer.hpp"
-#include "object.hpp"
+#include "class.hpp"
 
 namespace rtti {
 
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class S4_RTTI_EXPORT Fundamental : public Type {
+    class S4_RTTI_EXPORT TemplateInstance : public Class {
     public:
-        Fundamental(std::string name, size_t size)
-            : Type(std::move(name), size, {}) {}
+        TemplateInstance(std::string name, size_t size, Attributes attributes) 
+            : Class(std::move(name), size, std::move(attributes)) {}
 
-        const Fundamental* as_fundamental() const override { return this; }
-        const Enum* as_enum() const override { return nullptr; }
-        const Class* as_class() const override { return nullptr; }
-        const TemplateInstance* as_template_instance() const override { return nullptr; }
+        const TemplateInstance* as_template_instance() const override { return this; }
 
-    }; // class Fundamental
+    }; // class TemplateInstance
 
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    class S4_RTTI_EXPORT FundamentalInstance : public Fundamental {
+    template <typename CLASS>
+    class S4_RTTI_EXPORT TemplateInstanceInstance : public TemplateInstance {
     public:
-        FundamentalInstance(std::string name);
+        TemplateInstanceInstance(const std::string& name);
+        TemplateInstanceInstance(const std::string& name, Attributes attributes);
 
         bool is_default_constructible() const override;
         bool is_copy_constructible() const override;
@@ -65,56 +58,66 @@ namespace rtti {
         Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const override;
         Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const override;
 
-    }; // class FundamentalInstance
+    private:
+        static std::string generate_name(const std::string& name);
+
+    }; // class TemplateInstanceInstance
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    FundamentalInstance<FUNDAMENTAL>::FundamentalInstance(std::string name)
-        : Fundamental(std::move(name), sizeof(FUNDAMENTAL)) 
+    template <typename CLASS>
+    TemplateInstanceInstance<CLASS>::TemplateInstanceInstance(const std::string& name)
+        : TemplateInstance(generate_name(name), sizeof(CLASS), {}) 
     {}
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    bool FundamentalInstance<FUNDAMENTAL>::is_default_constructible() const {
-        return std::is_default_constructible_v<FUNDAMENTAL>;
+    template <typename CLASS>
+    TemplateInstanceInstance<CLASS>::TemplateInstanceInstance(const std::string& name
+        , Attributes attributes)
+        : TemplateInstance(generate_name(name), sizeof(CLASS), std::move(attributes)) 
+    {}
+
+    //*********************************************************************************************
+    template <typename CLASS>
+    bool TemplateInstanceInstance<CLASS>::is_default_constructible() const {
+        return std::is_default_constructible_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    bool FundamentalInstance<FUNDAMENTAL>::is_copy_constructible() const {
-        return std::is_copy_constructible_v<FUNDAMENTAL>;
+    template <typename CLASS>
+    bool TemplateInstanceInstance<CLASS>::is_copy_constructible() const {
+        return std::is_copy_constructible_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    bool FundamentalInstance<FUNDAMENTAL>::is_move_constructible() const {
-        return std::is_move_constructible_v<FUNDAMENTAL>;
+    template <typename CLASS>
+    bool TemplateInstanceInstance<CLASS>::is_move_constructible() const {
+        return std::is_move_constructible_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    bool FundamentalInstance<FUNDAMENTAL>::is_copy_assignable() const {
-        return std::is_copy_assignable_v<FUNDAMENTAL>;
+    template <typename CLASS>
+    bool TemplateInstanceInstance<CLASS>::is_copy_assignable() const {
+        return std::is_copy_assignable_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    bool FundamentalInstance<FUNDAMENTAL>::is_move_assignable() const {
-        return std::is_move_assignable_v<FUNDAMENTAL>;
+    template <typename CLASS>
+    bool TemplateInstanceInstance<CLASS>::is_move_assignable() const {
+        return std::is_move_assignable_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<Object, Type::ErrNewObject> FundamentalInstance<FUNDAMENTAL>::new_object() const {
+    template <typename CLASS>
+    Res<Object, Type::ErrNewObject> TemplateInstanceInstance<CLASS>::new_object() const {
         if (is_default_constructible())
-            return Ok(Object(new FUNDAMENTAL()));
+            return Ok(Object(new CLASS()));
         else
             return Err(ErrNewObject::NOT_DEFAULT_CONSTRUCTIBLE);
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<Object, Type::ErrNewCopy> FundamentalInstance<FUNDAMENTAL>::new_copy(
+    template <typename CLASS>
+    Res<Object, Type::ErrNewCopy> TemplateInstanceInstance<CLASS>::new_copy(
         const ObjectRef& src) const 
     {
         if (!is_copy_constructible())
@@ -124,12 +127,12 @@ namespace rtti {
         else if (src.type().ok() != this)
             return Err(ErrNewCopy::INCORRECT_SOURCE_TYPE);
         else
-            return Ok(Object(new FUNDAMENTAL(*src.value_as<FUNDAMENTAL>().ok())));
+            return Ok(Object(new CLASS(*src.value_as<CLASS>().ok())));
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<Object, Type::ErrNewMove> FundamentalInstance<FUNDAMENTAL>::new_move(
+    template <typename CLASS>
+    Res<Object, Type::ErrNewMove> TemplateInstanceInstance<CLASS>::new_move(
         ObjectRef& src) const 
     {
         if (!is_copy_constructible())
@@ -139,12 +142,12 @@ namespace rtti {
         else if (src.type().ok() != this)
             return Err(ErrNewMove::INCORRECT_SOURCE_TYPE);
         else
-            return Ok(Object(new FUNDAMENTAL(std::move(*src.value_as<FUNDAMENTAL>().ok()))));
+            return Ok(Object(new CLASS(std::move(*src.value_as<CLASS>().ok()))));
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<void, Type::ErrDeleteObject> FundamentalInstance<FUNDAMENTAL>::can_delete_object(
+    template <typename CLASS>
+    Res<void, Type::ErrDeleteObject> TemplateInstanceInstance<CLASS>::can_delete_object(
         const ObjectRef& obj) const 
     {
         if (!obj.is_valid())
@@ -156,17 +159,17 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    void FundamentalInstance<FUNDAMENTAL>::delete_object(Object&& obj) const {
+    template <typename CLASS>
+    void TemplateInstanceInstance<CLASS>::delete_object(Object&& obj) const {
         assert(can_delete_object(obj).is_ok());
-        delete reinterpret_cast<FUNDAMENTAL*>(obj.m_value);
+        delete reinterpret_cast<CLASS*>(obj.m_value);
         obj.m_value = nullptr;
         obj.m_type = nullptr;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<void, Type::ErrConstruct> FundamentalInstance<FUNDAMENTAL>::can_construct(
+    template <typename CLASS>
+    Res<void, Type::ErrConstruct> TemplateInstanceInstance<CLASS>::can_construct(
         const BufferRef& buff) const 
     {
         if (!is_default_constructible())
@@ -180,24 +183,24 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    ObjectRef FundamentalInstance<FUNDAMENTAL>::construct(BufferRef&& buff) const {
+    template <typename CLASS>
+    ObjectRef TemplateInstanceInstance<CLASS>::construct(BufferRef&& buff) const {
         assert(can_construct(buff).is_ok());
-        return ObjectRef(new(buff.data().ok()) FUNDAMENTAL, buff.size().ok());
+        return ObjectRef(new(buff.data().ok()) CLASS, buff.size().ok());
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Object FundamentalInstance<FUNDAMENTAL>::construct(Buffer&& buff) const {
+    template <typename CLASS>
+    Object TemplateInstanceInstance<CLASS>::construct(Buffer&& buff) const {
         assert(can_construct(buff).is_ok());
-        Object res(new(buff.data().ok()) FUNDAMENTAL, buff.size().ok());
+        Object res(new(buff.data().ok()) CLASS, buff.size().ok());
         std::move(buff).steal_data();
         return res;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<void, Type::ErrCopyConstruct> FundamentalInstance<FUNDAMENTAL>::can_copy_construct(
+    template <typename CLASS>
+    Res<void, Type::ErrCopyConstruct> TemplateInstanceInstance<CLASS>::can_copy_construct(
         const BufferRef& buff, const ObjectRef& src) const 
     {
         if (!is_copy_constructible())
@@ -215,30 +218,30 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    ObjectRef FundamentalInstance<FUNDAMENTAL>::copy_construct(BufferRef&& buff
+    template <typename CLASS>
+    ObjectRef TemplateInstanceInstance<CLASS>::copy_construct(BufferRef&& buff
         , const ObjectRef& src) const 
     {
         assert(can_copy_construct(buff, src).is_ok());
         return ObjectRef(
-            new(buff.data().ok()) FUNDAMENTAL(*src.value_as<FUNDAMENTAL>().ok()), buff.size().ok());
+            new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok());
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Object FundamentalInstance<FUNDAMENTAL>::copy_construct(Buffer&& buff
+    template <typename CLASS>
+    Object TemplateInstanceInstance<CLASS>::copy_construct(Buffer&& buff
         , const ObjectRef& src) const 
     {
         assert(can_copy_construct(buff, src).is_ok());
         Object res(
-            new(buff.data().ok()) FUNDAMENTAL(*src.value_as<FUNDAMENTAL>().ok()), buff.size().ok());
+            new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok());
         std::move(buff).steal_data();
         return res;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<void, Type::ErrMoveConstruct> FundamentalInstance<FUNDAMENTAL>::can_move_construct(
+    template <typename CLASS>
+    Res<void, Type::ErrMoveConstruct> TemplateInstanceInstance<CLASS>::can_move_construct(
         const BufferRef& buff, const ObjectRef& src) const 
     {
         if (!is_copy_constructible())
@@ -256,32 +259,32 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    ObjectRef FundamentalInstance<FUNDAMENTAL>::move_construct(BufferRef&& buff
+    template <typename CLASS>
+    ObjectRef TemplateInstanceInstance<CLASS>::move_construct(BufferRef&& buff
         , ObjectRef& src) const 
     {
         assert(can_move_construct(buff, src).is_ok());
         return ObjectRef(
             new(buff.data().ok()) 
-            FUNDAMENTAL(std::move(*src.value_as<FUNDAMENTAL>().ok())), buff.size().ok());
+            CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok());
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Object FundamentalInstance<FUNDAMENTAL>::move_construct(Buffer&& buff
+    template <typename CLASS>
+    Object TemplateInstanceInstance<CLASS>::move_construct(Buffer&& buff
         , ObjectRef& src) const 
     {
         assert(can_move_construct(buff, src).is_ok());
         Object res(
             new(buff.data().ok()) 
-            FUNDAMENTAL(std::move(*src.value_as<FUNDAMENTAL>().ok())), buff.size().ok());
+            CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok());
         std::move(buff).steal_data();
         return res;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<void, Type::ErrDestruct> FundamentalInstance<FUNDAMENTAL>::can_destruct(
+    template <typename CLASS>
+    Res<void, Type::ErrDestruct> TemplateInstanceInstance<CLASS>::can_destruct(
         const ObjectRef& obj) const 
     {
         if (!obj.is_valid())
@@ -293,28 +296,28 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    BufferRef FundamentalInstance<FUNDAMENTAL>::destruct(ObjectRef&& obj) const {
+    template <typename CLASS>
+    BufferRef TemplateInstanceInstance<CLASS>::destruct(ObjectRef&& obj) const {
         assert(can_destruct(obj).is_ok());
-        reinterpret_cast<FUNDAMENTAL*>(obj.value().ok())->~FUNDAMENTAL();
+        reinterpret_cast<CLASS*>(obj.value().ok())->~CLASS();
         BufferRef res(obj.value().ok(), obj.size().ok());
         std::move(obj).steal_value();
         return res;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Buffer FundamentalInstance<FUNDAMENTAL>::destruct(Object&& obj) const {
+    template <typename CLASS>
+    Buffer TemplateInstanceInstance<CLASS>::destruct(Object&& obj) const {
         assert(can_destruct(obj).is_ok());
-        reinterpret_cast<FUNDAMENTAL*>(obj.value().ok())->~FUNDAMENTAL();
+        reinterpret_cast<CLASS*>(obj.value().ok())->~CLASS();
         Buffer res(obj.value().ok(), obj.size().ok());
         std::move(obj).steal_value();
         return res;
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<void, Type::ErrCopy> FundamentalInstance<FUNDAMENTAL>::copy_assign(ObjectRef& dst
+    template <typename CLASS>
+    Res<void, Type::ErrCopy> TemplateInstanceInstance<CLASS>::copy_assign(ObjectRef& dst
         , const ObjectRef& src) const 
     {
         if (!is_copy_assignable())
@@ -328,15 +331,15 @@ namespace rtti {
         else if (src.type().ok() != this)
             return Err(Type::ErrCopy::INCORRECT_SOURCE_OBJECT_TYPE);
         else {
-            *reinterpret_cast<FUNDAMENTAL*>(dst.value().ok()) 
-                = *reinterpret_cast<const FUNDAMENTAL*>(src.value().ok());
+            *reinterpret_cast<CLASS*>(dst.value().ok()) 
+                = *reinterpret_cast<const CLASS*>(src.value().ok());
             return Ok();
         }
     }
 
     //*********************************************************************************************
-    template <typename FUNDAMENTAL>
-    Res<void, Type::ErrMove> FundamentalInstance<FUNDAMENTAL>::move_assign(ObjectRef& dst
+    template <typename CLASS>
+    Res<void, Type::ErrMove> TemplateInstanceInstance<CLASS>::move_assign(ObjectRef& dst
         , ObjectRef& src) const 
     {
         if (!is_move_assignable())
@@ -350,9 +353,24 @@ namespace rtti {
         else if (src.type().ok() != this)
             return Err(Type::ErrMove::INCORRECT_SOURCE_OBJECT_TYPE);
         else {
-            *reinterpret_cast<FUNDAMENTAL*>(dst.value().ok()) 
-                = std::move(*reinterpret_cast<const FUNDAMENTAL*>(src.value().ok()));
+            *reinterpret_cast<CLASS*>(dst.value().ok()) 
+                = std::move(*reinterpret_cast<const CLASS*>(src.value().ok()));
             return Ok();
+        }
+    }
+
+    //*********************************************************************************************
+    template <typename CLASS>
+    std::string TemplateInstanceInstance<CLASS>::generate_name(const std::string& name) {
+        size_t beg = 0;
+        size_t end = name.find('<', beg);
+        std::string template_name = name.substr(beg, end);
+        beg = end;
+        std::vector<std::string> params_names;
+
+        while (end != std::string::npos) {
+            end = name.find(' ', beg);
+            
         }
     }
 

@@ -26,6 +26,7 @@ namespace rtti {
         const Fundamental* as_fundamental() const override { return nullptr; }
         const Enum* as_enum() const override { return nullptr; }
         const Class* as_class() const override { return this; }
+        const TemplateInstance* as_template_instance() const override { return nullptr; }
 
     private:
         std::vector<const Member*> m_members;

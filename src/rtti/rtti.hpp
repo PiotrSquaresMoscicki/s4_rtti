@@ -1,11 +1,14 @@
 #pragma once
 
+#include <tuple>
+
 #include "ctti/ctti.hpp"
 
 #include "attributes.hpp"
 #include "fundamental.hpp"
 #include "enum.hpp"
 #include "class.hpp"
+#include "template_instance.hpp"
 #include "field.hpp"
 #include "method.hpp"
         
@@ -51,7 +54,8 @@
         static const ::rtti::Class* static_class() {\
             static bool initialized = false;\
             static ::rtti::ClassInstance<This> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
-            if (!initialized) {
+            if (!initialized) {\
+                initialized = true;
 
 #define END_CLASS_INTERNAL\
             }\
@@ -89,7 +93,33 @@
             END_CLASS_INTERNAL\
         };\
     } // namespace NAMESPACE
-    
+
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+#define TEMPLATE_INTERNAL(ARG_TEMPLATE, ARG_DECLARING_TEMPLATE, ARG_PARAMS, ...)\
+        using This = ARG_TEMPLATE;\
+        using DeclaringClass = ARG_DECLARING_TEMPLATE;\
+        using ParamsTuple = ::std::tuple ARG_PARAMS;\
+        virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
+        static const ::rtti::Class* static_class() {\
+            static bool initialized = false;\
+            static ::rtti::TemplateInstanceInstance<This> instance(STR(ARG_TEMPLATE ARG_PARAMS) __VA_OPT__(,) __VA_ARGS__);\
+            if (!initialized) {\
+                initialized = true;
+
+#define END_TEMPLATE_INTERNAL\
+            }\
+            return &instance;\
+        }
+
+//*************************************************************************************************
+#define TEMPLATE(ARG_TEMPLATE, ARG_PARAMS, ...)\
+    TEMPLATE_INTERNAL(ARG_TEMPLATE, ARG_TEMPLATE, ARG_PARAMS, __VA_OPT__(,) __VA_ARGS__)
+
+#define END_TEMPLATE\
+    END_TEMPLATE_INTERNAL
+
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************

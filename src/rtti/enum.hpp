@@ -23,6 +23,7 @@ namespace rtti {
         const Fundamental* as_fundamental() const override { return nullptr; }
         const Enum* as_enum() const override { return this; }
         const Class* as_class() const override { return nullptr; }
+        const TemplateInstance* as_template_instance() const override { return nullptr; }
 
     private:
         std::vector<EnumValue> m_values;

@@ -91,6 +91,7 @@ namespace rtti {
         virtual const Fundamental* as_fundamental() const = 0;
         virtual const Enum* as_enum() const = 0;
         virtual const Class* as_class() const = 0;
+        virtual const TemplateInstance* as_template_instance() const = 0;
 
         virtual bool is_default_constructible() const = 0;
         virtual bool is_copy_constructible() const = 0;

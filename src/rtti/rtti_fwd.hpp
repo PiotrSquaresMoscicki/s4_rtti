@@ -8,6 +8,7 @@ namespace rtti {
     class Enum;
     class Fundamental;
     class Class;
+    class TemplateInstance;
 
     class ObjectRef;
     class Object;
