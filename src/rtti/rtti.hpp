@@ -43,14 +43,19 @@
 //*************************************************************************************************
 //*************************************************************************************************
 #define CLASS(ARG_CLASS, ...)\
-    public:\
         using This = ::ARG_CLASS;\
         using DeclaringClass = ::ARG_CLASS;\
-        static const ::rtti::Class* static_class() { return &m_rtti_class_impl; }\
-        virtual const ::rtti::Class* dynamic_class() const { return &m_rtti_class_impl; }\
+        virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
+        static const ::rtti::Class* static_class() {
+            static ::rtti::ClassInstance<this
+        }
     private:\
+        static const ::rtti
         static inline const ::rtti::ClassInstance<This> m_rtti_class_impl\
             = ::rtti::ClassInstance<This>(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);
+
+#define END_CLASS\
+        }
         
 #define STR(ARG) #ARG
 
@@ -81,7 +86,7 @@
                 = ::rtti::ClassInstance<This>(STR(NAMESPACE::ARG_CLASS) __VA_OPT__(,) __VA_ARGS__);
 
 //*************************************************************************************************
-#define END_CLASS\
+#define END_REGISTER_CLASS\
         };\
     } // namespace NAMESPACE
     
