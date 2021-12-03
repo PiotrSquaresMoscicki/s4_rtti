@@ -8,6 +8,8 @@
 #include "class.hpp"
 #include "field.hpp"
 #include "method.hpp"
+        
+#define STR(ARG) #ARG
 
 //*************************************************************************************************
 //*************************************************************************************************
@@ -42,22 +44,26 @@
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-#define CLASS(ARG_CLASS, ...)\
+#define CLASS_INTERNAL(ARG_CLASS, ARG_DECLARING_CLASS, ...)\
         using This = ::ARG_CLASS;\
-        using DeclaringClass = ::ARG_CLASS;\
+        using DeclaringClass = ::ARG_DECLARING_CLASS;\
         virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
-        static const ::rtti::Class* static_class() {
-            static ::rtti::ClassInstance<this
+        static const ::rtti::Class* static_class() {\
+            static bool initialized = false;\
+            static ::rtti::ClassInstance<This> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
+            if (!initialized) {
+
+#define END_CLASS_INTERNAL\
+            }\
+            return &instance;\
         }
-    private:\
-        static const ::rtti
-        static inline const ::rtti::ClassInstance<This> m_rtti_class_impl\
-            = ::rtti::ClassInstance<This>(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);
+
+//*************************************************************************************************
+#define CLASS(ARG_CLASS, ...)\
+    CLASS_INTERNAL(ARG_CLASS, ARG_CLASS __VA_OPT__(,) __VA_ARGS__)
 
 #define END_CLASS\
-        }
-        
-#define STR(ARG) #ARG
+    END_CLASS_INTERNAL
 
 //*************************************************************************************************
 #define REGISTER_CLASS(NAMESPACE, ARG_CLASS, ...)\
@@ -77,16 +83,10 @@
     namespace NAMESPACE {\
         class ARG_CLASS##TypeImpl_internal {\
         public:\
-            using This = ::NAMESPACE::ARG_CLASS;\
-            using DeclaringClass = ARG_CLASS##TypeImpl_internal;\
-            static const ::rtti::Class* static_class() { return &m_rtti_class_impl; }\
-            virtual const ::rtti::Class* dynamic_class() const { return &m_rtti_class_impl; }\
-        private:\
-            static inline const ::rtti::ClassInstance<This> m_rtti_class_impl\
-                = ::rtti::ClassInstance<This>(STR(NAMESPACE::ARG_CLASS) __VA_OPT__(,) __VA_ARGS__);
+            CLASS_INTERNAL(NAMESPACE::ARG_CLASS, NAMESPACE::ARG_CLASS##TypeImpl_internal __VA_OPT__(,) __VA_ARGS__)
 
-//*************************************************************************************************
 #define END_REGISTER_CLASS\
+            END_CLASS_INTERNAL\
         };\
     } // namespace NAMESPACE
     

@@ -16,18 +16,18 @@ namespace test {
 
 }
 
-// REGISTER_CLASS(test, TestClass1)
-//     REGISTER_FIELD(m_bool)
-//     REGISTER_FIELD(m_int)
-//     REGISTER_FIELD(m_long)
-//     REGISTER_METHOD(sub, (first second))
-// END_CLASS
+REGISTER_CLASS(test, TestClass1)
+    // REGISTER_FIELD(m_bool)
+    // REGISTER_FIELD(m_int)
+    // REGISTER_FIELD(m_long)
+    // REGISTER_METHOD(sub, (first second))
+END_REGISTER_CLASS
 
 class TestClass2 {
+public:
     CLASS(TestClass2)
     END_CLASS
 
-public:
     virtual ~TestClass2() = default;
 
     char m_char = 'c';
@@ -54,7 +54,7 @@ TEST_CASE( "rtti::Class::methods", "[rtti::Class]" ) {
 }
 //*************************************************************************************************
 TEST_CASE( "rtti::Class::name", "[rtti::Fundamental]" ) {
-    //REQUIRE( static_type<TestClass1>()->name() == "test::TestClass1" );
-    //REQUIRE( static_type<TestClass2>()->name() == "TestClass2" );
+    REQUIRE( static_type<TestClass1>()->name() == "test::TestClass1" );
+    REQUIRE( static_type<TestClass2>()->name() == "TestClass2" );
 }
 

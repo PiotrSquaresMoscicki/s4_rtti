@@ -55,7 +55,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   s4_core
   GIT_REPOSITORY "https://github.com/PiotrMoscicki/s4_core.git"
-  GIT_TAG "main"
+  GIT_TAG "v0.0.1"
 )
 
 FetchContent_MakeAvailable(Catch2 s4_core)
