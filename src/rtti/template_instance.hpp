@@ -368,10 +368,11 @@ namespace rtti {
         beg = end;
         std::vector<std::string> params_names;
 
-        while (end != std::string::npos) {
-            end = name.find(' ', beg);
+        // while (end != std::string::npos) {
+        //     end = name.find(' ', beg);
             
-        }
+        // }
+        return template_name;
     }
 
 } // namespace rtti
