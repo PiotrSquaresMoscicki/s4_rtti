@@ -12,15 +12,15 @@ namespace rtti {
     class S4_RTTI_EXPORT TemplateInstance : public Class {
     public:
         TemplateInstance(std::string name, size_t size, Attributes attributes
-            , std::vector<TemplateParam> params) 
-            : Class(std::move(name), size, std::move(attributes)), m_params(std::move(params)) {}
+            , std::vector<TemplateParam> params);
 
         const TemplateInstance* as_template_instance() const override { return this; }
     
-        const std::vector<TemplateParam>& params() const { return m_params; }
+        const std::vector<const TemplateParam*>& params() const { return m_params_ptrs; }
 
     protected:
         std::vector<TemplateParam> m_params;
+        std::vector<const TemplateParam*> m_params_ptrs;
 
     }; // class TemplateInstance
     
@@ -29,15 +29,20 @@ namespace rtti {
     //*********************************************************************************************
     class TemplateParam {
     public:
+        friend class TemplateInstance;
+
         TemplateParam(std::string name, const Type* type) 
             : m_name(std::move(name)), m_type(type) {}
 
         const std::string& name() const { return m_name; }
         const Type* type() const { return m_type; }
+        const TemplateInstance* declaring_template_instance() const 
+            { return m_declaring_template_instance; }
 
     private:
         std::string m_name;
         const Type* m_type = nullptr;
+        const TemplateInstance* m_declaring_template_instance = nullptr;
     };
 
     //*********************************************************************************************
@@ -46,8 +51,10 @@ namespace rtti {
     template <typename CLASS, typename DECLARING_CLASS>
     class S4_RTTI_EXPORT TemplateInstanceInstance : public TemplateInstance {
     public:
-        TemplateInstanceInstance(const std::string& name);
-        TemplateInstanceInstance(const std::string& name, Attributes attributes);
+        TemplateInstanceInstance(const std::string& name
+            , std::vector<std::string>& out_params_names);
+        TemplateInstanceInstance(const std::string& name
+            , std::vector<std::string>& out_params_names, Attributes attributes);
 
         bool is_default_constructible() const override;
         bool is_copy_constructible() const override;
@@ -82,43 +89,88 @@ namespace rtti {
         Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const override;
         Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const override;
 
-    private:
-        TemplateInstanceInstance(const std::string& name, Attributes attributes
-            , std::vector<std::string>& out_params_names);
-    
         static std::string generate_name(const std::string& name
-            , std::vector<std::string>& out_params_names);
-
-        template <size_t IDX>
-        static std::vector<TemplateParam> generate_params(
-            const std::vector<std::string>& params_names) 
+            , std::vector<std::string>& out_params_names) 
         {
-            TemplateParam param(params_names[IDX]
-                , static_type<std::tuple_element<IDX, typename DECLARING_CLASS::ParamsTuple>>());
-            std::vector<TemplateParam> result;
-            result.push_back(std::move(param));
+            bool opening_bracket_found = false;
+            bool closing_bracket_found = false;
+            std::string curr_name;
 
-            if constexpr (IDX < std::tuple_size<typename DECLARING_CLASS::ParamsTuple>::value) {
-                std::vector<TemplateParam> next_params = generate_params<IDX + 1>(params_names);
-                result.insert(result.end(), next_params.begin(), next_params.end());
+            for (size_t i = 0; i < name.length(); ++i) {
+                if (name[i] == ' ' && name[i + 1] == '<') {
+                    assert(opening_bracket_found || closing_bracket_found == false);
+                    out_params_names.push_back(std::move(curr_name));
+                    opening_bracket_found = true;
+                    ++i;
+                } else if (name[i] == ' ') {
+                    assert(opening_bracket_found == true && closing_bracket_found == false);
+                    out_params_names.push_back(std::move(curr_name));
+                } else if (name[i] == '>') {
+                    assert(opening_bracket_found == true && closing_bracket_found == false);
+                    out_params_names.push_back(std::move(curr_name));
+                    closing_bracket_found = true;
+                } else
+                    curr_name += name[i];
             }
+
+            std::string result = out_params_names.front() + "<" + generate_params_for_name<>() + ">";
+            out_params_names.erase(out_params_names.begin());
+            return result;
+        }
+
+        template <size_t IDX = std::tuple_size<typename DECLARING_CLASS::ParamsTuple>::value>
+        static std::string generate_params_for_name() {
+            std::string result = generate_params_for_name<IDX - 1>();
+
+            std::string next_param
+                = static_type<typename std::tuple_element_t<IDX, typename DECLARING_CLASS::ParamsTuple>>()
+                    ->name();
+
+                result = result + ", " + next_param;
 
             return result;
         }
 
+        template<>
+        static std::string generate_params_for_name<0>() {
+            return static_type<
+                    typename std::tuple_element_t<0, typename DECLARING_CLASS::ParamsTuple>
+                >()->name();
+        }
+
+        template <size_t IDX>
+        static std::vector<TemplateParam> generate_params(
+            const std::vector<std::string>&) 
+        {
+            //assert(params_names.size() == 1);
+            //TemplateParam param(params_names[IDX]
+            //    , static_type<typename std::tuple_element<IDX, typename DECLARING_CLASS::ParamsTuple>::type>());
+            std::vector<TemplateParam> result;
+            //result.push_back(std::move(param));
+
+            // if constexpr (IDX < std::tuple_size<typename DECLARING_CLASS::ParamsTuple>::value) {
+            //     std::vector<TemplateParam> next_params = generate_params<IDX + 1>(params_names);
+            //     result.insert(result.end(), next_params.begin(), next_params.end());
+            // }
+
+            return result;
+        }
+        
     }; // class TemplateInstanceInstance
 
     //*********************************************************************************************
     template <typename CLASS, typename DECLARING_CLASS>
-    TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(const std::string& name)
-        : TemplateInstanceInstance(name, sizeof(CLASS), {},{}) 
+    TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(
+        const std::string& name, std::vector<std::string>& out_params_names)
+        : TemplateInstanceInstance(name, out_params_names, {}) 
     {}
 
     //*********************************************************************************************
     template <typename CLASS, typename DECLARING_CLASS>
-    TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(const std::string& name
-        , Attributes attributes)
-        : TemplateInstanceInstance(name, sizeof(CLASS), std::move(attributes), {}) 
+    TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(
+        const std::string& name, std::vector<std::string>& out_params_names, Attributes attributes)
+        : TemplateInstance(generate_name(name, out_params_names), sizeof(CLASS)
+        , std::move(attributes), generate_params<0>(out_params_names)) 
     {}
 
     //*********************************************************************************************
@@ -402,44 +454,6 @@ namespace rtti {
                 = std::move(*reinterpret_cast<const CLASS*>(src.value().ok()));
             return Ok();
         }
-    }
-
-    //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS>
-    TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(const std::string& name
-        , Attributes attributes, std::vector<std::string>& out_params_names)
-        : TemplateInstance(generate_name(name, out_params_names), sizeof(CLASS)
-        , std::move(attributes), generate_params<0>(out_params_names)) 
-    {}
-
-    //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS>
-    std::string TemplateInstanceInstance<CLASS, DECLARING_CLASS>::generate_name(const std::string& name
-        , std::vector<std::string>& out_params_names) 
-    {
-        bool opening_bracket_found = false;
-        bool closing_bracket_found = false;
-        std::string curr_name;
-
-        for (size_t i = 0; i < name.length(); ++i) {
-            if (name[i] == '<') {
-                assert(opening_bracket_found || closing_bracket_found == false);
-                out_params_names.push_back(std::move(curr_name));
-                opening_bracket_found = true;
-            } else if (name[i] == ' ') {
-                assert(opening_bracket_found == true && closing_bracket_found == false);
-                out_params_names.push_back(std::move(curr_name));
-            } else if (name[i] == '>') {
-                assert(opening_bracket_found == true && closing_bracket_found == false);
-                out_params_names.push_back(std::move(curr_name));
-                closing_bracket_found = true;
-            } else
-                curr_name += name[i];
-        }
-
-        std::string result = out_params_names.front();
-        out_params_names.erase(out_params_names.begin());
-        return result;
     }
 
 } // namespace rtti

@@ -70,5 +70,6 @@ using namespace test;
 //*************************************************************************************************
 TEST_CASE( "rtti::TemplateInstance::name", "[rtti::Template]" ) {
     //REQUIRE( static_type<TestTemplate1>()->name() == "test::TestTemplate1" );
-    //REQUIRE( static_type<TestTemplate2<int>>()->name() == "TestTemplate2<T>" );
+    //REQUIRE( static_type<TestTemplate2<int>>()->name() == "TestTemplate2<int>" );
+    static_type<TestTemplate2<int>>();
 }

@@ -104,7 +104,8 @@
         virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
         static const ::rtti::Class* static_class() {\
             static bool initialized = false;\
-            static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(STR(ARG_TEMPLATE ARG_PARAMS) __VA_OPT__(,) __VA_ARGS__);\
+            std::vector<std::string> out_params_names;\
+            static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);\
             if (!initialized) {\
                 initialized = true;
 

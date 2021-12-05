@@ -31,6 +31,7 @@ namespace rtti {
         template <typename FUNDAMENTAL> friend class FundamentalInstance;
         template <typename ENUM> friend class EnumInstance;
         template <typename CLASS> friend class ClassInstance;
+        template <typename CLASS, typename DECLARING_CLASS> friend class TemplateInstanceInstance;
 
         ObjectRef() = default;
         ObjectRef(const ObjectRef& other) = delete;
