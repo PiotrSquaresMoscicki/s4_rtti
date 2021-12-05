@@ -65,6 +65,8 @@ list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 set(S4_RTTI_TARGET s4_rtti)
 set(S4_RTTI_EXAMPLE_TARGET s4_rtti_example)
 set(S4_RTTI_TEST_TARGET s4_rtti_test)
+set(S4_RTTI_TEST_LIB_TARGET s4_rtti_test_lib)
+set(S4_RTTI_TEST_INTERFACE_TARGET s4_rtti_test_interface)
 
 # Subdirectories
 add_subdirectory(src)

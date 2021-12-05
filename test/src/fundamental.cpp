@@ -10,6 +10,27 @@ TEST_CASE( "rtti::Fundamental::==", "[rtti::Fundamental]" ) {
 }
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Fundamental::== from differend dll", "[rtti::Fundamental]" ) {
+    // std::string shared_lib_path;
+
+    // #ifdef __APPLE__
+    //     shared_lib_path = "libs4_core_test_lib.dylib";
+    // #elif __linux__
+    //     shared_lib_path = "libs4_core_test_lib.so";
+    // #elif _WIN32
+    //     shared_lib_path = "libs4_core_test_lib.dll";
+    // #endif 
+    
+    
+    // Shared lib = Shared::open(std::string(FULL_DIST_DIR) + "/" + shared_lib_path).ok();
+    // ITestInterface* test_obj 
+    //     = reinterpret_cast<ITestInterface*(*)()>(lib.symbol("create_test_interface").ok())();
+        
+    // REQUIRE( static_type<bool>() == static_type<bool>() );
+    // REQUIRE( static_type<int>() != static_type<float>() );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::name", "[rtti::Fundamental]" ) {
     REQUIRE( static_type<bool>()->name() == "bool" );
     REQUIRE( static_type<double>()->name() == "double" );
