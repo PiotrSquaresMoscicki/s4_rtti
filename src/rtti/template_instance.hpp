@@ -4,22 +4,46 @@
 
 namespace rtti {
 
+    class TemplateParam;
+
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
     class S4_RTTI_EXPORT TemplateInstance : public Class {
     public:
-        TemplateInstance(std::string name, size_t size, Attributes attributes) 
-            : Class(std::move(name), size, std::move(attributes)) {}
+        TemplateInstance(std::string name, size_t size, Attributes attributes
+            , std::vector<TemplateParam> params) 
+            : Class(std::move(name), size, std::move(attributes)), m_params(std::move(params)) {}
 
         const TemplateInstance* as_template_instance() const override { return this; }
+    
+        const std::vector<TemplateParam>& params() const { return m_params; }
+
+    protected:
+        std::vector<TemplateParam> m_params;
 
     }; // class TemplateInstance
+    
+    //*********************************************************************************************
+    //*********************************************************************************************
+    //*********************************************************************************************
+    class TemplateParam {
+    public:
+        TemplateParam(std::string name, const Type* type) 
+            : m_name(std::move(name)), m_type(type) {}
+
+        const std::string& name() const { return m_name; }
+        const Type* type() const { return m_type; }
+
+    private:
+        std::string m_name;
+        const Type* m_type = nullptr;
+    };
 
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    template <typename CLASS>
+    template <typename CLASS, typename DECLARING_CLASS>
     class S4_RTTI_EXPORT TemplateInstanceInstance : public TemplateInstance {
     public:
         TemplateInstanceInstance(const std::string& name);
@@ -59,56 +83,77 @@ namespace rtti {
         Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const override;
 
     private:
-        static std::string generate_name(const std::string& name);
+        TemplateInstanceInstance(const std::string& name, Attributes attributes
+            , std::vector<std::string>& out_params_names);
+    
+        static std::string generate_name(const std::string& name
+            , std::vector<std::string>& out_params_names);
+
+        template <size_t IDX>
+        static std::vector<TemplateParam> generate_params(
+            const std::vector<std::string>& params_names) 
+        {
+            TemplateParam param(params_names[IDX]
+                , static_type<std::tuple_element<IDX, typename DECLARING_CLASS::ParamsTuple>>());
+            std::vector<TemplateParam> result;
+            result.push_back(std::move(param));
+
+            if constexpr (IDX < std::tuple_size<typename DECLARING_CLASS::ParamsTuple>::value) {
+                std::vector<TemplateParam> next_params = generate_params<IDX + 1>(params_names);
+                result.insert(result.end(), next_params.begin(), next_params.end());
+            }
+
+            return result;
+        }
 
     }; // class TemplateInstanceInstance
 
     //*********************************************************************************************
-    template <typename CLASS>
-    TemplateInstanceInstance<CLASS>::TemplateInstanceInstance(const std::string& name)
-        : TemplateInstance(generate_name(name), sizeof(CLASS), {}) 
+    template <typename CLASS, typename DECLARING_CLASS>
+    TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(const std::string& name)
+        : TemplateInstanceInstance(name, sizeof(CLASS), {},{}) 
     {}
 
     //*********************************************************************************************
-    template <typename CLASS>
-    TemplateInstanceInstance<CLASS>::TemplateInstanceInstance(const std::string& name
+    template <typename CLASS, typename DECLARING_CLASS>
+    TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(const std::string& name
         , Attributes attributes)
-        : TemplateInstance(generate_name(name), sizeof(CLASS), std::move(attributes)) 
+        : TemplateInstanceInstance(name, sizeof(CLASS), std::move(attributes), {}) 
     {}
 
     //*********************************************************************************************
-    template <typename CLASS>
-    bool TemplateInstanceInstance<CLASS>::is_default_constructible() const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    bool TemplateInstanceInstance<CLASS, DECLARING_CLASS>::is_default_constructible() const {
         return std::is_default_constructible_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    bool TemplateInstanceInstance<CLASS>::is_copy_constructible() const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    bool TemplateInstanceInstance<CLASS, DECLARING_CLASS>::is_copy_constructible() const {
         return std::is_copy_constructible_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    bool TemplateInstanceInstance<CLASS>::is_move_constructible() const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    bool TemplateInstanceInstance<CLASS, DECLARING_CLASS>::is_move_constructible() const {
         return std::is_move_constructible_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    bool TemplateInstanceInstance<CLASS>::is_copy_assignable() const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    bool TemplateInstanceInstance<CLASS, DECLARING_CLASS>::is_copy_assignable() const {
         return std::is_copy_assignable_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    bool TemplateInstanceInstance<CLASS>::is_move_assignable() const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    bool TemplateInstanceInstance<CLASS, DECLARING_CLASS>::is_move_assignable() const {
         return std::is_move_assignable_v<CLASS>;
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<Object, Type::ErrNewObject> TemplateInstanceInstance<CLASS>::new_object() const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<Object, Type::ErrNewObject> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::new_object() const {
         if (is_default_constructible())
             return Ok(Object(new CLASS()));
         else
@@ -116,8 +161,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<Object, Type::ErrNewCopy> TemplateInstanceInstance<CLASS>::new_copy(
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<Object, Type::ErrNewCopy> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::new_copy(
         const ObjectRef& src) const 
     {
         if (!is_copy_constructible())
@@ -131,8 +176,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<Object, Type::ErrNewMove> TemplateInstanceInstance<CLASS>::new_move(
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<Object, Type::ErrNewMove> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::new_move(
         ObjectRef& src) const 
     {
         if (!is_copy_constructible())
@@ -146,8 +191,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<void, Type::ErrDeleteObject> TemplateInstanceInstance<CLASS>::can_delete_object(
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<void, Type::ErrDeleteObject> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::can_delete_object(
         const ObjectRef& obj) const 
     {
         if (!obj.is_valid())
@@ -159,8 +204,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    void TemplateInstanceInstance<CLASS>::delete_object(Object&& obj) const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    void TemplateInstanceInstance<CLASS, DECLARING_CLASS>::delete_object(Object&& obj) const {
         assert(can_delete_object(obj).is_ok());
         delete reinterpret_cast<CLASS*>(obj.m_value);
         obj.m_value = nullptr;
@@ -168,8 +213,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<void, Type::ErrConstruct> TemplateInstanceInstance<CLASS>::can_construct(
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<void, Type::ErrConstruct> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::can_construct(
         const BufferRef& buff) const 
     {
         if (!is_default_constructible())
@@ -183,15 +228,15 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    ObjectRef TemplateInstanceInstance<CLASS>::construct(BufferRef&& buff) const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    ObjectRef TemplateInstanceInstance<CLASS, DECLARING_CLASS>::construct(BufferRef&& buff) const {
         assert(can_construct(buff).is_ok());
         return ObjectRef(new(buff.data().ok()) CLASS, buff.size().ok());
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Object TemplateInstanceInstance<CLASS>::construct(Buffer&& buff) const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    Object TemplateInstanceInstance<CLASS, DECLARING_CLASS>::construct(Buffer&& buff) const {
         assert(can_construct(buff).is_ok());
         Object res(new(buff.data().ok()) CLASS, buff.size().ok());
         std::move(buff).steal_data();
@@ -199,8 +244,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<void, Type::ErrCopyConstruct> TemplateInstanceInstance<CLASS>::can_copy_construct(
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<void, Type::ErrCopyConstruct> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::can_copy_construct(
         const BufferRef& buff, const ObjectRef& src) const 
     {
         if (!is_copy_constructible())
@@ -218,8 +263,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    ObjectRef TemplateInstanceInstance<CLASS>::copy_construct(BufferRef&& buff
+    template <typename CLASS, typename DECLARING_CLASS>
+    ObjectRef TemplateInstanceInstance<CLASS, DECLARING_CLASS>::copy_construct(BufferRef&& buff
         , const ObjectRef& src) const 
     {
         assert(can_copy_construct(buff, src).is_ok());
@@ -228,8 +273,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Object TemplateInstanceInstance<CLASS>::copy_construct(Buffer&& buff
+    template <typename CLASS, typename DECLARING_CLASS>
+    Object TemplateInstanceInstance<CLASS, DECLARING_CLASS>::copy_construct(Buffer&& buff
         , const ObjectRef& src) const 
     {
         assert(can_copy_construct(buff, src).is_ok());
@@ -240,8 +285,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<void, Type::ErrMoveConstruct> TemplateInstanceInstance<CLASS>::can_move_construct(
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<void, Type::ErrMoveConstruct> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::can_move_construct(
         const BufferRef& buff, const ObjectRef& src) const 
     {
         if (!is_copy_constructible())
@@ -259,8 +304,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    ObjectRef TemplateInstanceInstance<CLASS>::move_construct(BufferRef&& buff
+    template <typename CLASS, typename DECLARING_CLASS>
+    ObjectRef TemplateInstanceInstance<CLASS, DECLARING_CLASS>::move_construct(BufferRef&& buff
         , ObjectRef& src) const 
     {
         assert(can_move_construct(buff, src).is_ok());
@@ -270,8 +315,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Object TemplateInstanceInstance<CLASS>::move_construct(Buffer&& buff
+    template <typename CLASS, typename DECLARING_CLASS>
+    Object TemplateInstanceInstance<CLASS, DECLARING_CLASS>::move_construct(Buffer&& buff
         , ObjectRef& src) const 
     {
         assert(can_move_construct(buff, src).is_ok());
@@ -283,8 +328,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<void, Type::ErrDestruct> TemplateInstanceInstance<CLASS>::can_destruct(
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<void, Type::ErrDestruct> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::can_destruct(
         const ObjectRef& obj) const 
     {
         if (!obj.is_valid())
@@ -296,8 +341,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    BufferRef TemplateInstanceInstance<CLASS>::destruct(ObjectRef&& obj) const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    BufferRef TemplateInstanceInstance<CLASS, DECLARING_CLASS>::destruct(ObjectRef&& obj) const {
         assert(can_destruct(obj).is_ok());
         reinterpret_cast<CLASS*>(obj.value().ok())->~CLASS();
         BufferRef res(obj.value().ok(), obj.size().ok());
@@ -306,8 +351,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Buffer TemplateInstanceInstance<CLASS>::destruct(Object&& obj) const {
+    template <typename CLASS, typename DECLARING_CLASS>
+    Buffer TemplateInstanceInstance<CLASS, DECLARING_CLASS>::destruct(Object&& obj) const {
         assert(can_destruct(obj).is_ok());
         reinterpret_cast<CLASS*>(obj.value().ok())->~CLASS();
         Buffer res(obj.value().ok(), obj.size().ok());
@@ -316,8 +361,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<void, Type::ErrCopy> TemplateInstanceInstance<CLASS>::copy_assign(ObjectRef& dst
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<void, Type::ErrCopy> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::copy_assign(ObjectRef& dst
         , const ObjectRef& src) const 
     {
         if (!is_copy_assignable())
@@ -338,8 +383,8 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    Res<void, Type::ErrMove> TemplateInstanceInstance<CLASS>::move_assign(ObjectRef& dst
+    template <typename CLASS, typename DECLARING_CLASS>
+    Res<void, Type::ErrMove> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::move_assign(ObjectRef& dst
         , ObjectRef& src) const 
     {
         if (!is_move_assignable())
@@ -360,18 +405,41 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS>
-    std::string TemplateInstanceInstance<CLASS>::generate_name(const std::string& name) {
-        size_t beg = 0;
-        size_t end = name.find('<', beg);
-        std::string template_name = name.substr(beg, end);
-        beg = end;
-        std::vector<std::string> params_names;
+    template <typename CLASS, typename DECLARING_CLASS>
+    TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(const std::string& name
+        , Attributes attributes, std::vector<std::string>& out_params_names)
+        : TemplateInstance(generate_name(name, out_params_names), sizeof(CLASS)
+        , std::move(attributes), generate_params<0>(out_params_names)) 
+    {}
 
-        while (end != std::string::npos) {
-            end = name.find(' ', beg);
-            
+    //*********************************************************************************************
+    template <typename CLASS, typename DECLARING_CLASS>
+    std::string TemplateInstanceInstance<CLASS, DECLARING_CLASS>::generate_name(const std::string& name
+        , std::vector<std::string>& out_params_names) 
+    {
+        bool opening_bracket_found = false;
+        bool closing_bracket_found = false;
+        std::string curr_name;
+
+        for (size_t i = 0; i < name.length(); ++i) {
+            if (name[i] == '<') {
+                assert(opening_bracket_found || closing_bracket_found == false);
+                out_params_names.push_back(std::move(curr_name));
+                opening_bracket_found = true;
+            } else if (name[i] == ' ') {
+                assert(opening_bracket_found == true && closing_bracket_found == false);
+                out_params_names.push_back(std::move(curr_name));
+            } else if (name[i] == '>') {
+                assert(opening_bracket_found == true && closing_bracket_found == false);
+                out_params_names.push_back(std::move(curr_name));
+                closing_bracket_found = true;
+            } else
+                curr_name += name[i];
         }
+
+        std::string result = out_params_names.front();
+        out_params_names.erase(out_params_names.begin());
+        return result;
     }
 
 } // namespace rtti
