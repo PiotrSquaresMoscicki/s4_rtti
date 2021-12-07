@@ -89,10 +89,10 @@ namespace rtti {
         Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const override;
         Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const override;
 
-        static std::string generate_name(const std::string& name
-            , std::vector<std::string>& out_params_names) 
+        static std::string generate_name(const std::string&
+            , std::vector<std::string>&) 
         {
-            bool opening_bracket_found = false;
+            /*bool opening_bracket_found = false;
             bool closing_bracket_found = false;
             std::string curr_name;
 
@@ -115,10 +115,11 @@ namespace rtti {
 
             std::string result = out_params_names.front() + "<" + generate_params_for_name<>() + ">";
             out_params_names.erase(out_params_names.begin());
-            return result;
+            return result;*/
+            return "";
         }
 
-        template <size_t IDX = std::tuple_size<typename DECLARING_CLASS::ParamsTuple>::value>
+/*        template <size_t IDX = std::tuple_size<typename DECLARING_CLASS::ParamsTuple>::value>
         static std::string generate_params_for_name() {
             std::string result = generate_params_for_name<IDX - 1>();
 
@@ -136,7 +137,7 @@ namespace rtti {
             return static_type<
                     typename std::tuple_element_t<0, typename DECLARING_CLASS::ParamsTuple>
                 >()->name();
-        }
+        }*/
 
         template <size_t IDX>
         static std::vector<TemplateParam> generate_params(
