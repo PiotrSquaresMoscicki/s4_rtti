@@ -11,6 +11,6 @@ Setup guide
 5. Generate build files (example is for make)
   cmake ..
 6. Build the project
-  make
+  cmake --build .
 7. Run tests
-  make test
+  ctest --output-on-failure
