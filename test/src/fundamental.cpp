@@ -1,7 +1,13 @@
 #include <catch2/catch_test_macros.hpp>
+#include <core/lib/shared.hpp>
 #include <rtti/rtti.hpp>
+#include <s4_rtti_cmake_config.hpp>
+
+#include <s4_rtti_test_interface.hpp>
 
 using namespace rtti;
+using namespace core::lib;
+using namespace test;
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::==", "[rtti::Fundamental]" ) {
@@ -11,22 +17,22 @@ TEST_CASE( "rtti::Fundamental::==", "[rtti::Fundamental]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::== from differend dll", "[rtti::Fundamental]" ) {
-    // std::string shared_lib_path;
+    std::string shared_lib_path;
 
-    // #ifdef __APPLE__
-    //     shared_lib_path = "libs4_core_test_lib.dylib";
-    // #elif __linux__
-    //     shared_lib_path = "libs4_core_test_lib.so";
-    // #elif _WIN32
-    //     shared_lib_path = "libs4_core_test_lib.dll";
-    // #endif 
+    #ifdef __APPLE__
+        shared_lib_path = "libs4_rtti_test_lib.dylib";
+    #elif __linux__
+        shared_lib_path = "libs4_rtti_test_lib.so";
+    #elif _WIN32
+        shared_lib_path = "libs4_rtti_test_lib.dll";
+    #endif 
     
     
-    // Shared lib = Shared::open(std::string(FULL_DIST_DIR) + "/" + shared_lib_path).ok();
-    // ITestInterface* test_obj 
-    //     = reinterpret_cast<ITestInterface*(*)()>(lib.symbol("create_test_interface").ok())();
+    Shared lib = Shared::open(std::string(S4_RTTI_PROJECT_FULL_DIST_DIR) + "/" + shared_lib_path).ok();
+    ITestInterface* test_obj 
+       = reinterpret_cast<ITestInterface*(*)()>(lib.symbol("create_test_interface").ok())();
         
-    // REQUIRE( static_type<bool>() == static_type<bool>() );
+    REQUIRE( static_type<bool>() == test_obj->get_bool_type() );
     // REQUIRE( static_type<int>() != static_type<float>() );
 }
 

@@ -18,7 +18,7 @@
 //*************************************************************************************************
 //*************************************************************************************************
 #define REGISTER_FUNDAMENTAL(ARG_TYPE)\
-    template <> inline const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
+    template <> S4_RTTI_EXPORT inline const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
         static ::rtti::FundamentalInstance<ARG_TYPE> result(#ARG_TYPE);\
         return &result;\
     }

@@ -45,6 +45,12 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${S4_RTTI_PROJECT_FULL_DIST_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${S4_RTTI_PROJECT_FULL_DIST_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${S4_RTTI_PROJECT_FULL_DIST_DIR})
 
+configure_file(
+	"${PROJECT_SOURCE_DIR}/config/s4_rtti_cmake_config.hpp.in" 
+	"${PROJECT_BINARY_DIR}/config/s4_rtti_cmake_config.hpp"
+)
+include_directories("${PROJECT_BINARY_DIR}/config")
+
 # Fetch dependencies
 include(FetchContent)
 FetchContent_Declare(
