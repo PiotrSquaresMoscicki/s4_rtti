@@ -17,8 +17,12 @@
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-#define REGISTER_FUNDAMENTAL(ARG_TYPE)\
-    template <> S4_RTTI_EXPORT inline const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
+#define DECLARE_FUNDAMENTAL(ARG_TYPE)\
+    template <>\
+    S4_RTTI_EXPORT const ::rtti::Type* ::rtti::static_type<ARG_TYPE>();
+
+#define DEFINE_FUNDAMENTAL(ARG_TYPE)\
+    template <> S4_RTTI_EXPORT const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
         static ::rtti::FundamentalInstance<ARG_TYPE> result(#ARG_TYPE);\
         return &result;\
     }
@@ -168,26 +172,26 @@ template <> inline const ::rtti::Type* ::rtti::static_type<void>() {
     return nullptr;
 }
 
-REGISTER_FUNDAMENTAL(bool)
+DECLARE_FUNDAMENTAL(bool)
 
-REGISTER_FUNDAMENTAL(signed char)
-REGISTER_FUNDAMENTAL(unsigned char)
-REGISTER_FUNDAMENTAL(char)
-REGISTER_FUNDAMENTAL(wchar_t)
-REGISTER_FUNDAMENTAL(char16_t)
-REGISTER_FUNDAMENTAL(char32_t)
-REGISTER_FUNDAMENTAL(char8_t)
+DECLARE_FUNDAMENTAL(signed char)
+DECLARE_FUNDAMENTAL(unsigned char)
+DECLARE_FUNDAMENTAL(char)
+DECLARE_FUNDAMENTAL(wchar_t)
+DECLARE_FUNDAMENTAL(char16_t)
+DECLARE_FUNDAMENTAL(char32_t)
+DECLARE_FUNDAMENTAL(char8_t)
 
-REGISTER_FUNDAMENTAL(short int)
-REGISTER_FUNDAMENTAL(unsigned short int)
-REGISTER_FUNDAMENTAL(int)
-REGISTER_FUNDAMENTAL(unsigned int)
-REGISTER_FUNDAMENTAL(long int)
-REGISTER_FUNDAMENTAL(unsigned long int)
-REGISTER_FUNDAMENTAL(long long int)
-REGISTER_FUNDAMENTAL(unsigned long long int)
+DECLARE_FUNDAMENTAL(short int)
+DECLARE_FUNDAMENTAL(unsigned short int)
+DECLARE_FUNDAMENTAL(int)
+DECLARE_FUNDAMENTAL(unsigned int)
+DECLARE_FUNDAMENTAL(long int)
+DECLARE_FUNDAMENTAL(unsigned long int)
+DECLARE_FUNDAMENTAL(long long int)
+DECLARE_FUNDAMENTAL(unsigned long long int)
 
-REGISTER_FUNDAMENTAL(float)
-REGISTER_FUNDAMENTAL(double)
-REGISTER_FUNDAMENTAL(long double)
+DECLARE_FUNDAMENTAL(float)
+DECLARE_FUNDAMENTAL(double)
+DECLARE_FUNDAMENTAL(long double)
 
