@@ -31,4 +31,7 @@ namespace rtti {
     template <typename CLASS>
     S4_RTTI_EXPORT inline const Class* dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
 
+    template <typename CLASS>
+    void initialize_class(Class& instance);
+
 } // namespace rtti

@@ -25,8 +25,10 @@ END_REGISTER_CLASS
 
 class TestClass2 {
 public:
-    CLASS(TestClass2)
-    END_CLASS
+    DECLARE_CLASS(TestClass2)
+
+    //CLASS(TestClass2)
+    //END_CLASS
 
     virtual ~TestClass2() = default;
 
@@ -38,6 +40,8 @@ public:
 
     int sum(int a, int b) { return a + b; }
 };
+
+DEFINE_CLASS(TestClass2) {}
 
 using namespace test;
 
