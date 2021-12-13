@@ -14,6 +14,7 @@
 #include "method.hpp"
         
 #define STR(ARG) #ARG
+#define COMMA ,
 
 //*************************************************************************************************
 //*************************************************************************************************
@@ -23,7 +24,7 @@
         static const ::rtti::Type* result = nullptr;\
         static ::rtti::FundamentalInstance<ARG_TYPE> instance(#ARG_TYPE);\
         if (result == nullptr)\
-            result = Database::register_type(&instance).ok();\
+            result = ::rtti::Database::register_type(&instance).ok();\
         return result;\
     }
 
@@ -34,7 +35,7 @@
     template <>\
     inline const ::rtti::Type* ::rtti::static_type<ARG_ENUM>() {\
         using EnumType = ::ARG_ENUM;\
-        static ::rtti::EnumInstance<EnumType> result = ::rtti::EnumInstance<EnumType>(#ARG_ENUM, \
+        static ::rtti::EnumInstance<EnumType> instance = ::rtti::EnumInstance<EnumType>(#ARG_ENUM, \
             std::vector<::rtti::EnumValue> {
 
 //*************************************************************************************************
@@ -45,7 +46,12 @@
 #define END_ENUM\
              ::rtti::EnumValue() /* dummy enum value so we can use , in ENUM_VALUE macro */\
         });\
-        return &result; \
+        static const ::rtti::Enum* result = nullptr;\
+        if (result == nullptr) {\
+            result = static_cast<const ::rtti::Enum*>(\
+                ::rtti::Database::register_type(&instance).ok());\
+        }\
+        return result; \
     }\
 
 //*************************************************************************************************
@@ -56,14 +62,15 @@
         using DeclaringClass = ::ARG_DECLARING_CLASS;\
         virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
         static const ::rtti::Class* static_class() {\
-            static bool initialized = false;\
+            static const ::rtti::Class* result = nullptr;\
             static ::rtti::ClassInstance<This> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
-            if (!initialized) {\
-                initialized = true;
+            if (result == nullptr) {
 
 #define END_CLASS_INTERNAL\
+                result = static_cast<const ::rtti::Class*>(\
+                    ::rtti::Database::register_type(&instance).ok());\
             }\
-            return &instance;\
+            return result;\
         }
 
 //*************************************************************************************************
@@ -102,20 +109,23 @@
 //*************************************************************************************************
 //*************************************************************************************************
 #define TEMPLATE_INTERNAL(ARG_TEMPLATE, ARG_DECLARING_TEMPLATE, ARG_PARAMS, ...)\
-        using This = ARG_TEMPLATE;\
-        using DeclaringClass = ARG_DECLARING_TEMPLATE;\
+        using This = ARG_TEMPLATE ARG_PARAMS;\
+        using DeclaringClass = ARG_DECLARING_TEMPLATE ARG_PARAMS;\
         using ParamsTuple = ::std::tuple ARG_PARAMS;\
         virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
         static const ::rtti::Class* static_class() {\
             static bool initialized = false;\
             std::vector<std::string> out_params_names;\
-            static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);\
-            if (!initialized) {\
-                initialized = true;
+            static const ::rtti::Class* result = nullptr;\
+            static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(\
+                STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);\
+            if (result == nullptr) {
 
 #define END_TEMPLATE_INTERNAL\
+                result = static_cast<const ::rtti::Class*>(\
+                    ::rtti::Database::register_type(&instance).ok());\
             }\
-            return &instance;\
+            return result;\
         }
 
 //*************************************************************************************************
