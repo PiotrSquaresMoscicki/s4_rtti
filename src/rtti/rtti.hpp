@@ -51,6 +51,31 @@
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
+#define DECLARE_CLASS(ARG_CLASS) \
+    template <typename C> friend inline const ::rtti::Class* static_class();\
+    virtual const ::rtti::Class* dynamic_class() const { \
+        return ::rtti::static_class<::ARG_CLASS>(); \
+    }
+
+#define DEFINE_CLASS(ARG_CLASS, ...) \
+    template<>\
+    const ::rtti::Type* ::rtti::static_type<::ARG_CLASS>() {\
+        return ::rtti::static_class<::ARG_CLASS>();\
+    }\
+    template<>\
+    const ::rtti::Class* ::rtti::static_class<::ARG_CLASS>() {\
+        static bool initialized = false;\
+        static ::rtti::ClassInstance<::ARG_CLASS> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
+        if (!initialized) {\
+            initialized = true;\
+            initialize_class<::ARG_CLASS>(instance);\
+        }\
+        return &instance;\
+    }\
+    template<>\
+    void ::rtti::initialize_class<::ARG_CLASS>(::rtti::Class& instance)
+
+
 #define CLASS_INTERNAL(ARG_CLASS, ARG_DECLARING_CLASS, ...)\
         using This = ::ARG_CLASS;\
         using DeclaringClass = ::ARG_DECLARING_CLASS;\

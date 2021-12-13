@@ -33,7 +33,6 @@ TEST_CASE( "rtti::Fundamental::== from differend dll", "[rtti::Fundamental]" ) {
        = reinterpret_cast<ITestInterface*(*)()>(lib.symbol("create_test_interface").ok())();
         
     REQUIRE( static_type<bool>() == test_obj->get_bool_type() );
-    // REQUIRE( static_type<int>() != static_type<float>() );
 }
 
 //*************************************************************************************************
