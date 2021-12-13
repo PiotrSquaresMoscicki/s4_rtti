@@ -4,6 +4,7 @@
 
 #include "ctti/ctti.hpp"
 
+#include "database.hpp"
 #include "attributes.hpp"
 #include "fundamental.hpp"
 #include "enum.hpp"
@@ -19,8 +20,11 @@
 //*************************************************************************************************
 #define REGISTER_FUNDAMENTAL(ARG_TYPE)\
     template <> S4_RTTI_EXPORT inline const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
-        static ::rtti::FundamentalInstance<ARG_TYPE> result(#ARG_TYPE);\
-        return &result;\
+        static const ::rtti::Type* result = nullptr;\
+        static ::rtti::FundamentalInstance<ARG_TYPE> instance(#ARG_TYPE);\
+        if (result == nullptr)\
+            result = Database::register_type(&instance).ok();\
+        return result;\
     }
 
 //*************************************************************************************************
