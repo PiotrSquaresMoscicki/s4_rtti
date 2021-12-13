@@ -8,8 +8,7 @@ namespace object_test {
     //*************************************************************************************************
     class TestClass {
     public:
-        CLASS(object_test::TestClass)
-        END_CLASS
+        DECLARE_CLASS(object_test::TestClass)
 
         virtual ~TestClass() { *m_destructed = true; }
         void init(bool* destructed) { m_destructed = destructed; }
@@ -20,6 +19,8 @@ namespace object_test {
     }; // class TestClass
 
 } // namespace object_test
+
+DEFINE_CLASS(object_test::TestClass) {}
 
 using namespace rtti;
 using namespace object_test;
