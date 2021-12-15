@@ -40,3 +40,7 @@ namespace test {
     }; // class ITestInterface
 
 } // namespace test
+
+REGISTER_ENUM(test::DynamicallyLoadedLibEnum)
+    ENUM_VALUE(UNDEFINED)
+END_ENUM

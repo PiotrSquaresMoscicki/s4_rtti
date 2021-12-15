@@ -136,19 +136,6 @@
     END_TEMPLATE_INTERNAL
 
 //*************************************************************************************************
-//*************************************************************************************************
-//*************************************************************************************************
-namespace rtti::internal {
-    
-    class StaticInitializer {
-    public:
-        StaticInitializer(void (*fn)()) { fn(); }
-
-    }; // class StaticInitializer
-
-} // namespace rtti::internal
-
-//*************************************************************************************************
 #define REGISTER_FIELD(ARG_NAME, ...)\
     static inline void ARG_NAME##_init_field_info() {\
         static ::rtti::FieldInstance<This, DeclaringClass, decltype(This::ARG_NAME)> instance(\

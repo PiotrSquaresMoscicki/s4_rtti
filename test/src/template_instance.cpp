@@ -59,7 +59,7 @@ public:
 using namespace test;
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Enum::== from differend dll", "[rtti::Enum]" ) {
+TEST_CASE( "rtti::TemplateInstance::== from differend dll", "[rtti::TemplateInstance]" ) {
     std::string shared_lib_path;
 
     #ifdef __APPLE__
