@@ -12,15 +12,12 @@
 #include "template_instance.hpp"
 #include "field.hpp"
 #include "method.hpp"
-        
-#define STR(ARG) #ARG
-#define COMMA ,
 
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
 #define REGISTER_FUNDAMENTAL(ARG_TYPE)\
-    template <> S4_RTTI_EXPORT inline const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
+    template <> inline const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
         static const ::rtti::Type* result = nullptr;\
         static ::rtti::FundamentalInstance<ARG_TYPE> instance(#ARG_TYPE);\
         if (result == nullptr)\
@@ -135,6 +132,15 @@
 #define END_TEMPLATE\
     END_TEMPLATE_INTERNAL
 
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+#define METHOD(ARG_NAME, ARG_PARAMS_NAMES, ...)\
+    static ::rtti::MethodInstance ARG_NAME##_method_instance(\
+        #ARG_NAME, #ARG_PARAMS_NAMES, &This::ARG_NAME, __VA_OPT__(,) __VA_ARGS__);
+
+//*************************************************************************************************
+//*************************************************************************************************
 //*************************************************************************************************
 #define REGISTER_FIELD(ARG_NAME, ...)\
     static inline void ARG_NAME##_init_field_info() {\

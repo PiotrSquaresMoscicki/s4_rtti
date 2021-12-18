@@ -1,8 +1,13 @@
-#include "lib.hpp"
-
 #include <rtti/rtti.hpp>
+#include <s4_rtti_test_interface.hpp>
 
 using namespace test;
+
+#ifdef _WIN64
+    #define S4_TEST_LIB_EXPORT __declspec(dllexport)
+#else
+    #define S4_TEST_LIB_EXPORT
+#endif
 
 //*************************************************************************************************
 //*************************************************************************************************
@@ -25,11 +30,6 @@ public:
     
 }; // TestInterfaceImpl
 
-//*************************************************************************************************
-// StringId TestInterfaceImpl::register_string(const std::string& src) {
-//     return StringId(src);
-// }
-
-extern "C" test::ITestInterface* create_test_interface() {
+extern "C" S4_TEST_LIB_EXPORT test::ITestInterface* create_test_interface() {
     return new TestInterfaceImpl{};
 }

@@ -41,9 +41,9 @@ namespace rtti {
         const Attributes& attributes() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
-        virtual Res<ObjectRef, ErrCall> call(const ObjectRef& self
+        virtual Res<ObjectRef, ErrCall> call_method(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const = 0;
-        virtual Res<ObjectRef, ErrCall> call(ObjectRef& self
+        virtual Res<ObjectRef, ErrCall> call_method(ObjectRef& self
             , const std::vector<ObjectRef*>& params) const = 0;
 
     private:
@@ -74,19 +74,18 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    class S4_RTTI_EXPORT MethodInstance : public Method {
+    template <typename CLASS, typename RET, typename... PARAMS>
+    class MethodInstance : public Method {
     public:
         using MethodType = RET (CLASS::*)(PARAMS...);
 
+        MethodInstance(std::string name, const std::string& params_names, MethodType method);
         MethodInstance(std::string name, const std::string& params_names, MethodType method
-            , void(DECLARING_CLASS::*)());
-        MethodInstance(std::string name, const std::string& params_names, MethodType method
-            , void(DECLARING_CLASS::*)(), Attributes attributes);
+            , Attributes attributes);
 
-        Res<ObjectRef, ErrCall> call(const ObjectRef& self
+        Res<ObjectRef, ErrCall> call_method(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
-        Res<ObjectRef, ErrCall> call(ObjectRef& self
+        Res<ObjectRef, ErrCall> call_method(ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
 
     private:
@@ -97,11 +96,11 @@ namespace rtti {
 
     }; // class MethodInstance
 
+/*
     //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>::MethodInstance(std::string name
-        , const std::string& params_names, MethodType method, void(DECLARING_CLASS::*)()
-        , Attributes attributes) 
+    template <typename CLASS, typename RET, typename... PARAMS>
+    MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(std::string name
+        , const std::string& params_names, MethodType method, Attributes attributes) 
         : Method(generate_name(std::move(name), params_names), static_type<RET>()
             , generate_params(params_names), static_class<CLASS>(), std::move(attributes))
         , m_method(method)
@@ -109,47 +108,46 @@ namespace rtti {
     }
 
     //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>::MethodInstance(std::string name
-        , const std::string& params_names, MethodType method, void(DECLARING_CLASS::*dummy)()) 
-        : MethodInstance(std::move(name), params_names, method, dummy, Attributes{})
+    template <typename CLASS, typename RET, typename... PARAMS>
+    MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(std::string name
+        , const std::string& params_names, MethodType method) 
+        : MethodInstance(std::move(name), params_names, method, Attributes{})
     {
-        const_cast<Class*>(DECLARING_CLASS::static_class())->m_methods.push_back(this);
     }
 
     //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    std::string MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>::
+    template <typename CLASS, typename RET, typename... PARAMS>
+    std::string MethodInstance<CLASS, RET, PARAMS...>::
         generate_name(std::string, const std::string&)
     {
         return "DDD";
     }
 
     //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    std::vector<const MethodParam*> MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>::
+    template <typename CLASS, typename RET, typename... PARAMS>
+    std::vector<const MethodParam*> MethodInstance<CLASS, RET, PARAMS...>::
         generate_params(const std::string&)
     {
         return {};
     }
 
     //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>::
+    template <typename CLASS, typename RET, typename... PARAMS>
+    Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, RET, PARAMS...>::
         call(const ObjectRef&, const std::vector<ObjectRef*>&) const
     {
         return Err(ErrCall::INVALID_PARAM_TYPE);
     }
 
     //*********************************************************************************************
-    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
-    Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, DECLARING_CLASS, RET, PARAMS...>
+    template <typename CLASS, typename RET, typename... PARAMS>
+    Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, RET, PARAMS...>
         ::call(ObjectRef&, const std::vector<ObjectRef*>&) const
     {
         return Err(ErrCall::INVALID_PARAM_TYPE);
     }
-
-//    template <typename CLASS, typename DECLARING_CLASS, typename RET, typename... PARAMS>
+*/
+//    template <typename CLASS, typename RET, typename... PARAMS>
  //   MethodInstance(std::string, const std::string&, RET (CLASS::*)(PARAMS...)) -> MethodInstance
 
 } // namespace rtti

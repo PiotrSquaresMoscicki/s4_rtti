@@ -49,7 +49,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     template <typename CLASS, typename DECLARING_CLASS>
-    class S4_RTTI_EXPORT TemplateInstanceInstance : public TemplateInstance {
+    class TemplateInstanceInstance : public TemplateInstance {
     public:
         TemplateInstanceInstance(const std::string& name
             , std::vector<std::string>& out_params_names);
@@ -206,7 +206,9 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS, typename DECLARING_CLASS>
-    Res<Object, Type::ErrNewObject> TemplateInstanceInstance<CLASS, DECLARING_CLASS>::new_object() const {
+    Res<Object, Type::ErrNewObject> TemplateInstanceInstance<CLASS, DECLARING_CLASS>
+        ::new_object() const 
+    {
         if (is_default_constructible())
             return Ok(Object(new CLASS()));
         else
@@ -458,3 +460,4 @@ namespace rtti {
     }
 
 } // namespace rtti
+

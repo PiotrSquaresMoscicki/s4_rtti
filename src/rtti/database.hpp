@@ -13,7 +13,7 @@ namespace rtti {
     using namespace core::util;
 
     //*********************************************************************************************
-    class Database {
+    class S4_RTTI_EXPORT Database {
     public:
         enum class ErrRegisterType {
             UNDEFINED

@@ -15,7 +15,7 @@ namespace rtti {
     class S4_RTTI_EXPORT Class : public Type {
     public:
         template <typename C, typename D, typename F> friend class FieldInstance;
-        template <typename C, typename D, typename R, typename... P> friend class MethodInstance;
+        template <typename C, typename R, typename... P> friend class MethodInstance;
 
         Class(std::string name, size_t size, Attributes attributes) 
             : Type(std::move(name), size, std::move(attributes)) {}
@@ -38,7 +38,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     template <typename CLASS>
-    class S4_RTTI_EXPORT ClassInstance : public Class {
+    class ClassInstance : public Class {
     public:
         ClassInstance(std::string name);
         ClassInstance(std::string name, Attributes attributes);

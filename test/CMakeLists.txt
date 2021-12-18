@@ -40,7 +40,6 @@ GenerateSourceGoups("${S4_RTTI_TEST_SRCS}")
 add_executable(${S4_RTTI_TEST_TARGET} ${S4_RTTI_TEST_SRCS})
 target_compile_features(${S4_RTTI_TEST_TARGET} PUBLIC cxx_std_20)
 target_include_directories(${S4_RTTI_TEST_TARGET} PUBLIC ${S4_RTTI_TEST_INCLUDE})
-
 target_link_libraries(${S4_RTTI_TEST_TARGET} PRIVATE ${S4_RTTI_TARGET} 
     ${S4_RTTI_TEST_INTERFACE_TARGET} Catch2::Catch2WithMain)
 

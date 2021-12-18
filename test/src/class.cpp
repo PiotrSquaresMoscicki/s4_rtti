@@ -38,7 +38,7 @@ TEST_CASE( "rtti::Class::== from differend dll", "[rtti::Class]" ) {
     #elif __linux__
         shared_lib_path = "libs4_rtti_test_lib.so";
     #elif _WIN32
-        shared_lib_path = "libs4_rtti_test_lib.dll";
+        shared_lib_path = "Debug/s4_rtti_test_lib.dll";
     #endif 
     
     
