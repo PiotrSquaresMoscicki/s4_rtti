@@ -28,7 +28,7 @@ set(S4_RTTI_PROJECT_DIST_DIR "${S4_RTTI_PROJECT_ROOT_DIR}/dist")
 set(S4_RTTI_PROJECT_COMMON_BUILD_DIR "${S4_RTTI_PROJECT_ROOT_DIR}/common_build")
 
 if(MSVC)
-	add_compile_options(/W4 /WX /wd4251 /wd5105 /wd4100 /Zc:preprocessor)
+	add_compile_options(/W4 /WX /wd4251 /wd5105 /wd4100 /wd5103 /Zc:preprocessor)
 else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++2a")
 	add_compile_options(-Wall -Wextra -Werror -Wno-unused-variable -Wno-unused-parameter)
