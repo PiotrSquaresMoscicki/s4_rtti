@@ -14,8 +14,7 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT Fundamental : public Type {
     public:
-        Fundamental(std::string name, size_t size)
-            : Type(std::move(name), size, {}) {}
+        Fundamental(std::string name, size_t size);
 
         const Fundamental* as_fundamental() const override { return this; }
         const Enum* as_enum() const override { return nullptr; }
@@ -28,7 +27,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    class S4_RTTI_EXPORT FundamentalInstance : public Fundamental {
+    class FundamentalInstance : public Fundamental {
     public:
         FundamentalInstance(std::string name);
 

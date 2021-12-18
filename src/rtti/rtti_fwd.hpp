@@ -31,7 +31,7 @@ namespace rtti {
     template <typename CLASS>
     inline const Class* dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
 
-    template <typename CLASS>
-    void initialize_class(Class& instance);
-
 } // namespace rtti
+
+#define STR(ARG) #ARG
+#define COMMA ,

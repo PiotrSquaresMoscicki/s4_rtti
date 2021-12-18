@@ -4,6 +4,7 @@
 
 #include "ctti/ctti.hpp"
 
+#include "database.hpp"
 #include "attributes.hpp"
 #include "fundamental.hpp"
 #include "enum.hpp"
@@ -11,20 +12,17 @@
 #include "template_instance.hpp"
 #include "field.hpp"
 #include "method.hpp"
-        
-#define STR(ARG) #ARG
 
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-#define DECLARE_FUNDAMENTAL(ARG_TYPE)\
-    template <>\
-    S4_RTTI_EXPORT const ::rtti::Type* ::rtti::static_type<ARG_TYPE>();
-
-#define DEFINE_FUNDAMENTAL(ARG_TYPE)\
-    template <> S4_RTTI_EXPORT const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
-        static ::rtti::FundamentalInstance<ARG_TYPE> result(#ARG_TYPE);\
-        return &result;\
+#define REGISTER_FUNDAMENTAL(ARG_TYPE)\
+    template <> inline const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
+        static const ::rtti::Type* result = nullptr;\
+        static ::rtti::FundamentalInstance<ARG_TYPE> instance(#ARG_TYPE);\
+        if (result == nullptr)\
+            result = ::rtti::Database::register_type(&instance).ok();\
+        return result;\
     }
 
 //*************************************************************************************************
@@ -34,7 +32,7 @@
     template <>\
     inline const ::rtti::Type* ::rtti::static_type<ARG_ENUM>() {\
         using EnumType = ::ARG_ENUM;\
-        static ::rtti::EnumInstance<EnumType> result = ::rtti::EnumInstance<EnumType>(#ARG_ENUM, \
+        static ::rtti::EnumInstance<EnumType> instance = ::rtti::EnumInstance<EnumType>(#ARG_ENUM, \
             std::vector<::rtti::EnumValue> {
 
 //*************************************************************************************************
@@ -45,74 +43,86 @@
 #define END_ENUM\
              ::rtti::EnumValue() /* dummy enum value so we can use , in ENUM_VALUE macro */\
         });\
-        return &result; \
-    }\
-
-//*************************************************************************************************
-//*************************************************************************************************
-//*************************************************************************************************
-#define DECLARE_CLASS(ARG_CLASS) \
-    virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
-    static const ::rtti::Class* static_class();\
-    static void initialize_class(::rtti::Class& instance);
-
-#define DEFINE_CLASS(ARG_CLASS, ...) \
-    const ::rtti::Class* ::ARG_CLASS::static_class() {\
-        static bool initialized = false;\
-        static ::rtti::ClassInstance<::ARG_CLASS> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
-        if (!initialized) {\
-            initialized = true;\
-            initialize_class(instance);\
+        static const ::rtti::Enum* result = nullptr;\
+        if (result == nullptr) {\
+            result = static_cast<const ::rtti::Enum*>(\
+                ::rtti::Database::register_type(&instance).ok());\
         }\
-        return &instance;\
+        return result; \
     }\
-    void ::ARG_CLASS::initialize_class(::rtti::Class& instance)
 
 //*************************************************************************************************
-#define DECLARE_CLASS_EXTERN(ARG_CLASS)\
-    template <>\
-    inline const ::rtti::Type* ::rtti::static_type<::ARG_CLASS>();\
-    template <>\
-    inline const ::rtti::Class* ::rtti::static_class<::ARG_CLASS>();\
-    template <>\
-    void ::rtti::initialize_class<::ARG_CLASS>(::rtti::Class& instance);
+//*************************************************************************************************
+//*************************************************************************************************
+#define CLASS_INTERNAL(ARG_CLASS, ARG_DECLARING_CLASS, ...)\
+        using This = ::ARG_CLASS;\
+        using DeclaringClass = ::ARG_DECLARING_CLASS;\
+        virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
+        static const ::rtti::Class* static_class() {\
+            static const ::rtti::Class* result = nullptr;\
+            static ::rtti::ClassInstance<This> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
+            if (result == nullptr) {
 
-#define DEFINE_CLASS_EXTERN(ARG_CLASS, ...) \
-    template <>\
-    inline const ::rtti::Type* ::rtti::static_type<::ARG_CLASS>() { \
-        return ::rtti::static_class<::ARG_CLASS>();\
+#define END_CLASS_INTERNAL\
+                result = static_cast<const ::rtti::Class*>(\
+                    ::rtti::Database::register_type(&instance).ok());\
+            }\
+            return result;\
+        }
+
+//*************************************************************************************************
+#define CLASS(ARG_CLASS, ...)\
+    CLASS_INTERNAL(ARG_CLASS, ARG_CLASS __VA_OPT__(,) __VA_ARGS__)
+
+#define END_CLASS\
+    END_CLASS_INTERNAL
+
+//*************************************************************************************************
+#define REGISTER_CLASS(NAMESPACE, ARG_CLASS, ...)\
+    namespace NAMESPACE {\
+        class ARG_CLASS##TypeImpl_internal;\
     }\
-    template <>\
-    inline const ::rtti::Class* ::rtti::static_class<::ARG_CLASS>() {\
-        static bool initialized = false;\
-        static ::rtti::ClassInstance<::ARG_CLASS> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
-        if (!initialized) {\
-            initialized = true;\
-            initialize_class<::ARG_CLASS>(instance);\
-        }\
-        return &instance;\
+    \
+    template<>\
+    const Type* ::rtti::static_type<::NAMESPACE::ARG_CLASS>() {\
+        return ::rtti::static_type<::NAMESPACE::ARG_CLASS##TypeImpl_internal>();\
     }\
-    template <>\
-    void ::rtti::initialize_class<::ARG_CLASS>(::rtti::Class& instance)
+    template<>\
+    const Class* ::rtti::static_class<::NAMESPACE::ARG_CLASS>() {\
+        return ::rtti::static_class<::NAMESPACE::ARG_CLASS##TypeImpl_internal>();\
+    }\
+    \
+    namespace NAMESPACE {\
+        class ARG_CLASS##TypeImpl_internal {\
+        public:\
+            CLASS_INTERNAL(NAMESPACE::ARG_CLASS, NAMESPACE::ARG_CLASS##TypeImpl_internal __VA_OPT__(,) __VA_ARGS__)
+
+#define END_REGISTER_CLASS\
+            END_CLASS_INTERNAL\
+        };\
+    } // namespace NAMESPACE
 
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
 #define TEMPLATE_INTERNAL(ARG_TEMPLATE, ARG_DECLARING_TEMPLATE, ARG_PARAMS, ...)\
-        using This = ARG_TEMPLATE;\
-        using DeclaringClass = ARG_DECLARING_TEMPLATE;\
+        using This = ARG_TEMPLATE ARG_PARAMS;\
+        using DeclaringClass = ARG_DECLARING_TEMPLATE ARG_PARAMS;\
         using ParamsTuple = ::std::tuple ARG_PARAMS;\
         virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
         static const ::rtti::Class* static_class() {\
             static bool initialized = false;\
             std::vector<std::string> out_params_names;\
-            static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);\
-            if (!initialized) {\
-                initialized = true;
+            static const ::rtti::Class* result = nullptr;\
+            static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(\
+                STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);\
+            if (result == nullptr) {
 
 #define END_TEMPLATE_INTERNAL\
+                result = static_cast<const ::rtti::Class*>(\
+                    ::rtti::Database::register_type(&instance).ok());\
             }\
-            return &instance;\
+            return result;\
         }
 
 //*************************************************************************************************
@@ -125,16 +135,12 @@
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-namespace rtti::internal {
-    
-    class StaticInitializer {
-    public:
-        StaticInitializer(void (*fn)()) { fn(); }
+#define METHOD(ARG_NAME, ARG_PARAMS_NAMES, ...)\
+    static ::rtti::MethodInstance ARG_NAME##_method_instance(\
+        #ARG_NAME, #ARG_PARAMS_NAMES, &This::ARG_NAME, __VA_OPT__(,) __VA_ARGS__);
 
-    }; // class StaticInitializer
-
-} // namespace rtti::internal
-
+//*************************************************************************************************
+//*************************************************************************************************
 //*************************************************************************************************
 #define REGISTER_FIELD(ARG_NAME, ...)\
     static inline void ARG_NAME##_init_field_info() {\
@@ -169,26 +175,26 @@ template <> inline const ::rtti::Type* ::rtti::static_type<void>() {
     return nullptr;
 }
 
-DECLARE_FUNDAMENTAL(bool)
+REGISTER_FUNDAMENTAL(bool)
 
-DECLARE_FUNDAMENTAL(signed char)
-DECLARE_FUNDAMENTAL(unsigned char)
-DECLARE_FUNDAMENTAL(char)
-DECLARE_FUNDAMENTAL(wchar_t)
-DECLARE_FUNDAMENTAL(char16_t)
-DECLARE_FUNDAMENTAL(char32_t)
-DECLARE_FUNDAMENTAL(char8_t)
+REGISTER_FUNDAMENTAL(signed char)
+REGISTER_FUNDAMENTAL(unsigned char)
+REGISTER_FUNDAMENTAL(char)
+REGISTER_FUNDAMENTAL(wchar_t)
+REGISTER_FUNDAMENTAL(char16_t)
+REGISTER_FUNDAMENTAL(char32_t)
+REGISTER_FUNDAMENTAL(char8_t)
 
-DECLARE_FUNDAMENTAL(short int)
-DECLARE_FUNDAMENTAL(unsigned short int)
-DECLARE_FUNDAMENTAL(int)
-DECLARE_FUNDAMENTAL(unsigned int)
-DECLARE_FUNDAMENTAL(long int)
-DECLARE_FUNDAMENTAL(unsigned long int)
-DECLARE_FUNDAMENTAL(long long int)
-DECLARE_FUNDAMENTAL(unsigned long long int)
+REGISTER_FUNDAMENTAL(short int)
+REGISTER_FUNDAMENTAL(unsigned short int)
+REGISTER_FUNDAMENTAL(int)
+REGISTER_FUNDAMENTAL(unsigned int)
+REGISTER_FUNDAMENTAL(long int)
+REGISTER_FUNDAMENTAL(unsigned long int)
+REGISTER_FUNDAMENTAL(long long int)
+REGISTER_FUNDAMENTAL(unsigned long long int)
 
-DECLARE_FUNDAMENTAL(float)
-DECLARE_FUNDAMENTAL(double)
-DECLARE_FUNDAMENTAL(long double)
+REGISTER_FUNDAMENTAL(float)
+REGISTER_FUNDAMENTAL(double)
+REGISTER_FUNDAMENTAL(long double)
 

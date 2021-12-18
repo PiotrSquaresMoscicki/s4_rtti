@@ -21,7 +21,7 @@
 	}
 
 //*************************************************************************************************
-#define CTTI_DECLARE_FUNDAMENTAL(TYPE)\
+#define DECLARE_FUNDAMENTAL(TYPE)\
 	template <>\
 	constexpr auto ::ctti::constexpr_type<TYPE>()\
 	{\
@@ -32,28 +32,28 @@
         );\
 	}
 
-CTTI_DECLARE_FUNDAMENTAL(bool)
+DECLARE_FUNDAMENTAL(bool)
 
-CTTI_DECLARE_FUNDAMENTAL(short int)
-CTTI_DECLARE_FUNDAMENTAL(unsigned short int)
-CTTI_DECLARE_FUNDAMENTAL(int)
-CTTI_DECLARE_FUNDAMENTAL(unsigned int)
-CTTI_DECLARE_FUNDAMENTAL(long int)
-CTTI_DECLARE_FUNDAMENTAL(unsigned long int)
-CTTI_DECLARE_FUNDAMENTAL(long long int)
-CTTI_DECLARE_FUNDAMENTAL(unsigned long long int)
+DECLARE_FUNDAMENTAL(short int)
+DECLARE_FUNDAMENTAL(unsigned short int)
+DECLARE_FUNDAMENTAL(int)
+DECLARE_FUNDAMENTAL(unsigned int)
+DECLARE_FUNDAMENTAL(long int)
+DECLARE_FUNDAMENTAL(unsigned long int)
+DECLARE_FUNDAMENTAL(long long int)
+DECLARE_FUNDAMENTAL(unsigned long long int)
 
-CTTI_DECLARE_FUNDAMENTAL(signed char)
-CTTI_DECLARE_FUNDAMENTAL(unsigned char)
-CTTI_DECLARE_FUNDAMENTAL(char)
-CTTI_DECLARE_FUNDAMENTAL(wchar_t)
-CTTI_DECLARE_FUNDAMENTAL(char8_t)
-CTTI_DECLARE_FUNDAMENTAL(char16_t)
-CTTI_DECLARE_FUNDAMENTAL(char32_t)
+DECLARE_FUNDAMENTAL(signed char)
+DECLARE_FUNDAMENTAL(unsigned char)
+DECLARE_FUNDAMENTAL(char)
+DECLARE_FUNDAMENTAL(wchar_t)
+DECLARE_FUNDAMENTAL(char8_t)
+DECLARE_FUNDAMENTAL(char16_t)
+DECLARE_FUNDAMENTAL(char32_t)
 
-CTTI_DECLARE_FUNDAMENTAL(float)
-CTTI_DECLARE_FUNDAMENTAL(double)
-CTTI_DECLARE_FUNDAMENTAL(long double)
+DECLARE_FUNDAMENTAL(float)
+DECLARE_FUNDAMENTAL(double)
+DECLARE_FUNDAMENTAL(long double)
 
 // #pragma once
 
