@@ -41,9 +41,9 @@ namespace rtti {
         const Attributes& attributes() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
-        virtual Res<ObjectRef, ErrCall> call_method(const ObjectRef& self
+        virtual Res<ObjectRef, ErrCall> call(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const = 0;
-        virtual Res<ObjectRef, ErrCall> call_method(ObjectRef& self
+        virtual Res<ObjectRef, ErrCall> call(ObjectRef& self
             , const std::vector<ObjectRef*>& params) const = 0;
 
     private:
@@ -83,9 +83,9 @@ namespace rtti {
         MethodInstance(std::string name, const std::string& params_names, MethodType method
             , Attributes attributes);
 
-        Res<ObjectRef, ErrCall> call_method(const ObjectRef& self
+        Res<ObjectRef, ErrCall> call(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
-        Res<ObjectRef, ErrCall> call_method(ObjectRef& self
+        Res<ObjectRef, ErrCall> call(ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
 
     private:
@@ -96,7 +96,7 @@ namespace rtti {
 
     }; // class MethodInstance
 
-/*
+
     //*********************************************************************************************
     template <typename CLASS, typename RET, typename... PARAMS>
     MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(std::string name
@@ -146,7 +146,7 @@ namespace rtti {
     {
         return Err(ErrCall::INVALID_PARAM_TYPE);
     }
-*/
+
 //    template <typename CLASS, typename RET, typename... PARAMS>
  //   MethodInstance(std::string, const std::string&, RET (CLASS::*)(PARAMS...)) -> MethodInstance
 
