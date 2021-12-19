@@ -13,6 +13,19 @@
 #include "field.hpp"
 #include "method.hpp"
 
+namespace rtti {
+
+    template <typename TYPE>
+    inline const Type* static_type() { return TYPE::static_class(); }
+
+    template <typename CLASS>
+    inline const Class* static_class() { return CLASS::static_class(); }
+    
+    template <typename CLASS>
+    inline const Class* dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
+
+}
+
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
