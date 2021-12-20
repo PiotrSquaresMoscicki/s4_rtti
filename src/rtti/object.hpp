@@ -44,8 +44,8 @@ namespace rtti {
         template <typename TYPE>
         ObjectRef(TYPE* obj, size_t size) 
             : ObjectRef(reinterpret_cast<void*>(obj), static_type<TYPE>(), size) {}
-        ObjectRef(void* obj, const Type* type) : ObjectRef(obj, type, type->size()) {}
-        ObjectRef(void* obj, const Type* type, size_t size);
+        ObjectRef(void* obj, TypePtr type) : ObjectRef(obj, type, type->size()) {}
+        ObjectRef(void* obj, TypePtr type, size_t size);
         virtual ~ObjectRef() = default;
 
         bool is_valid() const { return m_value && m_type && m_size; }
@@ -54,7 +54,7 @@ namespace rtti {
         Res<void*, ErrValue> value();
         Res<const void*, ErrValue> value() const;
         Res<void*, ErrValue> steal_value() &&;
-        Res<const Type*, ErrType> type() const;
+        Res<TypePtr, ErrType> type() const;
         Res<size_t, ErrSize> size() const;
 
         template <typename TYPE>
@@ -67,7 +67,7 @@ namespace rtti {
 
     protected:
         void* m_value = nullptr;
-        const Type* m_type = nullptr;
+        TypePtr m_type = nullptr;
         size_t m_size = 0;
 
     }; // class ObjectRef
@@ -92,7 +92,7 @@ namespace rtti {
 
         template <typename TYPE>
         void change_pointed_object(TYPE* obj);
-        void change_pointed_object(void* obj, const Type* type);
+        void change_pointed_object(void* obj, TypePtr type);
 
         void delete_object() &&;
         BufferRef call_destructor() &&;

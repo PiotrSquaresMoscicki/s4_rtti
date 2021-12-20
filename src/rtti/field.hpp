@@ -10,7 +10,7 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT Field : public Member {
     public:
-        Field(std::string name, const Type* type, const Class* declaring_class
+        Field(std::string name, TypePtr type, ClassPtr declaring_class
             , Attributes attributes) 
             : Member(std::move(name), type, declaring_class, std::move(attributes)) {}
             

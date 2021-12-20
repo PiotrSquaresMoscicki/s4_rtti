@@ -93,6 +93,6 @@ void Buffer::release_buffer() && {
 }
 
 //*************************************************************************************************
-Object Buffer::call_constructor(const Type*) && {
+Object Buffer::call_constructor(TypePtr) && {
     return {};
 }

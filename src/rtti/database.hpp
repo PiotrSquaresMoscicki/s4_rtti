@@ -19,10 +19,10 @@ namespace rtti {
             UNDEFINED
         };
 
-        static Res<const Type*, ErrRegisterType> register_type(const Type* type);
+        static Res<TypePtr, ErrRegisterType> register_type(TypePtr type);
 
     private:
-        static std::map<StringId, const Type*> m_name_to_type;
+        static std::map<StringId, TypePtr> m_name_to_type;
     }; // class Database
 
 } // namespace rtti

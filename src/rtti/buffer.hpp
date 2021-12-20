@@ -73,7 +73,7 @@ namespace rtti {
         void change_buffer_size(size_t new_size);
 
         void release_buffer() &&;
-        Object call_constructor(const Type* type) &&;
+        Object call_constructor(TypePtr type) &&;
 
     }; // class Buffer
 

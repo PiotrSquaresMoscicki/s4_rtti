@@ -23,10 +23,15 @@ namespace rtti {
         const std::vector<const Member*>& members() const { return m_members; }
         const std::vector<const Method*>& methods() const { return m_methods; }
 
-        const Fundamental* as_fundamental() const override { return nullptr; }
-        const Enum* as_enum() const override { return nullptr; }
-        const Class* as_class() const override { return this; }
-        const TemplateInstance* as_template_instance() const override { return nullptr; }
+        bool is_fundamental() const override { return false; }
+        bool is_enum() const override { return false; }
+        bool is_class() const override { return true; }
+        bool is_template_instance() const override { return false; }
+
+        FundamentalPtr as_fundamental() const override { return nullptr; }
+        EnumPtr as_enum() const override { return nullptr; }
+        ClassPtr as_class() const override { return this; }
+        TemplateInstancePtr as_template_instance() const override { return nullptr; }
 
     private:
         std::vector<const Member*> m_members;

@@ -16,10 +16,15 @@ namespace rtti {
     public:
         Fundamental(std::string name, size_t size);
 
-        const Fundamental* as_fundamental() const override { return this; }
-        const Enum* as_enum() const override { return nullptr; }
-        const Class* as_class() const override { return nullptr; }
-        const TemplateInstance* as_template_instance() const override { return nullptr; }
+        bool is_fundamental() const override { return true; }
+        bool is_enum() const override { return false; }
+        bool is_class() const override { return false; }
+        bool is_template_instance() const override { return false; }
+
+        FundamentalPtr as_fundamental() const override { return this; }
+        EnumPtr as_enum() const override { return nullptr; }
+        ClassPtr as_class() const override { return nullptr; }
+        TemplateInstancePtr as_template_instance() const override { return nullptr; }
 
     }; // class Fundamental
 

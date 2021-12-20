@@ -6,10 +6,10 @@ using namespace rtti;
 using namespace core::str;
 using namespace core::util;
 
-std::map<StringId, const Type*> Database::m_name_to_type;
+std::map<StringId, TypePtr> Database::m_name_to_type;
 
 //*************************************************************************************************
-Res<const Type*, Database::ErrRegisterType> Database::register_type(const Type* type) {
+Res<TypePtr, Database::ErrRegisterType> Database::register_type(TypePtr type) {
     const StringId new_type_name(type->name());
     const auto registered_type_it = m_name_to_type.find(new_type_name);
 

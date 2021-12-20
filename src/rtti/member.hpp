@@ -12,14 +12,14 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT Member {
     public:
-        Member(std::string name, const Type* type, const Class* declaring_class
+        Member(std::string name, TypePtr type, ClassPtr declaring_class
             , Attributes attributes)
             : m_name(std::move(name)), m_type(type), m_declaring_class(declaring_class)
             , m_attributes(std::move(attributes)) {}
 
         const std::string& name() const { return m_name; }
-        const Type* type() const { return m_type; }
-        const Class* declaring_class() const { return m_declaring_class; }
+        TypePtr type() const { return m_type; }
+        ClassPtr declaring_class() const { return m_declaring_class; }
         const Attributes& attributes() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
@@ -32,8 +32,8 @@ namespace rtti {
 
     private:
         const std::string m_name;
-        const Type* const m_type = nullptr;
-        const Class* const m_declaring_class = nullptr;
+        TypePtr const m_type = nullptr;
+        ClassPtr const m_declaring_class = nullptr;
         const Attributes m_attributes = {};
 
     }; // class member

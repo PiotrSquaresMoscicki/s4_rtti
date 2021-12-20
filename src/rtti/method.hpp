@@ -26,8 +26,8 @@ namespace rtti {
             CONST_SELF
         };
 
-        Method(std::string name, const Type* return_type, std::vector<const MethodParam*> params
-            , const Class* declaring_class, Attributes attributes)
+        Method(std::string name, TypePtr return_type, std::vector<const MethodParam*> params
+            , ClassPtr declaring_class, Attributes attributes)
             : m_name(std::move(name)), m_return_type(return_type), m_params(std::move(params))
             , m_declaring_class(declaring_class), m_attributes(std::move(attributes)) 
         {}
@@ -35,9 +35,9 @@ namespace rtti {
         virtual ~Method() = default;
 
         const std::string& name() const { return m_name; }
-        const Type* return_type() const { return m_return_type; }
+        TypePtr return_type() const { return m_return_type; }
         const std::vector<const MethodParam*> params() const { return m_params; }
-        const Class* declaring_class() const { return m_declaring_class; }
+        ClassPtr declaring_class() const { return m_declaring_class; }
         const Attributes& attributes() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
@@ -48,9 +48,9 @@ namespace rtti {
 
     private:
         const std::string m_name;
-        const Type* const m_return_type = nullptr;
+        TypePtr const m_return_type = nullptr;
         std::vector<const MethodParam*> m_params;
-        const Class* const m_declaring_class = nullptr;
+        ClassPtr const m_declaring_class = nullptr;
         const Attributes m_attributes = {};
 
     }; // class Method
@@ -60,14 +60,14 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT MethodParam {
     public:
-        MethodParam(std::string name, const Type* type) : m_name(std::move(name)), m_type(type) {}
+        MethodParam(std::string name, TypePtr type) : m_name(std::move(name)), m_type(type) {}
 
         const std::string& name() const { return m_name; }
-        const Type* type() const { return m_type; }
+        TypePtr type() const { return m_type; }
 
     private:
         std::string m_name;
-        const Type* m_type;
+        TypePtr m_type;
 
     }; // class MethodParam
 

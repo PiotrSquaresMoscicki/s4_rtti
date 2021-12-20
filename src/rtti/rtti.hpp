@@ -4,6 +4,7 @@
 
 #include "ctti/ctti.hpp"
 
+#include "rtti.hpp"
 #include "database.hpp"
 #include "attributes.hpp"
 #include "fundamental.hpp"
@@ -15,14 +16,20 @@
 
 namespace rtti {
 
+    inline FundamentalPtr::operator TypePtr() const { return TypePtr(m_type); }
+    inline EnumPtr::operator TypePtr() const { return TypePtr(m_type); }
+    inline ClassPtr::operator TypePtr() const { return TypePtr(m_type); }
+    inline TemplateInstancePtr::operator TypePtr() const { return TypePtr(m_type); }
+    inline TemplateInstancePtr::operator ClassPtr() const { return ClassPtr(m_type); }
+
     template <typename TYPE>
-    inline const Type* static_type() { return TYPE::static_class(); }
+    inline TypePtr static_type() { return TYPE::static_class(); }
 
     template <typename CLASS>
-    inline const Class* static_class() { return CLASS::static_class(); }
+    inline ClassPtr static_class() { return CLASS::static_class(); }
     
     template <typename CLASS>
-    inline const Class* dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
+    inline ClassPtr dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
 
 }
 
@@ -30,8 +37,8 @@ namespace rtti {
 //*************************************************************************************************
 //*************************************************************************************************
 #define REGISTER_FUNDAMENTAL(ARG_TYPE)\
-    template <> inline const ::rtti::Type* ::rtti::static_type<ARG_TYPE>() {\
-        static const ::rtti::Type* result = nullptr;\
+    template <> inline ::rtti::TypePtr rtti::static_type<ARG_TYPE>() {\
+        static ::rtti::TypePtr result = nullptr;\
         static ::rtti::FundamentalInstance<ARG_TYPE> instance(#ARG_TYPE);\
         if (result == nullptr)\
             result = ::rtti::Database::register_type(&instance).ok();\
@@ -43,7 +50,7 @@ namespace rtti {
 //*************************************************************************************************
 #define REGISTER_ENUM(ARG_ENUM)\
     template <>\
-    inline const ::rtti::Type* ::rtti::static_type<ARG_ENUM>() {\
+    inline ::rtti::TypePtr rtti::static_type<ARG_ENUM>() {\
         using EnumType = ::ARG_ENUM;\
         static ::rtti::EnumInstance<EnumType> instance = ::rtti::EnumInstance<EnumType>(#ARG_ENUM, \
             std::vector<::rtti::EnumValue> {
@@ -56,10 +63,9 @@ namespace rtti {
 #define END_ENUM\
              ::rtti::EnumValue() /* dummy enum value so we can use , in ENUM_VALUE macro */\
         });\
-        static const ::rtti::Enum* result = nullptr;\
+        static ::rtti::TypePtr result = nullptr;\
         if (result == nullptr) {\
-            result = static_cast<const ::rtti::Enum*>(\
-                ::rtti::Database::register_type(&instance).ok());\
+            result = ::rtti::Database::register_type(&instance).ok();\
         }\
         return result; \
     }\
@@ -70,15 +76,14 @@ namespace rtti {
 #define CLASS_INTERNAL(ARG_CLASS, ARG_DECLARING_CLASS, ...)\
         using This = ::ARG_CLASS;\
         using DeclaringClass = ::ARG_DECLARING_CLASS;\
-        virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
-        static const ::rtti::Class* static_class() {\
-            static const ::rtti::Class* result = nullptr;\
+        virtual ::rtti::ClassPtr dynamic_class() const { return static_class(); }\
+        static ::rtti::ClassPtr static_class() {\
+            static ::rtti::ClassPtr result = nullptr;\
             static ::rtti::ClassInstance<This> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
             if (result == nullptr) {
 
 #define END_CLASS_INTERNAL\
-                result = static_cast<const ::rtti::Class*>(\
-                    ::rtti::Database::register_type(&instance).ok());\
+                result = ::rtti::Database::register_type(&instance).ok()->as_class();\
             }\
             return result;\
         }
@@ -97,11 +102,11 @@ namespace rtti {
     }\
     \
     template<>\
-    const Type* ::rtti::static_type<::NAMESPACE::ARG_CLASS>() {\
+    ::rtti::TypePtr rtti::static_type<::NAMESPACE::ARG_CLASS>() {\
         return ::rtti::static_type<::NAMESPACE::ARG_CLASS##TypeImpl_internal>();\
     }\
     template<>\
-    const Class* ::rtti::static_class<::NAMESPACE::ARG_CLASS>() {\
+    ::rtti::ClassPtr rtti::static_class<::NAMESPACE::ARG_CLASS>() {\
         return ::rtti::static_class<::NAMESPACE::ARG_CLASS##TypeImpl_internal>();\
     }\
     \
@@ -122,18 +127,17 @@ namespace rtti {
         using This = ARG_TEMPLATE ARG_PARAMS;\
         using DeclaringClass = ARG_DECLARING_TEMPLATE ARG_PARAMS;\
         using ParamsTuple = ::std::tuple ARG_PARAMS;\
-        virtual const ::rtti::Class* dynamic_class() const { return static_class(); }\
-        static const ::rtti::Class* static_class() {\
+        virtual ::rtti::ClassPtr dynamic_class() const { return static_class(); }\
+        static ::rtti::ClassPtr static_class() {\
             static bool initialized = false;\
             std::vector<std::string> out_params_names;\
-            static const ::rtti::Class* result = nullptr;\
+            static ::rtti::ClassPtr result = nullptr;\
             static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(\
                 STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);\
             if (result == nullptr) {
 
 #define END_TEMPLATE_INTERNAL\
-                result = static_cast<const ::rtti::Class*>(\
-                    ::rtti::Database::register_type(&instance).ok());\
+                result = ::rtti::Database::register_type(&instance).ok()->as_class();\
             }\
             return result;\
         }
@@ -184,7 +188,7 @@ namespace rtti {
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-template <> inline const ::rtti::Type* ::rtti::static_type<void>() {
+template <> inline ::rtti::TypePtr rtti::static_type<void>() {
     return nullptr;
 }
 

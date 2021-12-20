@@ -20,10 +20,15 @@ namespace rtti {
 
         const std::vector<const EnumValue*>& values() const { return m_values_ptrs; }
 
-        const Fundamental* as_fundamental() const override { return nullptr; }
-        const Enum* as_enum() const override { return this; }
-        const Class* as_class() const override { return nullptr; }
-        const TemplateInstance* as_template_instance() const override { return nullptr; }
+        bool is_fundamental() const override { return false; }
+        bool is_enum() const override { return true; }
+        bool is_class() const override { return false; }
+        bool is_template_instance() const override { return false; }
+
+        FundamentalPtr as_fundamental() const override { return nullptr; }
+        EnumPtr as_enum() const override { return this; }
+        ClassPtr as_class() const override { return nullptr; }
+        TemplateInstancePtr as_template_instance() const override { return nullptr; }
 
     private:
         std::vector<EnumValue> m_values;

@@ -88,10 +88,15 @@ namespace rtti {
         const Attributes& attributes() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
-        virtual const Fundamental* as_fundamental() const = 0;
-        virtual const Enum* as_enum() const = 0;
-        virtual const Class* as_class() const = 0;
-        virtual const TemplateInstance* as_template_instance() const = 0;
+        virtual bool is_fundamental() const = 0;
+        virtual bool is_enum() const = 0;
+        virtual bool is_class() const = 0;
+        virtual bool is_template_instance() const = 0;
+
+        virtual FundamentalPtr as_fundamental() const = 0;
+        virtual EnumPtr as_enum() const = 0;
+        virtual ClassPtr as_class() const = 0;
+        virtual TemplateInstancePtr as_template_instance() const = 0;
 
         virtual bool is_default_constructible() const = 0;
         virtual bool is_copy_constructible() const = 0;
@@ -132,26 +137,5 @@ namespace rtti {
         Attributes m_attributes;
 
     }; // class Type
-    
-    //*********************************************************************************************
-    //*********************************************************************************************
-    //*********************************************************************************************
-    class TypePtr {
-    public:
-        TypePtr() = default;
-        template <typename O> TypePtr(O type) : m_type(type) {}
-        TypePtr(const TypePtr& other) : m_type(other.m_type) {}
-        TypePtr& operator=(const TypePtr& other) { m_type = other.m_type; return *this;}
-        
-        bool operator==(const TypePtr& other) const { return m_type == other.m_type; }
-        const Type* operator->() const { return m_type; }
-        operator bool() const { return is_valid(); }
-
-        bool is_valid() const { return m_type; }
-
-    private:
-        const Type* m_type = nullptr;
-
-    }; // class TypePtr
 
 } // namespace rtti

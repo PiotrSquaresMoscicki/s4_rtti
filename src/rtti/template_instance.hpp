@@ -14,7 +14,8 @@ namespace rtti {
         TemplateInstance(std::string name, size_t size, Attributes attributes
             , std::vector<TemplateParam> params);
 
-        const TemplateInstance* as_template_instance() const override { return this; }
+        bool is_template_instance() const override { return true; }
+        TemplateInstancePtr as_template_instance() const override { return this; }
     
         const std::vector<const TemplateParam*>& params() const { return m_params_ptrs; }
 
@@ -31,17 +32,17 @@ namespace rtti {
     public:
         friend class TemplateInstance;
 
-        TemplateParam(std::string name, const Type* type) 
+        TemplateParam(std::string name, TypePtr type) 
             : m_name(std::move(name)), m_type(type) {}
 
         const std::string& name() const { return m_name; }
-        const Type* type() const { return m_type; }
+        TypePtr type() const { return m_type; }
         const TemplateInstance* declaring_template_instance() const 
             { return m_declaring_template_instance; }
 
     private:
         std::string m_name;
-        const Type* m_type = nullptr;
+        TypePtr m_type = nullptr;
         const TemplateInstance* m_declaring_template_instance = nullptr;
     };
 

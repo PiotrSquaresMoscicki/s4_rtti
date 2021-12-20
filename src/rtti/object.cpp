@@ -5,7 +5,7 @@ using namespace rtti;
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-ObjectRef::ObjectRef(void* obj, const Type* type, size_t size)
+ObjectRef::ObjectRef(void* obj, TypePtr type, size_t size)
     : m_value(obj)
     , m_type(type)
     , m_size(size)
@@ -63,7 +63,7 @@ Res<void*, ObjectRef::ErrValue> ObjectRef::steal_value() && {
 }
 
 //*************************************************************************************************
-Res<const Type*, ObjectRef::ErrType> ObjectRef::type() const {
+Res<TypePtr, ObjectRef::ErrType> ObjectRef::type() const {
     if (is_valid())
         return Ok(m_type);
     else
