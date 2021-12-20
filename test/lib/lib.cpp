@@ -15,7 +15,7 @@ using namespace test;
 class TestInterfaceImpl : public ITestInterface {
 public:
     rtti::EnumPtr get_test_enum_type() const override {
-        return rtti::static_type<DynamicallyLoadedLibEnum>()->as_enum(); 
+        return rtti::static_type<DynamicallyLoadedLibEnum>()->as_enum().ok(); 
     }
 
     rtti::ClassPtr get_test_class_type() const override { 

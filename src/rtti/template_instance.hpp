@@ -15,7 +15,9 @@ namespace rtti {
             , std::vector<TemplateParam> params);
 
         bool is_template_instance() const override { return true; }
-        TemplateInstancePtr as_template_instance() const override { return this; }
+        Res<TemplateInstancePtr, ErrAsTemplateInstance> as_template_instance() const override { 
+            return Ok(TemplateInstancePtr(this)); 
+        }
     
         const std::vector<const TemplateParam*>& params() const { return m_params_ptrs; }
 

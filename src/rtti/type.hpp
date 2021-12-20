@@ -17,6 +17,22 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT Type {
     public:
+        enum class ErrAsFundamental {
+            NOT_A_FUNDAMENTAL
+        };
+
+        enum class ErrAsEnum {
+            NOT_AN_ENUM
+        };
+
+        enum class ErrAsClass {
+            NOT_A_CLASS
+        };
+
+        enum class ErrAsTemplateInstance {
+            NOT_A_TEMPLATE_INSTANCE
+        };
+
         enum class ErrNewObject {
             NOT_DEFAULT_CONSTRUCTIBLE
         };
@@ -93,10 +109,10 @@ namespace rtti {
         virtual bool is_class() const = 0;
         virtual bool is_template_instance() const = 0;
 
-        virtual FundamentalPtr as_fundamental() const = 0;
-        virtual EnumPtr as_enum() const = 0;
-        virtual ClassPtr as_class() const = 0;
-        virtual TemplateInstancePtr as_template_instance() const = 0;
+        virtual Res<FundamentalPtr, ErrAsFundamental> as_fundamental() const = 0;
+        virtual Res<EnumPtr, ErrAsEnum> as_enum() const = 0;
+        virtual Res<ClassPtr, ErrAsClass> as_class() const = 0;
+        virtual Res<TemplateInstancePtr, ErrAsTemplateInstance> as_template_instance() const = 0;
 
         virtual bool is_default_constructible() const = 0;
         virtual bool is_copy_constructible() const = 0;

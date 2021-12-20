@@ -28,10 +28,18 @@ namespace rtti {
         bool is_class() const override { return true; }
         bool is_template_instance() const override { return false; }
 
-        FundamentalPtr as_fundamental() const override { return nullptr; }
-        EnumPtr as_enum() const override { return nullptr; }
-        ClassPtr as_class() const override { return this; }
-        TemplateInstancePtr as_template_instance() const override { return nullptr; }
+        Res<FundamentalPtr, ErrAsFundamental> as_fundamental() const override { 
+            return Err(ErrAsFundamental::NOT_A_FUNDAMENTAL); 
+        }
+        Res<EnumPtr, ErrAsEnum> as_enum() const override { 
+            return Err(ErrAsEnum::NOT_AN_ENUM); 
+        }
+        Res<ClassPtr, ErrAsClass> as_class() const override { 
+            return Ok(ClassPtr(this)); 
+        }
+        Res<TemplateInstancePtr, ErrAsTemplateInstance> as_template_instance() const override { 
+            return Err(ErrAsTemplateInstance::NOT_A_TEMPLATE_INSTANCE); 
+        }
 
     private:
         std::vector<const Member*> m_members;

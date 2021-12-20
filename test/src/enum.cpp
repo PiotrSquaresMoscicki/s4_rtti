@@ -60,7 +60,8 @@ TEST_CASE( "rtti::Enum::== from differend dll", "[rtti::Enum]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Enum::values", "[rtti::Enum]" ) {
-    const std::vector<const EnumValue*>& values = static_type<TestEnum2>()->as_enum()->values();
+    const std::vector<const EnumValue*>& values 
+        = static_type<TestEnum2>()->as_enum().ok()->values();
 
     REQUIRE( values.size() == 3 );
     REQUIRE( values[0]->name() == "VAL_4" );
@@ -94,17 +95,17 @@ TEST_CASE( "rtti::Enum::size", "[rtti::Enum]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Enum::as_fundamental", "[rtti::Enum]" ) {
-    REQUIRE( static_type<TestEnum1>()->as_fundamental() == nullptr );
+    REQUIRE( static_type<TestEnum1>()->as_fundamental().is_err() );
 }
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Enum::as_enum", "[rtti::Enum]" ) {
-    REQUIRE( static_type<TestEnum1>()->as_enum() == static_type<TestEnum1>() );
+    REQUIRE( static_type<TestEnum1>()->as_enum().ok() == static_type<TestEnum1>() );
 }
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Enum::as_class", "[Enum]" ) {
-    REQUIRE( static_type<TestEnum1>()->as_class() == nullptr );
+    REQUIRE( static_type<TestEnum1>()->as_class().is_err());
 }
 
 //*************************************************************************************************

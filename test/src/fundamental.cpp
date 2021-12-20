@@ -49,17 +49,17 @@ TEST_CASE( "rtti::Fundamental::size", "[rtti::Fundamental]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::as_fundamental", "[rtti::Fundamental]" ) {
-    REQUIRE( static_type<bool>()->as_fundamental() == static_type<bool>() );
+    REQUIRE( static_type<bool>()->as_fundamental().ok() == static_type<bool>() );
 }
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::as_enum", "[rtti::Fundamental]" ) {
-    REQUIRE( static_type<bool>()->as_enum() == nullptr );
+    REQUIRE( static_type<bool>()->as_enum().is_err() );
 }
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::as_class", "[Fundamental]" ) {
-    REQUIRE( static_type<bool>()->as_class() == nullptr );
+    REQUIRE( static_type<bool>()->as_class().is_err() );
 }
 
 //*************************************************************************************************

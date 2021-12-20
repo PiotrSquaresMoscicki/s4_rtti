@@ -83,7 +83,7 @@ namespace rtti {
             if (result == nullptr) {
 
 #define END_CLASS_INTERNAL\
-                result = ::rtti::Database::register_type(&instance).ok()->as_class();\
+                result = ::rtti::Database::register_type(&instance).ok()->as_class().ok();\
             }\
             return result;\
         }
@@ -137,7 +137,7 @@ namespace rtti {
             if (result == nullptr) {
 
 #define END_TEMPLATE_INTERNAL\
-                result = ::rtti::Database::register_type(&instance).ok()->as_class();\
+                result = ::rtti::Database::register_type(&instance).ok()->as_class().ok();\
             }\
             return result;\
         }
