@@ -351,7 +351,7 @@ namespace rtti {
             return Err(Type::ErrCopy::NOT_COPY_ASSIGNABLE);
         else if (!dst.is_valid())
             return Err(Type::ErrCopy::INVALID_DESTINATION_OBJECT);
-        else if (dst.type().ok() != this)
+        else if (dst.type().ok() != TypePtr(this))
             return Err(Type::ErrCopy::INCORRECT_DESTINATION_OBJECT_TYPE);
         else if (!src.is_valid())
             return Err(Type::ErrCopy::INVALID_SOURCE_OBJECT);
@@ -373,7 +373,7 @@ namespace rtti {
             return Err(Type::ErrMove::NOT_MOVE_ASSIGNABLE);
         else if (!dst.is_valid())
             return Err(Type::ErrMove::INVALID_DESTINATION_OBJECT);
-        else if (dst.type().ok() != this)
+        else if (dst.type().ok() != TypePtr(this))
             return Err(Type::ErrMove::INCORRECT_DESTINATION_OBJECT_TYPE);
         else if (!src.is_valid())
             return Err(Type::ErrMove::INVALID_SOURCE_OBJECT);
