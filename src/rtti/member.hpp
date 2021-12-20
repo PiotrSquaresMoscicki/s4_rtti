@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "attributes.hpp"
+#include "meta.hpp"
 #include "rtti_fwd.hpp"
 
 namespace rtti {
@@ -13,14 +13,14 @@ namespace rtti {
     class S4_RTTI_EXPORT Member {
     public:
         Member(std::string name, TypePtr type, ClassPtr declaring_class
-            , Attributes attributes)
+            , Meta meta)
             : m_name(std::move(name)), m_type(type), m_declaring_class(declaring_class)
-            , m_attributes(std::move(attributes)) {}
+            , m_attributes(std::move(meta)) {}
 
         const std::string& name() const { return m_name; }
         TypePtr type() const { return m_type; }
         ClassPtr declaring_class() const { return m_declaring_class; }
-        const Attributes& attributes() const { return m_attributes; }
+        const Meta& meta() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
         virtual const ObjectRef value(const ObjectRef& object) const = 0;
@@ -34,7 +34,7 @@ namespace rtti {
         const std::string m_name;
         TypePtr const m_type = nullptr;
         ClassPtr const m_declaring_class = nullptr;
-        const Attributes m_attributes = {};
+        const Meta m_attributes = {};
 
     }; // class member
 

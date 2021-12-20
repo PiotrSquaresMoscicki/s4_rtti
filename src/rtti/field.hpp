@@ -11,8 +11,8 @@ namespace rtti {
     class S4_RTTI_EXPORT Field : public Member {
     public:
         Field(std::string name, TypePtr type, ClassPtr declaring_class
-            , Attributes attributes) 
-            : Member(std::move(name), type, declaring_class, std::move(attributes)) {}
+            , Meta meta) 
+            : Member(std::move(name), type, declaring_class, std::move(meta)) {}
             
         const Field* as_field() const { return this; };
         const Property* as_property() const { return nullptr; }
@@ -25,7 +25,7 @@ namespace rtti {
     class FieldInstance : public Field {
     public:
         FieldInstance(std::string name, FIELD CLASS::*const field);
-        FieldInstance(std::string name, FIELD CLASS::*const field, Attributes attributes);
+        FieldInstance(std::string name, FIELD CLASS::*const field, Meta meta);
         
         const ObjectRef value(const ObjectRef& object) const override;
         void copy_assign(ObjectRef& object, const ObjectRef& src) const override;
@@ -47,8 +47,8 @@ namespace rtti {
     //*********************************************************************************************
     template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
     FieldInstance<CLASS, DECLARING_CLASS, FIELD>::FieldInstance(std::string name, FIELD CLASS::*const
-        , Attributes attributes)
-        : Field(std::move(name), static_type<FIELD>(), static_class<CLASS>(), std::move(attributes)) 
+        , Meta meta)
+        : Field(std::move(name), static_type<FIELD>(), static_class<CLASS>(), std::move(meta)) 
     {}
 
     //*********************************************************************************************

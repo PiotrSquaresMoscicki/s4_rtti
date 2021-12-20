@@ -6,7 +6,7 @@
 #include <core/util/res.hpp>
 
 #include "object.hpp"
-#include "attributes.hpp"
+#include "meta.hpp"
 #include "rtti_fwd.hpp"
 
 namespace rtti {
@@ -27,9 +27,9 @@ namespace rtti {
         };
 
         Method(std::string name, TypePtr return_type, std::vector<const MethodParam*> params
-            , ClassPtr declaring_class, Attributes attributes)
+            , ClassPtr declaring_class, Meta meta)
             : m_name(std::move(name)), m_return_type(return_type), m_params(std::move(params))
-            , m_declaring_class(declaring_class), m_attributes(std::move(attributes)) 
+            , m_declaring_class(declaring_class), m_attributes(std::move(meta)) 
         {}
 
         virtual ~Method() = default;
@@ -38,7 +38,7 @@ namespace rtti {
         TypePtr return_type() const { return m_return_type; }
         const std::vector<const MethodParam*> params() const { return m_params; }
         ClassPtr declaring_class() const { return m_declaring_class; }
-        const Attributes& attributes() const { return m_attributes; }
+        const Meta& meta() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
         virtual Res<ObjectRef, ErrCall> call(const ObjectRef& self
@@ -51,7 +51,7 @@ namespace rtti {
         TypePtr const m_return_type = nullptr;
         std::vector<const MethodParam*> m_params;
         ClassPtr const m_declaring_class = nullptr;
-        const Attributes m_attributes = {};
+        const Meta m_attributes = {};
 
     }; // class Method
 
@@ -81,7 +81,7 @@ namespace rtti {
 
         MethodInstance(std::string name, const std::string& params_names, MethodType method);
         MethodInstance(std::string name, const std::string& params_names, MethodType method
-            , Attributes attributes);
+            , Meta meta);
 
         Res<ObjectRef, ErrCall> call(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
@@ -100,9 +100,9 @@ namespace rtti {
     //*********************************************************************************************
     template <typename CLASS, typename RET, typename... PARAMS>
     MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(std::string name
-        , const std::string& params_names, MethodType method, Attributes attributes) 
+        , const std::string& params_names, MethodType method, Meta meta) 
         : Method(generate_name(std::move(name), params_names), static_type<RET>()
-            , generate_params(params_names), static_class<CLASS>(), std::move(attributes))
+            , generate_params(params_names), static_class<CLASS>(), std::move(meta))
         , m_method(method)
     {
     }
@@ -111,7 +111,7 @@ namespace rtti {
     template <typename CLASS, typename RET, typename... PARAMS>
     MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(std::string name
         , const std::string& params_names, MethodType method) 
-        : MethodInstance(std::move(name), params_names, method, Attributes{})
+        : MethodInstance(std::move(name), params_names, method, Meta{})
     {
     }
 

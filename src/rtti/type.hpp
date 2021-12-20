@@ -6,7 +6,7 @@
 #include <core/util/res.hpp>
 
 #include "rtti_fwd.hpp"
-#include "attributes.hpp"
+#include "meta.hpp"
 
 namespace rtti {
 
@@ -97,11 +97,11 @@ namespace rtti {
             INCORRECT_SOURCE_OBJECT_TYPE
         };
 
-        Type(std::string name, size_t size, Attributes attributes);
+        Type(std::string name, size_t size, Meta meta);
 
         const std::string& name() const { return m_name; }
         size_t size() const { return m_size; }
-        const Attributes& attributes() const { return m_attributes; }
+        const Meta& meta() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
         virtual bool is_fundamental() const = 0;
@@ -150,7 +150,7 @@ namespace rtti {
     private:
         std::string m_name;
         size_t m_size = 0;
-        Attributes m_attributes;
+        Meta m_attributes;
 
     }; // class Type
 

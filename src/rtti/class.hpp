@@ -17,8 +17,8 @@ namespace rtti {
         template <typename C, typename D, typename F> friend class FieldInstance;
         template <typename C, typename R, typename... P> friend class MethodInstance;
 
-        Class(std::string name, size_t size, Attributes attributes) 
-            : Type(std::move(name), size, std::move(attributes)) {}
+        Class(std::string name, size_t size, Meta meta) 
+            : Type(std::move(name), size, std::move(meta)) {}
 
         const std::vector<const Member*>& members() const { return m_members; }
         const std::vector<const Method*>& methods() const { return m_methods; }
@@ -54,7 +54,7 @@ namespace rtti {
     class ClassInstance : public Class {
     public:
         ClassInstance(std::string name);
-        ClassInstance(std::string name, Attributes attributes);
+        ClassInstance(std::string name, Meta meta);
 
         bool is_default_constructible() const override;
         bool is_copy_constructible() const override;
@@ -99,8 +99,8 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    ClassInstance<CLASS>::ClassInstance(std::string name, Attributes attributes)
-        : Class(std::move(name), sizeof(CLASS), std::move(attributes)) 
+    ClassInstance<CLASS>::ClassInstance(std::string name, Meta meta)
+        : Class(std::move(name), sizeof(CLASS), std::move(meta)) 
     {}
 
     //*********************************************************************************************

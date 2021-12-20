@@ -5,8 +5,8 @@ using namespace rtti;
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-Type::Type(std::string name, size_t size, Attributes attributes)
+Type::Type(std::string name, size_t size, Meta meta)
     : m_name(std::move(name))
     , m_size(size)
-    , m_attributes(std::move(attributes))
+    , m_attributes(std::move(meta))
 {}

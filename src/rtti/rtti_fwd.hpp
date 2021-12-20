@@ -20,7 +20,7 @@ namespace rtti {
     class Property;
     class Method;
 
-    class Attributes;
+    class Meta;
 
     class FundamentalPtr;
     class EnumPtr;

@@ -11,7 +11,7 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT TemplateInstance : public Class {
     public:
-        TemplateInstance(std::string name, size_t size, Attributes attributes
+        TemplateInstance(std::string name, size_t size, Meta meta
             , std::vector<TemplateParam> params);
 
         bool is_template_instance() const override { return true; }
@@ -57,7 +57,7 @@ namespace rtti {
         TemplateInstanceInstance(const std::string& name
             , std::vector<std::string>& out_params_names);
         TemplateInstanceInstance(const std::string& name
-            , std::vector<std::string>& out_params_names, Attributes attributes);
+            , std::vector<std::string>& out_params_names, Meta meta);
 
         bool is_default_constructible() const override;
         bool is_copy_constructible() const override;
@@ -172,9 +172,9 @@ namespace rtti {
     //*********************************************************************************************
     template <typename CLASS, typename DECLARING_CLASS>
     TemplateInstanceInstance<CLASS, DECLARING_CLASS>::TemplateInstanceInstance(
-        const std::string& name, std::vector<std::string>& out_params_names, Attributes attributes)
+        const std::string& name, std::vector<std::string>& out_params_names, Meta meta)
         : TemplateInstance(generate_name(name, out_params_names), sizeof(CLASS)
-        , std::move(attributes), generate_params<0>(out_params_names)) 
+        , std::move(meta), generate_params<0>(out_params_names)) 
     {}
 
     //*********************************************************************************************
