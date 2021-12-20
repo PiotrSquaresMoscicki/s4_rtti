@@ -7,6 +7,7 @@
 
 #include "object.hpp"
 #include "meta.hpp"
+#include "class.hpp"
 #include "rtti_fwd.hpp"
 
 namespace rtti {
@@ -79,9 +80,10 @@ namespace rtti {
     public:
         using MethodType = RET (CLASS::*)(PARAMS...);
 
-        MethodInstance(std::string name, const std::string& params_names, MethodType method);
-        MethodInstance(std::string name, const std::string& params_names, MethodType method
-            , Meta meta);
+        MethodInstance(Class* instance, std::string name, const std::string& params_names
+            , MethodType method, Meta meta);
+        MethodInstance(Class* instance, std::string name, const std::string& params_names
+            , MethodType method);
 
         Res<ObjectRef, ErrCall> call(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
@@ -99,19 +101,20 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS, typename RET, typename... PARAMS>
-    MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(std::string name
+    MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(Class* instance, std::string name
         , const std::string& params_names, MethodType method, Meta meta) 
         : Method(generate_name(std::move(name), params_names), static_type<RET>()
             , generate_params(params_names), static_class<CLASS>(), std::move(meta))
         , m_method(method)
     {
+        instance->m_methods.push_back(this);
     }
 
     //*********************************************************************************************
     template <typename CLASS, typename RET, typename... PARAMS>
-    MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(std::string name
+    MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(Class* instance, std::string name
         , const std::string& params_names, MethodType method) 
-        : MethodInstance(std::move(name), params_names, method, Meta{})
+        : MethodInstance(instance, std::move(name), params_names, method, Meta{})
     {
     }
 

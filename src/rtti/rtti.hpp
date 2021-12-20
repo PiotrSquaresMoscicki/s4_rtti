@@ -154,7 +154,7 @@ namespace rtti {
 //*************************************************************************************************
 #define METHOD(ARG_NAME, ARG_PARAMS_NAMES, ...)\
     static ::rtti::MethodInstance ARG_NAME##_method_instance(\
-        #ARG_NAME, #ARG_PARAMS_NAMES, &This::ARG_NAME, __VA_OPT__(,) __VA_ARGS__);
+        &instance, #ARG_NAME, #ARG_PARAMS_NAMES, &This::ARG_NAME __VA_OPT__(,) __VA_ARGS__);\
 
 //*************************************************************************************************
 //*************************************************************************************************

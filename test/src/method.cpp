@@ -27,6 +27,7 @@ END_REGISTER_CLASS
 class TestClass2 {
 public:
     CLASS(TestClass2)
+        METHOD(sum, (a b))
     END_CLASS
 
     virtual ~TestClass2() = default;
