@@ -151,7 +151,7 @@ namespace rtti {
             return Err(ErrNewCopy::NOT_COPY_CONSTRUCTIBLE);
         else if (!src.is_valid())
             return Err(ErrNewCopy::NOT_VALID_SOURCE);
-        else if (src.type().ok() != this)
+        else if (src.type().ok() != TypePtr(this))
             return Err(ErrNewCopy::INCORRECT_SOURCE_TYPE);
         else
             return Ok(Object(new CLASS(*src.value_as<CLASS>().ok())));
@@ -166,7 +166,7 @@ namespace rtti {
             return Err(ErrNewMove::NOT_MOVE_CONSTRUCTIBLE);
         else if (!src.is_valid())
             return Err(ErrNewMove::NOT_VALID_SOURCE);
-        else if (src.type().ok() != this)
+        else if (src.type().ok() != TypePtr(this))
             return Err(ErrNewMove::INCORRECT_SOURCE_TYPE);
         else
             return Ok(Object(new CLASS(std::move(*src.value_as<CLASS>().ok()))));
@@ -238,7 +238,7 @@ namespace rtti {
             return Err(Type::ErrCopyConstruct::BUFFER_TOO_SMALL);
         else if (!src.is_valid())
             return Err(Type::ErrCopyConstruct::NOT_VALID_SOURCE);
-        else if (src.type().ok() != this)
+        else if (src.type().ok() != TypePtr(this))
             return Err(Type::ErrCopyConstruct::INCORRECT_SOURCE_TYPE);
         else
             return Ok();
@@ -279,7 +279,7 @@ namespace rtti {
             return Err(Type::ErrMoveConstruct::BUFFER_TOO_SMALL);
         else if (!src.is_valid())
             return Err(Type::ErrMoveConstruct::NOT_VALID_SOURCE);
-        else if (src.type().ok() != this)
+        else if (src.type().ok() != TypePtr(this))
             return Err(Type::ErrMoveConstruct::INCORRECT_SOURCE_TYPE);
         else
             return Ok();
@@ -355,7 +355,7 @@ namespace rtti {
             return Err(Type::ErrCopy::INCORRECT_DESTINATION_OBJECT_TYPE);
         else if (!src.is_valid())
             return Err(Type::ErrCopy::INVALID_SOURCE_OBJECT);
-        else if (src.type().ok() != this)
+        else if (src.type().ok() != TypePtr(this))
             return Err(Type::ErrCopy::INCORRECT_SOURCE_OBJECT_TYPE);
         else {
             *reinterpret_cast<CLASS*>(dst.value().ok()) 
@@ -377,7 +377,7 @@ namespace rtti {
             return Err(Type::ErrMove::INCORRECT_DESTINATION_OBJECT_TYPE);
         else if (!src.is_valid())
             return Err(Type::ErrMove::INVALID_SOURCE_OBJECT);
-        else if (src.type().ok() != this)
+        else if (src.type().ok() != TypePtr(this))
             return Err(Type::ErrMove::INCORRECT_SOURCE_OBJECT_TYPE);
         else {
             *reinterpret_cast<CLASS*>(dst.value().ok()) 
