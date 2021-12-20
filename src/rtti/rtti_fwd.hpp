@@ -38,7 +38,11 @@ namespace rtti {
         TypePtr& operator=(const TypePtr& other) { m_type = other.m_type; return *this; }
         
         bool operator==(const TypePtr& other) const { return m_type == other.m_type; }
+        bool operator!=(const TypePtr& other) const { return m_type != other.m_type; }
         bool operator<(const TypePtr& other) const { return m_type < other.m_type; }
+        bool operator<=(const TypePtr& other) const { return m_type <= other.m_type; }
+        bool operator>(const TypePtr& other) const { return m_type > other.m_type; }
+        bool operator>=(const TypePtr& other) const { return m_type >= other.m_type; }
         const Type* operator->() const { return m_type; }
         operator bool() const { return is_valid(); }
 
@@ -61,7 +65,10 @@ namespace rtti {
         FundamentalPtr& operator=(const FundamentalPtr& other) { m_type = other.m_type; return *this; }
         
         bool operator==(const FundamentalPtr& other) const { return m_type == other.m_type; }
+        bool operator!=(const FundamentalPtr& other) const { return m_type != other.m_type; }
         bool operator<(const FundamentalPtr& other) const { return m_type < other.m_type; }
+        bool operator>(const FundamentalPtr& other) const { return m_type > other.m_type; }
+        bool operator>=(const FundamentalPtr& other) const { return m_type >= other.m_type; }
         const Fundamental* operator->() const { return m_type; }
         operator bool() const { return is_valid(); }
         operator TypePtr() const;
@@ -85,7 +92,10 @@ namespace rtti {
         EnumPtr& operator=(const EnumPtr& other) { m_type = other.m_type; return *this;}
         
         bool operator==(const EnumPtr& other) const { return m_type == other.m_type; }
+        bool operator!=(const EnumPtr& other) const { return m_type != other.m_type; }
         bool operator<(const EnumPtr& other) const { return m_type < other.m_type; }
+        bool operator>(const EnumPtr& other) const { return m_type > other.m_type; }
+        bool operator>=(const EnumPtr& other) const { return m_type >= other.m_type; }
         const Enum* operator->() const { return m_type; }
         operator bool() const { return is_valid(); }
         operator TypePtr() const;
@@ -109,7 +119,10 @@ namespace rtti {
         ClassPtr& operator=(const ClassPtr& other) { m_type = other.m_type; return *this; }
         
         bool operator==(const ClassPtr& other) const { return m_type == other.m_type; }
+        bool operator!=(const ClassPtr& other) const { return m_type != other.m_type; }
         bool operator<(const ClassPtr& other) const { return m_type < other.m_type; }
+        bool operator>(const ClassPtr& other) const { return m_type > other.m_type; }
+        bool operator>=(const ClassPtr& other) const { return m_type >= other.m_type; }
         const Class* operator->() const { return m_type; }
         operator bool() const { return is_valid(); }
         operator TypePtr() const;
@@ -133,7 +146,10 @@ namespace rtti {
         TemplateInstancePtr& operator=(const TemplateInstancePtr& other) { m_type = other.m_type; return *this;}
         
         bool operator==(const TemplateInstancePtr& other) const { return m_type == other.m_type; }
+        bool operator!=(const TemplateInstancePtr& other) const { return m_type != other.m_type; }
         bool operator<(const TemplateInstancePtr& other) const { return m_type < other.m_type; }
+        bool operator>(const TemplateInstancePtr& other) const { return m_type > other.m_type; }
+        bool operator>=(const TemplateInstancePtr& other) const { return m_type >= other.m_type; }
         const TemplateInstance* operator->() const { return m_type; }
         operator bool() const { return is_valid(); }
         operator TypePtr() const;
