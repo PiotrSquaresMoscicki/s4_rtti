@@ -58,12 +58,12 @@ namespace rtti {
 
         const std::string& name() const { return m_name; }
         size_t value() const { return m_value; }
-        const Enum* declaring_enum() const { return m_declaring_enum; }
+        EnumPtr declaring_enum() const { return m_declaring_enum; }
 
     private:
         std::string m_name;
         size_t m_value = 0;
-        const Enum* m_declaring_enum = 0;
+        EnumPtr m_declaring_enum = 0;
 
     }; // class EnumValue
 
