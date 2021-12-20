@@ -179,7 +179,7 @@ namespace rtti {
     {
         if (!obj.is_valid())
             return Err(ErrDeleteObject::NOT_VALID_SOURCE);
-        else if (obj.type().ok() != this)
+        else if (obj.type().ok() != TypePtr(this))
             return Err(ErrDeleteObject::INCORRECT_SOURCE_TYPE);
         else
             return Ok();
@@ -316,7 +316,7 @@ namespace rtti {
     {
         if (!obj.is_valid())
             return Err(ErrDestruct::NOT_VALID_OBJECT);
-        else if (obj.type().ok() != this)
+        else if (obj.type().ok() != TypePtr(this))
             return Err(ErrDestruct::INCORRECT_OBJECT_TYPE);
         else
             return Ok();
