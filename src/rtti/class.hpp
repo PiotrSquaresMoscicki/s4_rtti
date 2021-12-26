@@ -31,7 +31,7 @@ namespace rtti {
 
         const std::vector<const Member*>& members() const { return m_members; }
         const std::vector<const Method*>& methods() const { return m_methods; }
-        Res<const Method*, ErrMethod> method(StringId name);
+        Res<const Method*, ErrMethod> method(StringId name) const;
 
         bool is_fundamental() const override { return false; }
         bool is_enum() const override { return false; }
