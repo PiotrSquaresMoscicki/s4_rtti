@@ -80,10 +80,10 @@ namespace rtti {
         static ::rtti::ClassPtr static_class() {\
             static ::rtti::ClassPtr result = nullptr;\
             static ::rtti::ClassInstance<This> instance(#ARG_CLASS __VA_OPT__(,) __VA_ARGS__);\
-            if (result == nullptr) {
+            if (result == nullptr) {\
+                result = ::rtti::Database::register_type(&instance).ok()->as_class().ok();
 
 #define END_CLASS_INTERNAL\
-                result = ::rtti::Database::register_type(&instance).ok()->as_class().ok();\
             }\
             return result;\
         }
@@ -134,10 +134,10 @@ namespace rtti {
             static ::rtti::ClassPtr result = nullptr;\
             static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(\
                 STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);\
-            if (result == nullptr) {
+            if (result == nullptr) {\
+                result = ::rtti::Database::register_type(&instance).ok()->as_class().ok();
 
 #define END_TEMPLATE_INTERNAL\
-                result = ::rtti::Database::register_type(&instance).ok()->as_class().ok();\
             }\
             return result;\
         }

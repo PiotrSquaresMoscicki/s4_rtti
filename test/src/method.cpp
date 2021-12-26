@@ -8,36 +8,33 @@
 using namespace rtti;
 using namespace core::lib;
 
-namespace test::method {
-    
+namespace rtti::test::method {
+
     class TestClass1 {
     public:
         short sub(short first, short second) { return first - second; }
     };
 
+    class TestClass2 {
+    public:
+        CLASS(rtti::test::method::TestClass2)
+            METHOD(first_method, ())
+            METHOD(sum, (a b))
+        END_CLASS
+
+        virtual ~TestClass2() = default;
+        void first_method() {}
+
+        int sum(int a, int b) { return a + b; }
+    };
 }
 
-REGISTER_CLASS(test::method, TestClass1)
-    // REGISTER_FIELD(m_bool)
-    // REGISTER_FIELD(m_int)
-    // REGISTER_FIELD(m_long)
-    // REGISTER_METHOD(sub, (first second))
+REGISTER_CLASS(rtti::test::method, TestClass1)
+    METHOD(sub, (first, second))
 END_REGISTER_CLASS
 
-class TestClass2 {
-public:
-    CLASS(TestClass2)
-        METHOD(sum, (a b))
-    END_CLASS
-
-    virtual ~TestClass2() = default;
-    void first_method() {}
-
-    int sum(int a, int b) { return a + b; }
-};
-
-using namespace test::method;
-using namespace test;
+using namespace rtti::test::method;
+//using namespace test;
 
 //*************************************************************************************************
 // TEST_CASE( "rtti::Class::== from differend dll", "[rtti::Class]" ) {
@@ -60,16 +57,15 @@ using namespace test;
 // }
 
 //*************************************************************************************************
-// TEST_CASE( "rtti::Class::members", "[rtti::Class]" ) {
-//     REQUIRE( static_class<TestClass1>()->members().size() == 3 );
-//     REQUIRE( static_class<TestClass2>()->members().size() == 4 );
-// }
+TEST_CASE( "rtti::Method::==", "[rtti::Method]" ) {
+    //REQUIRE( static_class<TestClass2>()->method );
+}
 
-// *************************************************************************************************
-// TEST_CASE( "rtti::Class::methods", "[rtti::Class]" ) {
-//     REQUIRE( static_class<TestClass1>()->methods().size() == 1 );
-//     REQUIRE( static_class<TestClass2>()->methods().size() == 2 );
-// }
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::methods", "[rtti::Class]" ) {
+    REQUIRE( static_class<TestClass1>()->methods().size() == 1 );
+    REQUIRE( static_class<TestClass2>()->methods().size() == 2 );
+}
 
 //*************************************************************************************************
 // TEST_CASE( "rtti::Class::name", "[rtti::Fundamental]" ) {

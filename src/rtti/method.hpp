@@ -27,6 +27,7 @@ namespace rtti {
             CONST_SELF
         };
 
+        //Method() = default;
         Method(std::string name, TypePtr return_type, std::vector<const MethodParam*> params
             , ClassPtr declaring_class, Meta meta)
             : m_name(std::move(name)), m_return_type(return_type), m_params(std::move(params))
@@ -81,9 +82,7 @@ namespace rtti {
         using MethodType = RET (CLASS::*)(PARAMS...);
 
         MethodInstance(Class* instance, std::string name, const std::string& params_names
-            , MethodType method, Meta meta);
-        MethodInstance(Class* instance, std::string name, const std::string& params_names
-            , MethodType method);
+            , MethodType method, Meta meta = {});
 
         Res<ObjectRef, ErrCall> call(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
@@ -108,14 +107,6 @@ namespace rtti {
         , m_method(method)
     {
         instance->m_methods.push_back(this);
-    }
-
-    //*********************************************************************************************
-    template <typename CLASS, typename RET, typename... PARAMS>
-    MethodInstance<CLASS, RET, PARAMS...>::MethodInstance(Class* instance, std::string name
-        , const std::string& params_names, MethodType method) 
-        : MethodInstance(instance, std::move(name), params_names, method, Meta{})
-    {
     }
 
     //*********************************************************************************************

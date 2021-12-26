@@ -2,12 +2,17 @@
 
 #include <cassert>
 #include <vector>
+#include <map>
+
+#include <core/str/string_id.hpp>
 
 #include "type.hpp"
 #include "buffer.hpp"
 #include "object.hpp"
 
 namespace rtti {
+
+    using namespace core::str;
 
     //*********************************************************************************************
     //*********************************************************************************************
@@ -17,11 +22,16 @@ namespace rtti {
         template <typename C, typename D, typename F> friend class FieldInstance;
         template <typename C, typename R, typename... P> friend class MethodInstance;
 
+        enum class ErrMethod {
+            METHOD_NOT_FOUND
+        };
+
         Class(std::string name, size_t size, Meta meta) 
             : Type(std::move(name), size, std::move(meta)) {}
 
         const std::vector<const Member*>& members() const { return m_members; }
         const std::vector<const Method*>& methods() const { return m_methods; }
+        Res<const Method*, ErrMethod> method(StringId name);
 
         bool is_fundamental() const override { return false; }
         bool is_enum() const override { return false; }
@@ -44,6 +54,7 @@ namespace rtti {
     private:
         std::vector<const Member*> m_members;
         std::vector<const Method*> m_methods;
+        std::map<StringId, const Method*> m_methods_by_name;
 
     }; // class Class
 
