@@ -2,21 +2,24 @@
 
 #include <vector>
 
-#include "rtti_fwd.hpp"
+#include "rtti.hpp"
 
 namespace script {
 
     using namespace rtti;
     using namespace core::str;
 
+    class Program;
+    class ProgramRef;
+
     class StackRef {
     public:
-        ObjectRef push_variable(TypePtr type);
-
+        void push(TypePtr type);
+        void pop();
+        ObjectRef get(size_t idx);
 
     private:
         std::vector<ObjectRef> m_variables;
-        size_t m_last_script_step;
 
     }; // class StackRef
 
@@ -40,22 +43,31 @@ namespace script {
         static ScriptStep copy_assign(size_t dst, size_t src);
         static ScriptStep copy_assign(size_t dst, const ObjectRef& src);
 
-        void step(StackRef& stack);
+        void step(StackRef& stack) const {}
 
     private:
         const Operation m_operation = Operation::INVALID;
-        const TypePtr 
+        const TypePtr m_type;
+        const Function* m_function = nullptr;
+        const size_t m_stack_dst = 0;
+        const size_t m_stack_src = 0;
+        const ObjectRef m_heap_dst;
+        const ObjectRef m_heap_src;
 
     };
 
     class Script {
     public:
-        Stack enter() const;
-        StackRef enter(BufferRef&& buff) const;
-        void leave(Stack&& stack) const;
-        BufferRef leave(StackRef&& stack) const;
+        Program run() const;
+        ProgramRef run(BufferRef&& buff) const;
 
-        bool step(StackRef& stack) const;
+        bool step(StackRef& stack, size_t step) const {
+            if (step >= m_steps.size())
+                return false;
+
+            m_steps[step].step(stack);
+            return true;
+        }
 
     private:
         std::vector<ScriptStep> m_steps;
@@ -64,14 +76,23 @@ namespace script {
 
     class ProgramRef {
     public:
+        ProgramRef(const Script* script, StackRef&& stack) 
+            : m_script(script), m_stack(stack) {}
+
+        void execute() {
+            while(step());
+        }
+
         bool step() {
-            m_script->step(m_stack);
+            return m_script->step(m_stack, m_last_script_step++);
         }
 
     private:
         const Script* m_script = nullptr;
         StackRef m_stack;
-    }
+        size_t m_last_script_step = 0;
+
+    };
 
 /*
 
