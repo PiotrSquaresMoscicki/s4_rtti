@@ -18,8 +18,8 @@ namespace rtti::test::method {
     class TestClass2 {
     public:
         CLASS(rtti::test::method::TestClass2)
-            METHOD(first_method, ())
-            METHOD(sum, (a b))
+            //METHOD(first_method, ())
+            //METHOD(sum, (a b))
         END_CLASS
 
         virtual ~TestClass2() = default;
@@ -30,7 +30,7 @@ namespace rtti::test::method {
 }
 
 REGISTER_CLASS(rtti::test::method, TestClass1)
-    METHOD(sub, (first, second))
+    //METHOD(sub, (first, second))
 END_REGISTER_CLASS
 
 using namespace rtti::test::method;
@@ -63,8 +63,8 @@ TEST_CASE( "rtti::Method::==", "[rtti::Method]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Class::methods", "[rtti::Class]" ) {
-    REQUIRE( static_class<TestClass1>()->methods().size() == 1 );
-    REQUIRE( static_class<TestClass2>()->methods().size() == 2 );
+    //REQUIRE( static_class<TestClass1>()->methods().size() == 1 );
+    //REQUIRE( static_class<TestClass2>()->methods().size() == 2 );
 }
 
 //*************************************************************************************************

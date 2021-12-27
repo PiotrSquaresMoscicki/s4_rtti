@@ -19,10 +19,16 @@ namespace rtti {
             UNDEFINED
         };
 
+        enum class ErrRegisterFunction {
+            UNDEFINED
+        };
+
         static Res<TypePtr, ErrRegisterType> register_type(TypePtr type);
+        static Res<const Function*, ErrRegisterFunction> register_function(const Function* function);
 
     private:
-        static std::map<StringId, TypePtr> m_name_to_type;
+        static std::map<StringId, TypePtr>& get_name_to_type();
+        static std::map<StringId, const Function*>& get_name_to_function();
     }; // class Database
 
 } // namespace rtti

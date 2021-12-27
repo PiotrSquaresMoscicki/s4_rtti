@@ -2,25 +2,34 @@
 
 #include "src/s4_rtti_export.h"
 
+#include <core/str/string_id.hpp>
+#include <core/util/res.hpp>
+
 namespace rtti {
+
+    using namespace core::str;
+    using namespace core::util;
+
+    class Meta;
 
     class Type;
     class Enum;
+    class EnumValue;
     class Fundamental;
     class Class;
     class TemplateInstance;
+
+    class Function;
+    class FunctionParam;
+    class Method;
+    class Member;
+    class Field;
+    class Property;
 
     class ObjectRef;
     class Object;
     class BufferRef;
     class Buffer;
-
-    class Member;
-    class Field;
-    class Property;
-    class Method;
-
-    class Meta;
 
     class FundamentalPtr;
     class EnumPtr;
@@ -171,6 +180,12 @@ namespace rtti {
     
     template <typename CLASS>
     inline ClassPtr dynamic_class(CLASS& obj);
+
+    enum class ErrFunction {
+        NOT_FOUND
+    };
+
+    Res<const Function*, ErrFunction> function(StringId name);
 
 } // namespace rtti
 

@@ -154,7 +154,53 @@ namespace rtti {
 //*************************************************************************************************
 #define METHOD(ARG_NAME, ARG_PARAMS_NAMES, ...)\
     static ::rtti::MethodInstance ARG_NAME##_method_instance(\
-        &instance, #ARG_NAME, #ARG_PARAMS_NAMES, &This::ARG_NAME __VA_OPT__(,) __VA_ARGS__);\
+        &instance, #ARG_NAME, #ARG_PARAMS_NAMES, &This::ARG_NAME __VA_OPT__(,) __VA_ARGS__);
+
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+#define REGISTER_FUNCTION(ARG_RET, ARG_NAME, ARG_PARAMS, ...)\
+namespace {\
+    static ::rtti::FunctionStaticInitializer ARG_NAME##_function_instance_initializer(\
+        #ARG_NAME, #ARG_PARAMS, &::ARG_NAME __VA_OPT__(,) __VA_ARGS__);\
+}
+
+/*
+#define REGISTER_OVERLOADED_FUNCTION(ARG_NAME)\
+namespace {\
+    ARG_RET (*ARG_NAME##_function)(ARG_PARAMS) = nullptr;\
+    static ::rtti::FunctionStaticInitializer ARG_NAME##_function_instance_initializer(\
+        #ARG_NAME, #ARG_PARAMS, static_cast<decltype(ARG_NAME##_function)>(&::ARG_NAME)\
+        __VA_OPT__(,) __VA_ARGS__);\
+}
+
+#define FUNCTION_OVERLOAD(ARG_RET, ARG_NAME, ARG_PARAMS, ...)\
+
+*/
+
+namespace rtti {
+
+    template <typename RET, typename... PARAMS>
+    class FunctionStaticInitializer {
+    public:
+        using FunctionType = RET (*)(PARAMS...);
+
+        FunctionStaticInitializer(const std::string& name_no_params, const std::string& params, 
+            FunctionType function, Meta meta = {})
+
+            : m_instance(name_no_params, params, function, std::move(meta))
+        {
+            Database::register_function(&m_instance);
+        }
+
+
+
+    private:
+        FunctionInstance<RET, PARAMS...> m_instance;
+
+    }; // class FunctionStaticInitializer;
+
+} // namespace rtti
 
 //*************************************************************************************************
 //*************************************************************************************************
