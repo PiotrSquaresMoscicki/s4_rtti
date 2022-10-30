@@ -35,9 +35,9 @@ namespace rtti {
 
         ClassPtr declaring_class() const { return m_declaring_class; }
 
-        virtual Res<ObjectRef, ErrCall> call(const ObjectRef& self
+        virtual Res<ObjectRef, ErrCall> call_on(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const = 0;
-        virtual Res<ObjectRef, ErrCall> call(ObjectRef& self
+        virtual Res<ObjectRef, ErrCall> call_on(ObjectRef& self
             , const std::vector<ObjectRef*>& params) const = 0;
 
     private:
@@ -56,9 +56,9 @@ namespace rtti {
         MethodInstance(Class* instance, const std::string& name_no_params
             , const std::string& params_names, MethodType method, Meta meta = {});
 
-        Res<ObjectRef, ErrCall> call(const ObjectRef& self
+        Res<ObjectRef, ErrCall> call_on(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
-        Res<ObjectRef, ErrCall> call(ObjectRef& self
+        Res<ObjectRef, ErrCall> call_on(ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
 
     private:
@@ -82,7 +82,7 @@ namespace rtti {
     //*********************************************************************************************
     template <typename CLASS, typename RET, typename... PARAMS>
     Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, RET, PARAMS...>::
-        call(const ObjectRef&, const std::vector<ObjectRef*>&) const
+        call_on(const ObjectRef&, const std::vector<ObjectRef*>&) const
     {
         return Err(ErrCall::INVALID_PARAM_TYPE);
     }
@@ -90,7 +90,7 @@ namespace rtti {
     //*********************************************************************************************
     template <typename CLASS, typename RET, typename... PARAMS>
     Res<ObjectRef, Method::ErrCall> MethodInstance<CLASS, RET, PARAMS...>
-        ::call(ObjectRef&, const std::vector<ObjectRef*>&) const
+        ::call_on(ObjectRef&, const std::vector<ObjectRef*>&) const
     {
         return Err(ErrCall::INVALID_PARAM_TYPE);
     }
