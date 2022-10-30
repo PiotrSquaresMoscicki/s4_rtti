@@ -54,7 +54,7 @@ namespace script {
         static void call_impl();
         static void mov_impl();
 
-        std::byte m_data = 0;
+        std::byte m_data = std::byte{0};
     };
 
     class Script {
