@@ -30,30 +30,31 @@ namespace script {
     class ScriptStep {
     public:
         enum class Operation {
-            INVALID,
-            PUSH,
-            POP,
-            CALL,
-            COPY_ASSIGN
+            NOP = 0,
+            PUSH = 1,
+            POP = 2,
+            CALL = 3,
+            MOV = 4
         };
 
-        static ScriptStep push(StringId type);
-        static ScriptStep pop();
-        static ScriptStep call(StringId function);
-        static ScriptStep copy_assign(size_t dst, size_t src);
-        static ScriptStep copy_assign(size_t dst, const ObjectRef& src);
+        static std::vector<ScriptStep> nop();
+        static std::vector<ScriptStep> push(size_t size);
+        static std::vector<ScriptStep> pop(size_t size);
+        static std::vector<ScriptStep> mov(size_t dst, size_t src);
+        static std::vector<ScriptStep> deref(size_t dst, size_t ptr);
+        static std::vector<ScriptStep> add(size_t dst, size_t val);
+        static std::vector<ScriptStep> sub(size_t dst, size_t val);
+        static std::vector<ScriptStep> call(StringId function);
 
         void step(StackRef& stack) const {}
 
     private:
-        const Operation m_operation = Operation::INVALID;
-        const TypePtr m_type;
-        const Function* m_function = nullptr;
-        const size_t m_stack_dst = 0;
-        const size_t m_stack_src = 0;
-        const ObjectRef m_heap_dst;
-        const ObjectRef m_heap_src;
+        static void push_impl();
+        static void pop_impl();
+        static void call_impl();
+        static void mov_impl();
 
+        std::byte m_data = 0;
     };
 
     class Script {
@@ -77,7 +78,7 @@ namespace script {
     class ProgramRef {
     public:
         ProgramRef(const Script* script, StackRef&& stack) 
-            : m_script(script), m_stack(stack) {}
+            : m_script(script), m_stack(std::move(stack)) {}
 
         void execute() {
             while(step());

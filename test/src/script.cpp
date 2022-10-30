@@ -11,10 +11,9 @@ using namespace script;
 //*************************************************************************************************
 //*************************************************************************************************
 TEST_CASE( "script::ScriptStep::push", "[script::ScriptStep]" ) {
-    std::vector<ScriptStep> steps = {
-        // int integer;
-        ScriptStep::push(StringId("int"))
-    };
+    std::vector<ScriptStep> steps;
+    // int integer;
+    steps.push_back(ScriptStep::push(StringId("int")));
 
     REQUIRE( false == false );
 }
