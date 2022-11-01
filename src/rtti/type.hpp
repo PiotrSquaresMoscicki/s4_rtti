@@ -120,7 +120,7 @@ namespace rtti {
         virtual bool is_copy_assignable() const = 0;
         virtual bool is_move_assignable() const = 0;
 
-        virtual Res<Object, ErrNewObject> new_object() const = 0;
+        virtual Res<Object, ErrNewObject> new_default() const = 0;
         virtual Res<Object, ErrNewCopy> new_copy(const ObjectRef& src) const = 0;
         virtual Res<Object, ErrNewMove> new_move(ObjectRef& src) const = 0;
         virtual Res<void, ErrDeleteObject> can_delete_object(const ObjectRef& obj) const = 0;

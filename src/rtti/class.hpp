@@ -73,7 +73,7 @@ namespace rtti {
         bool is_copy_assignable() const override;
         bool is_move_assignable() const override;
 
-        Res<Object, ErrNewObject> new_object() const override;
+        Res<Object, ErrNewObject> new_default() const override;
         Res<Object, ErrNewCopy> new_copy(const ObjectRef& src) const override;
         Res<Object, ErrNewMove> new_move(ObjectRef& src) const override;
         Res<void, ErrDeleteObject> can_delete_object(const ObjectRef& obj) const override;
@@ -146,7 +146,7 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    Res<Object, Type::ErrNewObject> ClassInstance<CLASS>::new_object() const {
+    Res<Object, Type::ErrNewObject> ClassInstance<CLASS>::new_default() const {
         if (is_default_constructible())
             return Ok(Object(new CLASS()));
         else

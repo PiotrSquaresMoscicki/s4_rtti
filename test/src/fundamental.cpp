@@ -93,8 +93,8 @@ TEST_CASE( "rtti::Fundamental::is_move_assignable", "[rtti::Fundamental]" ) {
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Fundamental::new_object", "[rtti::Fundamental]" ) {
-    Object obj = static_type<float>()->new_object().ok();
+TEST_CASE( "rtti::Fundamental::new_default", "[rtti::Fundamental]" ) {
+    Object obj = static_type<float>()->new_default().ok();
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.type().ok() == static_type<float>() );
     REQUIRE( obj.size().ok() == sizeof(float) );
@@ -102,7 +102,7 @@ TEST_CASE( "rtti::Fundamental::new_object", "[rtti::Fundamental]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::new_copy", "[rtti::Fundamental]" ) {
-    Object src = static_type<int>()->new_object().ok();
+    Object src = static_type<int>()->new_default().ok();
     *src.value_as<int>().ok() = 4;
     Object dst = static_type<int>()->new_copy(src).ok();
     REQUIRE( dst.is_valid() == true );
@@ -112,13 +112,13 @@ TEST_CASE( "rtti::Fundamental::new_copy", "[rtti::Fundamental]" ) {
 
     REQUIRE( static_type<int>()->new_copy(Object()).err() == Type::ErrNewCopy::NOT_VALID_SOURCE );
 
-    src = static_type<float>()->new_object().ok();
+    src = static_type<float>()->new_default().ok();
     REQUIRE( static_type<int>()->new_copy(src).err() == Type::ErrNewCopy::INCORRECT_SOURCE_TYPE );
 }
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::new_move", "[rtti::Fundamental]" ) {
-    Object src = static_type<int>()->new_object().ok();
+    Object src = static_type<int>()->new_default().ok();
     *src.value_as<int>().ok() = 6;
     Object dst = static_type<int>()->new_move(src).ok();
     REQUIRE( dst.is_valid() == true );
@@ -129,13 +129,13 @@ TEST_CASE( "rtti::Fundamental::new_move", "[rtti::Fundamental]" ) {
     Object invalid_src;
     REQUIRE( static_type<int>()->new_move(invalid_src).err() == Type::ErrNewMove::NOT_VALID_SOURCE );
 
-    src = static_type<float>()->new_object().ok();
+    src = static_type<float>()->new_default().ok();
     REQUIRE( static_type<int>()->new_move(src).err() == Type::ErrNewMove::INCORRECT_SOURCE_TYPE );
 }
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::can_delete_object", "[rtti::Fundamental]" ) {
-    Object src = static_type<int>()->new_object().ok();
+    Object src = static_type<int>()->new_default().ok();
     REQUIRE( static_type<int>()->can_delete_object(src).is_ok() == true );
 
     Object invalid_src;
@@ -144,7 +144,7 @@ TEST_CASE( "rtti::Fundamental::can_delete_object", "[rtti::Fundamental]" ) {
         == 
         Type::ErrDeleteObject::NOT_VALID_SOURCE );
 
-    src = static_type<float>()->new_object().ok();
+    src = static_type<float>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->can_delete_object(src).err() 
         == 
@@ -153,7 +153,7 @@ TEST_CASE( "rtti::Fundamental::can_delete_object", "[rtti::Fundamental]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::delete_object", "[rtti::Fundamental]" ) {
-    Object src = static_type<int>()->new_object().ok();
+    Object src = static_type<int>()->new_default().ok();
     static_type<int>()->delete_object(std::move(src));
     REQUIRE( src.is_valid() == false );
 }
@@ -211,13 +211,13 @@ TEST_CASE( "rtti::Fundamental::can_copy_construct", "[rtti::Fundamental]" ) {
         == 
         Type::ErrCopyConstruct::NOT_VALID_SOURCE );
 
-    src = static_type<float>()->new_object().ok();
+    src = static_type<float>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->can_copy_construct(buff, src).err() 
         == 
         Type::ErrCopyConstruct::INCORRECT_SOURCE_TYPE );
 
-    src = static_type<int>()->new_object().ok();
+    src = static_type<int>()->new_default().ok();
     REQUIRE( static_type<int>()->can_copy_construct(buff, src).is_ok() == true );
 }
 
@@ -225,7 +225,7 @@ TEST_CASE( "rtti::Fundamental::can_copy_construct", "[rtti::Fundamental]" ) {
 TEST_CASE( "rtti::Fundamental::copy_construct", "[rtti::Fundamental]" ) {
     char src_array[30];
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
-    Object src = static_type<long>()->new_object().ok();
+    Object src = static_type<long>()->new_default().ok();
     *src.value_as<long>().ok() = 57;
     ObjectRef obj_ref = static_type<long>()->copy_construct(std::move(buff_ref), src);
     REQUIRE( obj_ref.is_valid() == true );
@@ -263,13 +263,13 @@ TEST_CASE( "rtti::Fundamental::can_move_construct", "[rtti::Fundamental]" ) {
         == 
         Type::ErrMoveConstruct::NOT_VALID_SOURCE );
 
-    src = static_type<float>()->new_object().ok();
+    src = static_type<float>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->can_move_construct(buff, src).err() 
         == 
         Type::ErrMoveConstruct::INCORRECT_SOURCE_TYPE );
 
-    src = static_type<int>()->new_object().ok();
+    src = static_type<int>()->new_default().ok();
     REQUIRE( static_type<int>()->can_move_construct(buff, src).is_ok() == true );
 }
 
@@ -277,7 +277,7 @@ TEST_CASE( "rtti::Fundamental::can_move_construct", "[rtti::Fundamental]" ) {
 TEST_CASE( "rtti::Fundamental::move_construct", "[rtti::Fundamental]" ) {
     char src_array[30];
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
-    Object src = static_type<long>()->new_object().ok();
+    Object src = static_type<long>()->new_default().ok();
     *src.value_as<long>().ok() = 57;
     ObjectRef obj_ref = static_type<long>()->move_construct(std::move(buff_ref), src);
     REQUIRE( obj_ref.is_valid() == true );
@@ -299,10 +299,10 @@ TEST_CASE( "rtti::Fundamental::can_destruct", "[rtti::Fundamental]" ) {
     Object obj;
     REQUIRE( static_type<int>()->can_destruct(obj).err() == Type::ErrDestruct::NOT_VALID_OBJECT );
     
-    obj = static_type<long>()->new_object().ok();
+    obj = static_type<long>()->new_default().ok();
     REQUIRE( static_type<int>()->can_destruct(obj).err() == Type::ErrDestruct::INCORRECT_OBJECT_TYPE );
     
-    obj = static_type<int>()->new_object().ok();
+    obj = static_type<int>()->new_default().ok();
     REQUIRE( static_type<int>()->can_destruct(obj).is_ok() == true );
 }
 
@@ -314,7 +314,7 @@ TEST_CASE( "rtti::Fundamental::destruct", "[rtti::Fundamental]" ) {
     buff_ref = static_type<int>()->destruct(std::move(obj_ref));
     REQUIRE( buff_ref.data().ok() == reinterpret_cast<void*>(src_array) );
 
-    Object obj = static_type<int>()->new_object().ok();
+    Object obj = static_type<int>()->new_default().ok();
     const void* obj_value_ptr = obj.value().ok();
     Buffer buff = static_type<int>()->destruct(std::move(obj));
     REQUIRE( buff.data().ok() == obj_value_ptr );
@@ -329,25 +329,25 @@ TEST_CASE( "rtti::Fundamental::copy_assign", "[rtti::Fundamental]" ) {
         == 
         Type::ErrCopy::INVALID_DESTINATION_OBJECT );
         
-    dst = static_type<long>()->new_object().ok();
+    dst = static_type<long>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INCORRECT_DESTINATION_OBJECT_TYPE );
     
-    dst = static_type<int>()->new_object().ok();
+    dst = static_type<int>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INVALID_SOURCE_OBJECT );
         
-    src = static_type<long>()->new_object().ok();
+    src = static_type<long>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INCORRECT_SOURCE_OBJECT_TYPE );
         
-    src = static_type<int>()->new_object().ok();
+    src = static_type<int>()->new_default().ok();
     *src.value_as<int>().ok() = 6565656;
     REQUIRE( static_type<int>()->copy_assign(dst, src).is_ok() == true );
     REQUIRE( *dst.value_as<int>().ok() == 6565656 );
@@ -362,25 +362,25 @@ TEST_CASE( "rtti::Fundamental::move_assign", "[rtti::Fundamental]" ) {
         == 
         Type::ErrMove::INVALID_DESTINATION_OBJECT );
         
-    dst = static_type<long>()->new_object().ok();
+    dst = static_type<long>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INCORRECT_DESTINATION_OBJECT_TYPE );
     
-    dst = static_type<int>()->new_object().ok();
+    dst = static_type<int>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INVALID_SOURCE_OBJECT );
         
-    src = static_type<long>()->new_object().ok();
+    src = static_type<long>()->new_default().ok();
     REQUIRE( 
         static_type<int>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INCORRECT_SOURCE_OBJECT_TYPE );
         
-    src = static_type<int>()->new_object().ok();
+    src = static_type<int>()->new_default().ok();
     *src.value_as<int>().ok() = 6565656;
     REQUIRE( static_type<int>()->move_assign(dst, src).is_ok() == true );
     REQUIRE( *dst.value_as<int>().ok() == 6565656 );
