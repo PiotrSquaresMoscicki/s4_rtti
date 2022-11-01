@@ -34,3 +34,5 @@
 # build files
 build/
 dist/
+Testing/Temporary/CTestCostData.txt
+Testing/Temporary/LastTest.log
