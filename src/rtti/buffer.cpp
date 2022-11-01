@@ -22,8 +22,7 @@ BufferRef::BufferRef(BufferRef&& other)
 }
 
 //*************************************************************************************************
-BufferRef& BufferRef::operator=(BufferRef&& other)
-{
+BufferRef& BufferRef::operator=(BufferRef&& other) {
     m_data = other.m_data;
     m_size = other.m_size;
     other.m_data = nullptr;
