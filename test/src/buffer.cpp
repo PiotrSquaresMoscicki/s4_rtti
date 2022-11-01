@@ -12,14 +12,21 @@ public:
 };
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Buffer::default constructor", "[rtti::Buffer]" ) {
+TEST_CASE( "rtti::BufferRef::default constructor", "[rtti::BufferRef]" ) {
     Buffer buff;
     const Buffer constBuff;
     REQUIRE( buff.is_valid() == false );
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Buffer::custom constructor", "[rtti::Buffer]" ) {
+TEST_CASE( "rtti::BufferRef::custom constructor", "[rtti::BufferRef]" ) {
+    int i = 0;
+    BufferRef buff(&i, sizeof(int));
+    REQUIRE( buff.is_valid() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::BufferRef::move constructor", "[rtti::BufferRef]" ) {
     int i = 0;
     BufferRef buff(&i, sizeof(int));
     REQUIRE( buff.is_valid() == true );
