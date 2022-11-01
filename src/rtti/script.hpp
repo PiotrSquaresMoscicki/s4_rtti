@@ -31,10 +31,12 @@ namespace script {
     public:
         enum class Operation {
             NOP = 0,
-            PUSH = 1,
-            POP = 2,
-            CALL = 3,
-            MOV = 4
+            BREAK = 1,
+            PUSH = 2,
+            POP = 3,
+            MOVE = 4,
+            JUMP = 5,
+            CALL = 6
         };
 
         static std::vector<ScriptStep> nop();
