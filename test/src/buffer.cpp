@@ -92,3 +92,12 @@ TEST_CASE( "rtti::BufferRef::data", "[rtti::BufferRef]" ) {
 
     REQUIRE( buff.data().ok() == &i );
 }
+
+//*************************************************************************************************
+TEST_CASE( "rtti::BufferRef::steal_data", "[rtti::BufferRef]" ) {
+    int i = 0;
+    BufferRef buff(&i, sizeof(int));
+
+    REQUIRE( buff.steal_data().ok() == &i );
+    REQUIRE( buff.is_valid() == false );
+}
