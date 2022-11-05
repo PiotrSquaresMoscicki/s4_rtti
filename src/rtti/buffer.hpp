@@ -16,11 +16,7 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT BufferRef {
     public:
-        enum class ErrData {
-            INVALID_BUFFER
-        };
-
-        enum class ErrSize {
+        enum class Error {
             INVALID_BUFFER
         };
 
@@ -38,12 +34,10 @@ namespace rtti {
         virtual ~BufferRef() = default;
 
         bool is_valid() const { return m_data && m_size; }
-        Res<const void*, ErrData> data() const;
-        Res<void*, ErrData> data();
-        Res<void*, ErrData> steal_data() &&;
-        Res<size_t, ErrSize> size() const;
-
-        void copy(const BufferRef& src);
+        Res<size_t, Error> size() const;
+        Res<const void*, Error> data() const;
+        Res<void*, Error> data();
+        Res<void*, Error> steal_data();
 
     protected:
         void* m_data = nullptr;

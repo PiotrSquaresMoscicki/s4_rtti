@@ -31,25 +31,25 @@ BufferRef& BufferRef::operator=(BufferRef&& other) {
 }
 
 //*************************************************************************************************
-Res<const void*, BufferRef::ErrData> BufferRef::data() const { 
+Res<const void*, BufferRef::Error> BufferRef::data() const { 
     if (is_valid()) 
         return Ok(const_cast<const void*>(m_data)); 
     else 
-        return Err(ErrData::INVALID_BUFFER);
+        return Err(Error::INVALID_BUFFER);
 }
 
 //*************************************************************************************************
-Res<void*, BufferRef::ErrData> BufferRef::data() { 
+Res<void*, BufferRef::Error> BufferRef::data() { 
     if (is_valid()) 
         return Ok(m_data); 
     else 
-        return Err(ErrData::INVALID_BUFFER);
+        return Err(Error::INVALID_BUFFER);
 }
 
 //*************************************************************************************************
-Res<void*, BufferRef::ErrData> BufferRef::steal_data() && {
+Res<void*, BufferRef::Error> BufferRef::steal_data() {
     if (!is_valid())
-        return Err(ErrData::INVALID_BUFFER);
+        return Err(Error::INVALID_BUFFER);
 
     void* res = m_data;
     m_data = nullptr;
@@ -58,16 +58,11 @@ Res<void*, BufferRef::ErrData> BufferRef::steal_data() && {
 }
 
 //*************************************************************************************************
-void BufferRef::copy(const BufferRef&) {
-    
-}
-
-//*************************************************************************************************
-Res<size_t, BufferRef::ErrSize> BufferRef::size() const { 
+Res<size_t, BufferRef::Error> BufferRef::size() const { 
     if (is_valid()) 
         return Ok(m_size); 
     else 
-        return Err(ErrSize::INVALID_BUFFER);
+        return Err(Error::INVALID_BUFFER);
 }
 
 //*************************************************************************************************
