@@ -93,8 +93,8 @@ TEST_CASE( "rtti::TemplateInstance::== from differend dll", "[rtti::TemplateInst
 // }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::TemplateInstance::name", "[rtti::Template]" ) {
-    //REQUIRE( static_type<TestTemplate1>()->name() == "test::TestTemplate1" );
-    //REQUIRE( static_type<TestTemplate2<int>>()->name() == "TestTemplate2<int>" );
-    static_type<TestTemplate2<int>>();
-}
+// TEST_CASE( "rtti::TemplateInstance::name", "[rtti::Template]" ) {
+//     //REQUIRE( static_type<TestTemplate1>()->name() == "test::TestTemplate1" );
+//     //REQUIRE( static_type<TestTemplate2<int>>()->name() == "TestTemplate2<int>" );
+//     static_type<TestTemplate2<int>>();
+// }
