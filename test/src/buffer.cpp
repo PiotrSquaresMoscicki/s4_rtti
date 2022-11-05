@@ -3,18 +3,36 @@
 
 using namespace rtti;
 
-class TestClass2 {
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+class TestClass {
 public:
-    CLASS(TestClass2)
+    CLASS(TestClass)
     END_CLASS
 
-    virtual ~TestClass2() = default;
+    TestClass() = default;
+
+    TestClass(bool* deleted) 
+        : m_deleted(deleted)
+    {
+        *m_deleted = false;
+    }
+
+    virtual ~TestClass() {
+        *m_deleted = true;
+    }
+
+private:
+    bool* m_deleted = nullptr;
 };
 
 //*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
 TEST_CASE( "rtti::BufferRef::default constructor", "[rtti::BufferRef]" ) {
-    Buffer buff;
-    const Buffer constBuff;
+    BufferRef buff;
+    const BufferRef constBuff;
 
     REQUIRE( buff.is_valid() == false );
     REQUIRE( buff.size().err() == BufferRef::Error::INVALID_BUFFER );
@@ -100,4 +118,68 @@ TEST_CASE( "rtti::BufferRef::steal_data", "[rtti::BufferRef]" ) {
 
     REQUIRE( buff.steal_data().ok() == &i );
     REQUIRE( buff.is_valid() == false );
+}
+
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+TEST_CASE( "rtti::Buffer::default constructor", "[rtti::Buffer]" ) {
+    Buffer buff;
+    const Buffer constBuff;
+
+    REQUIRE( buff.is_valid() == false );
+    REQUIRE( buff.size().err() == BufferRef::Error::INVALID_BUFFER );
+    REQUIRE( buff.data().err() == BufferRef::Error::INVALID_BUFFER );
+    REQUIRE( buff.steal_data().err() == BufferRef::Error::INVALID_BUFFER );
+
+    REQUIRE( constBuff.is_valid() == false );
+    REQUIRE( constBuff.size().err() == BufferRef::Error::INVALID_BUFFER );
+    REQUIRE( constBuff.data().err() == BufferRef::Error::INVALID_BUFFER );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Buffer::custom constructor", "[rtti::Buffer]" ) {
+    int* obj1 = new int();
+    int* obj2 = new int();
+
+    Buffer buff(obj1, sizeof(int));
+    const Buffer constBuff(obj2, sizeof(int));
+
+    REQUIRE( buff.is_valid() == true );
+    REQUIRE( buff.size().is_ok() == true );
+    REQUIRE( buff.data().is_ok() == true );
+    REQUIRE( buff.steal_data().is_ok() == true );
+
+    REQUIRE( constBuff.is_valid() == true );
+    REQUIRE( constBuff.size().is_ok() == true );
+    REQUIRE( constBuff.data().is_ok() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Buffer::custom destructor", "[rtti::Buffer]" ) {
+    bool obj1_deleted = false;
+    bool obj2_deleted = false;
+    
+    // {
+    //     TestClass* obj1 = new TestClass(&obj1_deleted);
+    //     TestClass* obj2 = new TestClass(&obj2_deleted);
+
+    //     Buffer buff(obj1, sizeof(TestClass));
+    //     const Buffer constBuff(obj2, sizeof(TestClass));
+
+    //     REQUIRE( buff.is_valid() == true );
+    //     REQUIRE( buff.size().is_ok() == true );
+    //     REQUIRE( buff.data().is_ok() == true );
+    //     REQUIRE( buff.steal_data().is_ok() == true );
+
+    //     REQUIRE( constBuff.is_valid() == true );
+    //     REQUIRE( constBuff.size().is_ok() == true );
+    //     REQUIRE( constBuff.data().is_ok() == true );
+
+    //     REQUIRE( obj1_deleted == false );
+    //     REQUIRE( obj2_deleted == false );
+    // }
+    
+    // REQUIRE( obj1_deleted == true );
+    // REQUIRE( obj2_deleted == true );
 }
