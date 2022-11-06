@@ -171,9 +171,9 @@ TEST_CASE( "rtti::Buffer::move constructor", "[rtti::Buffer]" ) {
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Buffer::move assignment", "[rtti::Buffer]" ) {
-    int* obj1 = new int();
+    char* obj1 = new char[5];
 
-    Buffer srcBuff(obj1, sizeof(int));
+    Buffer srcBuff(obj1, sizeof(char[5]));
     Buffer buff;
     
     buff = std::move(srcBuff);
