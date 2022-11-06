@@ -156,30 +156,31 @@ TEST_CASE( "rtti::Buffer::custom constructor", "[rtti::Buffer]" ) {
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Buffer::custom destructor", "[rtti::Buffer]" ) {
-    bool obj1_deleted = false;
-    bool obj2_deleted = false;
+TEST_CASE( "rtti::Buffer::move constructor", "[rtti::Buffer]" ) {
+    int* obj1 = new int();
+
+    Buffer buff(obj1, sizeof(int));
+    const Buffer constBuff(std::move(buff));
+
+    REQUIRE( buff.is_valid() == false );
+
+    REQUIRE( constBuff.is_valid() == true );
+    REQUIRE( constBuff.size().is_ok() == true );
+    REQUIRE( constBuff.data().is_ok() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Buffer::move assignment", "[rtti::Buffer]" ) {
+    int* obj1 = new int();
+
+    Buffer srcBuff(obj1, sizeof(int));
+    Buffer buff;
     
-    // {
-    //     TestClass* obj1 = new TestClass(&obj1_deleted);
-    //     TestClass* obj2 = new TestClass(&obj2_deleted);
+    buff = std::move(srcBuff);
 
-    //     Buffer buff(obj1, sizeof(TestClass));
-    //     const Buffer constBuff(obj2, sizeof(TestClass));
+    REQUIRE( srcBuff.is_valid() == false );
 
-    //     REQUIRE( buff.is_valid() == true );
-    //     REQUIRE( buff.size().is_ok() == true );
-    //     REQUIRE( buff.data().is_ok() == true );
-    //     REQUIRE( buff.steal_data().is_ok() == true );
-
-    //     REQUIRE( constBuff.is_valid() == true );
-    //     REQUIRE( constBuff.size().is_ok() == true );
-    //     REQUIRE( constBuff.data().is_ok() == true );
-
-    //     REQUIRE( obj1_deleted == false );
-    //     REQUIRE( obj2_deleted == false );
-    // }
-    
-    // REQUIRE( obj1_deleted == true );
-    // REQUIRE( obj2_deleted == true );
+    REQUIRE( buff.is_valid() == true );
+    REQUIRE( buff.size().is_ok() == true );
+    REQUIRE( buff.data().is_ok() == true );
 }
