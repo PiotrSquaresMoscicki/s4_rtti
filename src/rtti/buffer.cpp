@@ -2,6 +2,8 @@
 
 #include "object.hpp"
 
+#include <cstring>
+
 using namespace rtti;
 
 //*************************************************************************************************
@@ -79,7 +81,10 @@ Buffer::~Buffer() {
 }
 
 //*************************************************************************************************
-void Buffer::change_buffer_size(size_t) {
+void Buffer::resize(size_t new_size) {
+    Buffer buff(new_size);
+    std::memcpy(buff.m_data, m_data, new_size);
+    *this = std::move(buff);
 }
 
 //*************************************************************************************************

@@ -138,7 +138,7 @@ TEST_CASE( "rtti::Buffer::default constructor", "[rtti::Buffer]" ) {
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Buffer::custom constructor", "[rtti::Buffer]" ) {
+TEST_CASE( "rtti::Buffer::custom BufferRef constructor", "[rtti::Buffer]" ) {
     int* obj1 = new int();
     int* obj2 = new int();
 
@@ -181,6 +181,41 @@ TEST_CASE( "rtti::Buffer::move assignment", "[rtti::Buffer]" ) {
     REQUIRE( srcBuff.is_valid() == false );
 
     REQUIRE( buff.is_valid() == true );
-    REQUIRE( buff.size().is_ok() == true );
+    REQUIRE( buff.size().ok() == 5 );
+    REQUIRE( buff.data().ok() == obj1 );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Buffer::custom constructor", "[rtti::Buffer]" ) {
+    Buffer buff(10);
+
+    REQUIRE( buff.is_valid() == true );
+    REQUIRE( buff.size().ok() == 10 );
     REQUIRE( buff.data().is_ok() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Buffer::resize", "[rtti::Buffer]" ) {
+    char* obj = new char[5];
+    obj[1] = 'g';
+    Buffer buff(obj, sizeof(char[5]));
+    buff.resize(2);
+
+    REQUIRE( buff.is_valid() == true );
+    REQUIRE( buff.size().ok() == 2 );
+    REQUIRE( static_cast<char*>(buff.data().ok())[1] == 'g' );
+
+    buff = Buffer(10);
+    static_cast<char*>(buff.data().ok())[2] = 'F';
+    buff.resize(3);
+
+    REQUIRE( buff.is_valid() == true );
+    REQUIRE( buff.size().ok() == 3 );
+    REQUIRE( static_cast<char*>(buff.data().ok())[2] == 'F' );
+
+    buff.resize(0);
+    REQUIRE( buff.is_valid() == false );
+
+    buff.resize(1);
+    REQUIRE( buff.is_valid() == true );
 }

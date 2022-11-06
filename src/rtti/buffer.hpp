@@ -64,7 +64,7 @@ namespace rtti {
         Buffer(size_t size);
         ~Buffer();
 
-        void change_buffer_size(size_t new_size);
+        void resize(size_t new_size);
 
         void release_buffer() &&;
         Object call_constructor(TypePtr type) &&;
