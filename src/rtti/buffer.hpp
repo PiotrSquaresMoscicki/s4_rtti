@@ -66,9 +66,6 @@ namespace rtti {
 
         void resize(size_t new_size);
 
-        void release_buffer() &&;
-        Object call_constructor(TypePtr type) &&;
-
     }; // class Buffer
 
 } // namespace rtti

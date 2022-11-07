@@ -26,26 +26,13 @@
 # Functionality
 
 - BufferRef
-    todo 
-        - implement copy
-        - add unit tests
-
     - check is valid
     - get size
     - get data ptr
     - steal data ptr
-    - copy data (returns Buffer)
 
 - Buffer : BufferRef
-    todo 
-        - implement change buffer size
-        - implement release buffer
-        - implement call constructor
-        - add unit tests
-
     - change buffer size
-    - release buffer
-    - call constructor (returns Object)
 
 - ObjectRef
     todo

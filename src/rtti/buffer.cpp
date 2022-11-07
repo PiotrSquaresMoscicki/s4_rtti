@@ -86,12 +86,3 @@ void Buffer::resize(size_t new_size) {
     std::memcpy(buff.m_data, m_data, new_size);
     *this = std::move(buff);
 }
-
-//*************************************************************************************************
-void Buffer::release_buffer() && {
-}
-
-//*************************************************************************************************
-Object Buffer::call_constructor(TypePtr) && {
-    return {};
-}
