@@ -267,9 +267,13 @@ namespace rtti {
     Res<ObjectRef, Type::ErrCopyConstruct> ClassInstance<CLASS>::copy_construct(BufferRef&& buff
         , const ObjectRef& src) const 
     {
-        assert(can_copy_construct(buff, src).is_ok());
-        return Ok(ObjectRef(
-            new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok()));
+        if constexpr (!std::is_copy_constructible_v<CLASS>)
+            return Err(Type::ErrCopyConstruct::NOT_COPY_CONSTRUCTIBLE);
+        else
+        {
+            return Ok(ObjectRef(
+                new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok()));
+        }
     }
 
     //*********************************************************************************************
@@ -277,11 +281,15 @@ namespace rtti {
     Res<Object, Type::ErrCopyConstruct> ClassInstance<CLASS>::copy_construct(Buffer&& buff
         , const ObjectRef& src) const 
     {
-        assert(can_copy_construct(buff, src).is_ok());
-        Object res(
-            new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok());
-        std::move(buff).steal_data();
-        return Ok(std::move(res));
+        if constexpr (!std::is_copy_constructible_v<CLASS>)
+            return Err(Type::ErrCopyConstruct::NOT_COPY_CONSTRUCTIBLE);
+        else
+        {
+            Object res(
+                new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok());
+            std::move(buff).steal_data();
+            return Ok(std::move(res));
+        }
     }
 
     //*********************************************************************************************
@@ -289,7 +297,7 @@ namespace rtti {
     Res<void, Type::ErrMoveConstruct> ClassInstance<CLASS>::can_move_construct(
         const BufferRef& buff, const ObjectRef& src) const 
     {
-        if (!is_copy_constructible())
+        if (!is_move_constructible())
             return Err(Type::ErrMoveConstruct::NOT_MOVE_CONSTRUCTIBLE);
         else if (!buff.is_valid())
             return Err(Type::ErrMoveConstruct::INVALID_BUFFER);
@@ -308,10 +316,13 @@ namespace rtti {
     Res<ObjectRef, Type::ErrMoveConstruct> ClassInstance<CLASS>::move_construct(BufferRef&& buff
         , ObjectRef& src) const 
     {
-        assert(can_move_construct(buff, src).is_ok());
-        return Ok(ObjectRef(
-            new(buff.data().ok()) 
-            CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok()));
+        if constexpr (!std::is_move_constructible_v<CLASS>)
+            return Err(Type::ErrMoveConstruct::NOT_MOVE_CONSTRUCTIBLE);
+        else{
+            return Ok(ObjectRef(
+                new(buff.data().ok()) 
+                CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok()));
+        }
     }
 
     //*********************************************************************************************
@@ -319,12 +330,16 @@ namespace rtti {
     Res<Object, Type::ErrMoveConstruct> ClassInstance<CLASS>::move_construct(Buffer&& buff
         , ObjectRef& src) const 
     {
-        assert(can_move_construct(buff, src).is_ok());
-        Object res(
-            new(buff.data().ok()) 
-            CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok());
-        std::move(buff).steal_data();
-        return Ok(std::move(res));
+        if constexpr (!std::is_move_constructible_v<CLASS>)
+            return Err(Type::ErrMoveConstruct::NOT_MOVE_CONSTRUCTIBLE);
+        else {
+            Object res(
+                new(buff.data().ok()) 
+                CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok());
+            std::move(buff).steal_data();
+            return Ok(std::move(res));
+
+        }
     }
 
     //*********************************************************************************************
@@ -365,7 +380,7 @@ namespace rtti {
     Res<void, Type::ErrCopy> ClassInstance<CLASS>::copy_assign(ObjectRef& dst
         , const ObjectRef& src) const 
     {
-        if (!is_copy_assignable())
+        if constexpr (!std::is_copy_assignable_v<CLASS>)
             return Err(Type::ErrCopy::NOT_COPY_ASSIGNABLE);
         else if (!dst.is_valid())
             return Err(Type::ErrCopy::INVALID_DESTINATION_OBJECT);
@@ -387,7 +402,7 @@ namespace rtti {
     Res<void, Type::ErrMove> ClassInstance<CLASS>::move_assign(ObjectRef& dst
         , ObjectRef& src) const 
     {
-        if (!is_move_assignable())
+        if constexpr (!std::is_move_assignable_v<CLASS>)
             return Err(Type::ErrMove::NOT_MOVE_ASSIGNABLE);
         else if (!dst.is_valid())
             return Err(Type::ErrMove::INVALID_DESTINATION_OBJECT);
@@ -398,8 +413,9 @@ namespace rtti {
         else if (src.type().ok() != TypePtr(this))
             return Err(Type::ErrMove::INCORRECT_SOURCE_OBJECT_TYPE);
         else {
-            *reinterpret_cast<CLASS*>(dst.value().ok()) 
-                = std::move(*reinterpret_cast<const CLASS*>(src.value().ok()));
+            CLASS& dst_ref = *reinterpret_cast<CLASS*>(dst.value().ok());
+            CLASS& src_ref = *reinterpret_cast<CLASS*>(src.value().ok());
+            dst_ref = std::move(src_ref);
             return Ok();
         }
     }
