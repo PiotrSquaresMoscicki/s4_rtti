@@ -133,6 +133,67 @@ TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
 
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Class::size", "[rtti::Class]" ) {
+    REQUIRE( 
+        static_type<TestClassNotDefaultConstructible>()->size() 
+        == 
+        sizeof(TestClassNotDefaultConstructible) );
+
+    REQUIRE( 
+        static_type<TestClassNotCopyAssignable>()->size() 
+        == 
+        sizeof(TestClassNotCopyAssignable) );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::as_fundamental", "[rtti::Class]" ) {
+    REQUIRE( static_type<TestClassNotDefaultConstructible>()->as_fundamental().is_err() );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::as_enum", "[rtti::Class]" ) {
+    REQUIRE( static_type<TestClassNotDefaultConstructible>()->as_enum().is_err() );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::as_class", "[Fundamental]" ) {
+    REQUIRE( 
+        static_type<TestClassNotDefaultConstructible>()->as_class().ok()
+        == 
+        static_type<TestClassNotDefaultConstructible>() );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::is_default_constructible", "[rtti::Class]" ) {
+    REQUIRE( static_type<TestClassNotDefaultConstructible>()->is_default_constructible() == false );
+    REQUIRE( static_type<TestClassNotCopyAssignable>()->is_default_constructible() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::is_copy_constructible", "[rtti::Class]" ) {
+    REQUIRE( static_type<TestClassNotCopyConstructible>()->is_copy_constructible() == false );
+    REQUIRE( static_type<TestClassNotDefaultConstructible>()->is_copy_constructible() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::is_move_constructible", "[rtti::Class]" ) {
+    REQUIRE( static_type<TestClassNotMoveConstructible>()->is_move_constructible() == false );
+    REQUIRE( static_type<TestClassNotDefaultConstructible>()->is_move_constructible() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::is_copy_assignable", "[rtti::Class]" ) {
+    REQUIRE( static_type<TestClassNotCopyAssignable>()->is_copy_assignable() == false );
+    REQUIRE( static_type<TestClassNotDefaultConstructible>()->is_copy_assignable() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::is_move_assignable", "[rtti::Class]" ) {
+    REQUIRE( static_type<TestClassNotMoveAssignable>()->is_move_assignable() == false );
+    REQUIRE( static_type<TestClassNotDefaultConstructible>()->is_move_assignable() == true );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Class::can_construct", "[rtti::Class]" ) {
     Buffer src;
 
