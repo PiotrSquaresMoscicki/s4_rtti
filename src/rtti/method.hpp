@@ -56,6 +56,8 @@ namespace rtti {
         MethodInstance(Class* instance, const std::string& name_no_params
             , const std::string& params_names, MethodType method, Meta meta = {});
 
+        Res<ObjectRef, Function::ErrCall> call(const std::vector<ObjectRef*>& params) const override;
+
         Res<ObjectRef, ErrCall> call_on(const ObjectRef& self
             , const std::vector<ObjectRef*>& params) const override;
         Res<ObjectRef, ErrCall> call_on(ObjectRef& self
@@ -65,6 +67,14 @@ namespace rtti {
         MethodType m_method = nullptr;
 
     }; // class MethodInstance
+
+    //*********************************************************************************************
+    template <typename CLASS, typename RET, typename... PARAMS>
+    Res<ObjectRef, Function::ErrCall> MethodInstance<CLASS, RET, PARAMS...>::
+        call(const std::vector<ObjectRef*>&) const
+    {
+        return Err(Function::ErrCall::INVALID_PARAM_TYPE);
+    }
 
     //*********************************************************************************************
     template <typename CLASS, typename RET, typename... PARAMS>
