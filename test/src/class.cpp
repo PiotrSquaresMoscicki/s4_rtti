@@ -14,6 +14,33 @@ namespace test {
     public:
     };
 
+    // class TestClassNotDefaultConstructible {
+    // public:
+    //     CLASS(TestClassNotDefaultConstructible)
+    //     END_CLASS
+        
+    //     TestClassNotDefaultConstructible(int val) : m_val(val) {}
+        
+    // private:
+    //     int m_val = 0;
+    // };
+
+    // class TestClassNotCopyConstructible {
+    // public:
+    //     CLASS(TestClassNotCopyConstructible)
+    //     END_CLASS
+
+    //     TestClassNotCopyConstructible() = default;
+    //     TestClassNotCopyConstructible(const TestClassNotCopyConstructible& other) = delete;
+    // };
+
+    // class TestClassNotMoveConstructible {
+    // public:
+    //     CLASS(TestClassNotMoveConstructible)
+    //     END_CLASS
+    //     TestClassNotMoveConstructible() = default;
+    //     TestClassNotMoveConstructible(TestClassNotMoveConstructible&& other) = delete;
+    // };
 }
 
 REGISTER_CLASS(test, TestClass1)
@@ -26,6 +53,24 @@ public:
 
     virtual ~TestClass2() = default;
 };
+
+// class TestClassNotMoveAssignable {
+// public:
+//     CLASS(TestClassNotMoveAssignable)
+//     END_CLASS
+
+//     TestClassNotMoveAssignable() = default;
+//     TestClassNotMoveAssignable(TestClassNotMoveAssignable&& other) = delete;
+// };
+
+// class TestClassNotCopyAssignable {
+// public:
+//     CLASS(TestClassNotCopyAssignable)
+//     END_CLASS
+
+//     TestClassNotCopyAssignable() = default;
+//     TestClassNotCopyAssignable(const TestClassNotCopyAssignable& other) = delete;
+// };
 
 using namespace test;
 
