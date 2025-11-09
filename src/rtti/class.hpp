@@ -7,6 +7,7 @@
 #include <core/str/string_id.hpp>
 
 #include "type_instance.hpp"
+#include "container.hpp"
 #include "buffer.hpp"
 #include "object.hpp"
 
@@ -17,7 +18,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class S4_RTTI_EXPORT Class : public virtual Type {
+    class S4_RTTI_EXPORT Class : public virtual Container {
     public:
         template <typename C, typename D, typename F> friend class FieldInstance;
         template <typename C, typename R, typename... P> friend class MethodInstance;
