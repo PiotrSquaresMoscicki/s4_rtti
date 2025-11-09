@@ -127,6 +127,44 @@ TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
     REQUIRE( static_type<TestClass2>()->name() == "TestClass2" );
 }
 
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::can_copy_construct", "[rtti::Class]" ) {
+    Buffer buff;
+    Object src;
+    
+    REQUIRE( 
+        static_type<TestClassNotCopyConstructible>()->can_copy_construct(buff, src).err() 
+        == 
+        Type::ErrCopyConstruct::NOT_COPY_CONSTRUCTIBLE );
+
+    REQUIRE( 
+        static_type<TestClassNotMoveConstructible>()->can_copy_construct(buff, src).err() 
+        == 
+        Type::ErrCopyConstruct::INVALID_BUFFER );
+
+    buff = Buffer(1);
+    REQUIRE( 
+        static_type<TestClassNotMoveConstructible>()->can_copy_construct(buff, src).err() 
+        == 
+        Type::ErrCopyConstruct::BUFFER_TOO_SMALL );
+
+    buff = Buffer(sizeof(TestClassNotMoveConstructible));
+    REQUIRE( 
+        static_type<TestClassNotMoveConstructible>()->can_copy_construct(buff, src).err() 
+        == 
+        Type::ErrCopyConstruct::NOT_VALID_SOURCE );
+
+    src = static_type<TestClassNotCopyConstructible>()->alloc_construct().ok();
+    REQUIRE( 
+        static_type<TestClassNotMoveConstructible>()->can_copy_construct(buff, src).err() 
+        == 
+        Type::ErrCopyConstruct::INCORRECT_SOURCE_TYPE );
+
+    src = static_type<TestClassNotMoveConstructible>()->alloc_construct().ok();
+    REQUIRE( static_type<TestClassNotMoveConstructible>()->can_copy_construct(buff, src).is_ok() == true );
+}
+
 //*************************************************************************************************
 TEST_CASE( "rtti::Class::copy_construct", "[rtti::Class]" ) {
     char src_array[30];
