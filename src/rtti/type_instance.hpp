@@ -11,7 +11,7 @@ namespace rtti {
 
     using namespace core::util;
 
-     //*********************************************************************************************
+    //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
     template <typename TYPE>
@@ -34,25 +34,31 @@ namespace rtti {
         Res<void, ErrCopyConstruct> can_copy_construct(const BufferRef& buff
             , const ObjectRef& src) const override;
         Res<Object, ErrCopyConstruct> alloc_copy_construct(const ObjectRef& src) const override;
-        Res<ObjectRef, ErrCopyConstruct> copy_construct(BufferRef&& buff, const ObjectRef& src) const override;
-        Res<Object, ErrCopyConstruct> copy_construct(Buffer&& buff, const ObjectRef& src) const override;
+        Res<ObjectRef, ErrCopyConstruct> copy_construct(BufferRef&& buff
+            , const ObjectRef& src) const override;
+        Res<Object, ErrCopyConstruct> copy_construct(Buffer&& buff
+            , const ObjectRef& src) const override;
         
         Res<void, ErrMoveConstruct> can_move_construct(const ObjectRef& src) const override;
         Res<void, ErrMoveConstruct> can_move_construct(const BufferRef& buff
             , const ObjectRef& src) const override;
         Res<Object, ErrMoveConstruct> alloc_move_construct(ObjectRef& src) const override;
-        Res<ObjectRef, ErrMoveConstruct> move_construct(BufferRef&& buff, ObjectRef& src) const override;
-        Res<Object, ErrMoveConstruct> move_construct(Buffer&& buff, ObjectRef& src) const override;
+        Res<ObjectRef, ErrMoveConstruct> move_construct(BufferRef&& buff
+            , ObjectRef& src) const override;
+        Res<Object, ErrMoveConstruct> move_construct(Buffer&& buff
+            , ObjectRef& src) const override;
         
         Res<void, ErrDestruct> can_destruct(const ObjectRef& obj) const override;
         Res<void, ErrDestruct> dealloc_destruct(Object&& obj) const override;
         Res<BufferRef, ErrDestruct> destruct(ObjectRef&& obj) const override;
         Res<Buffer, ErrDestruct> destruct(Object&& obj) const override;
 
-        Res<void, ErrCopy> can_copy_assign(const ObjectRef& dst, const ObjectRef& src) const override;
+        Res<void, ErrCopy> can_copy_assign(const ObjectRef& dst
+            , const ObjectRef& src) const override;
         Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const override;
 
-        Res<void, ErrMove> can_move_assign(const ObjectRef& dst, const ObjectRef& src) const override;
+        Res<void, ErrMove> can_move_assign(const ObjectRef& dst
+            , const ObjectRef& src) const override;
         Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const override;
 
     }; // class TypeInstance

@@ -111,8 +111,10 @@ namespace rtti {
         virtual Res<void, ErrCopyConstruct> can_copy_construct(const BufferRef& buff
             , const ObjectRef& src) const = 0;
         virtual Res<Object, ErrCopyConstruct> alloc_copy_construct(const ObjectRef& src) const = 0;
-        virtual Res<ObjectRef, ErrCopyConstruct> copy_construct(BufferRef&& buff, const ObjectRef& src) const = 0;
-        virtual Res<Object, ErrCopyConstruct> copy_construct(Buffer&& buff, const ObjectRef& src) const = 0;
+        virtual Res<ObjectRef, ErrCopyConstruct> copy_construct(BufferRef&& buff
+            , const ObjectRef& src) const = 0;
+        virtual Res<Object, ErrCopyConstruct> copy_construct(Buffer&& buff
+            , const ObjectRef& src) const = 0;
         
 // TODO: Add support for variadic args in Res structure to provide additional data in case of error
 //      Right now if we fail move instruct or move assign operation we just eat up the source object 
@@ -120,19 +122,23 @@ namespace rtti {
         virtual Res<void, ErrMoveConstruct> can_move_construct(const BufferRef& buff
             , const ObjectRef& src) const = 0;
         virtual Res<Object, ErrMoveConstruct> alloc_move_construct(ObjectRef& src) const = 0;
-        virtual Res<ObjectRef, ErrMoveConstruct> move_construct(BufferRef&& buff, ObjectRef& src) const = 0;
-        virtual Res<Object, ErrMoveConstruct> move_construct(Buffer&& buff, ObjectRef& src) const = 0;
+        virtual Res<ObjectRef, ErrMoveConstruct> move_construct(BufferRef&& buff
+            , ObjectRef& src) const = 0;
+        virtual Res<Object, ErrMoveConstruct> move_construct(Buffer&& buff
+            , ObjectRef& src) const = 0;
         
         virtual Res<void, ErrDestruct> can_destruct(const ObjectRef& obj) const = 0;
         virtual Res<void, ErrDestruct> dealloc_destruct(Object&& obj) const = 0;
         virtual Res<BufferRef, ErrDestruct> destruct(ObjectRef&& obj) const = 0;
         virtual Res<Buffer, ErrDestruct> destruct(Object&& obj) const = 0;
         
-        virtual Res<void, ErrCopy> can_copy_assign(const ObjectRef& dst, const ObjectRef& src) const = 0;
+        virtual Res<void, ErrCopy> can_copy_assign(const ObjectRef& dst
+            , const ObjectRef& src) const = 0;
         virtual Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const = 0;
 
 // TODO add tests for can move assign and can move assign
-        virtual Res<void, ErrMove> can_move_assign(const ObjectRef& dst, const ObjectRef& src) const = 0;
+        virtual Res<void, ErrMove> can_move_assign(const ObjectRef& dst
+            , const ObjectRef& src) const = 0;
         virtual Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const = 0;
 
     private:

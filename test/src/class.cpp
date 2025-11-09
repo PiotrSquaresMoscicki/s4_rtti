@@ -123,6 +123,27 @@ TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
 
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Class::move_construct", "[rtti::Class]" ) {
+    char src_array[30];
+    BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
+    Object src = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
+    src.value_as<TestClassNotMoveAssignable>().ok()->m_int_val = 57;
+    ObjectRef obj_ref = static_type<TestClassNotMoveAssignable>()->move_construct(std::move(buff_ref), src).ok();
+    REQUIRE( obj_ref.is_valid() == true );
+    REQUIRE( obj_ref.type().ok() == static_type<TestClassNotMoveAssignable>() );
+    REQUIRE( obj_ref.size().ok() == 30 );
+    REQUIRE( obj_ref.value().ok() == reinterpret_cast<void*>(src_array) );
+    REQUIRE( obj_ref.value_as<TestClassNotMoveAssignable>().ok()->m_int_val == 57 );
+
+    Buffer buff = Buffer(sizeof(TestClassNotMoveAssignable));
+    Object obj = static_type<TestClassNotMoveAssignable>()->move_construct(std::move(buff), src).ok();
+    REQUIRE( obj.is_valid() == true );
+    REQUIRE( obj.type().ok() == static_type<TestClassNotMoveAssignable>() );
+    REQUIRE( obj.size().ok() == sizeof(TestClassNotMoveAssignable) );
+    REQUIRE( obj.value_as<TestClassNotMoveAssignable>().ok()->m_int_val == 57 );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Class::can_destruct", "[rtti::Class]" ) {
     Object obj;
     REQUIRE( 
