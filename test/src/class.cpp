@@ -203,6 +203,29 @@ TEST_CASE( "rtti::Class::is_move_assignable", "[rtti::Class]" ) {
 }
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Class::alloc_move_construct", "[rtti::Class]" ) {
+    Object src = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
+    src.value_as<TestClassNotMoveAssignable>().ok()->m_int_val = 6;
+    Object dst = static_type<TestClassNotMoveAssignable>()->alloc_move_construct(src).ok();
+    REQUIRE( dst.is_valid() == true );
+    REQUIRE( dst.type().ok() == static_type<TestClassNotMoveAssignable>() );
+    REQUIRE( dst.size().ok() == sizeof(TestClassNotMoveAssignable) );
+    REQUIRE( dst.value_as<TestClassNotMoveAssignable>().ok()->m_int_val == 6 );
+
+    Object invalid_src;
+    REQUIRE( 
+        static_type<TestClassNotMoveAssignable>()->alloc_move_construct(invalid_src).err() 
+        ==
+        Type::ErrMoveConstruct::NOT_VALID_SOURCE );
+
+    src = static_type<TestClassNotCopyAssignable>()->alloc_construct().ok();
+    REQUIRE( 
+        static_type<TestClassNotMoveAssignable>()->alloc_move_construct(src).err()
+        ==
+        Type::ErrMoveConstruct::INCORRECT_SOURCE_TYPE );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Class::can_construct", "[rtti::Class]" ) {
     Buffer src;
 
