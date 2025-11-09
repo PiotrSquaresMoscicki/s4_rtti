@@ -33,27 +33,6 @@ namespace rtti {
             NOT_A_TEMPLATE_INSTANCE
         };
 
-        enum class ErrNewObject {
-            NOT_DEFAULT_CONSTRUCTIBLE
-        };
-
-        enum class ErrNewCopy {
-            NOT_COPY_CONSTRUCTIBLE,
-            NOT_VALID_SOURCE,
-            INCORRECT_SOURCE_TYPE
-        };
-
-        enum class ErrNewMove {
-            NOT_MOVE_CONSTRUCTIBLE,
-            NOT_VALID_SOURCE,
-            INCORRECT_SOURCE_TYPE
-        };
-
-        enum class ErrDeleteObject {
-            NOT_VALID_SOURCE,
-            INCORRECT_SOURCE_TYPE
-        };
-
         enum class ErrConstruct {
             NOT_DEFAULT_CONSTRUCTIBLE,
             INVALID_BUFFER,
@@ -122,33 +101,37 @@ namespace rtti {
         virtual bool is_copy_assignable() const = 0;
         virtual bool is_move_assignable() const = 0;
 
-        virtual Res<Object, ErrNewObject> new_default() const = 0;
-        virtual Res<Object, ErrNewCopy> new_copy(const ObjectRef& src) const = 0;
-        virtual Res<Object, ErrNewMove> new_move(ObjectRef& src) const = 0;
-        virtual Res<void, ErrDeleteObject> can_delete_object(const ObjectRef& obj) const = 0;
-        virtual Res<void, ErrDeleteObject> delete_object(Object&& obj) const = 0;
-
+        virtual Res<void, ErrConstruct> can_construct() const = 0;
         virtual Res<void, ErrConstruct> can_construct(const BufferRef& buff) const = 0;
+        virtual Res<Object, ErrConstruct> alloc_construct() const = 0;
         virtual Res<ObjectRef, ErrConstruct> construct(BufferRef&& buff) const = 0;
         virtual Res<Object, ErrConstruct> construct(Buffer&& buff) const = 0;
 
+        virtual Res<void, ErrCopyConstruct> can_copy_construct(const ObjectRef& src) const = 0;
         virtual Res<void, ErrCopyConstruct> can_copy_construct(const BufferRef& buff
             , const ObjectRef& src) const = 0;
+        virtual Res<Object, ErrCopyConstruct> alloc_copy_construct(const ObjectRef& src) const = 0;
         virtual Res<ObjectRef, ErrCopyConstruct> copy_construct(BufferRef&& buff, const ObjectRef& src) const = 0;
         virtual Res<Object, ErrCopyConstruct> copy_construct(Buffer&& buff, const ObjectRef& src) const = 0;
         
 // TODO: Add support for variadic args in Res structure to provide additional data in case of error
 //      Right now if we fail move instruct or move assign operation we just eat up the source object 
+        virtual Res<void, ErrMoveConstruct> can_move_construct(const ObjectRef& src) const = 0;
         virtual Res<void, ErrMoveConstruct> can_move_construct(const BufferRef& buff
             , const ObjectRef& src) const = 0;
+        virtual Res<Object, ErrMoveConstruct> alloc_move_construct(ObjectRef& src) const = 0;
         virtual Res<ObjectRef, ErrMoveConstruct> move_construct(BufferRef&& buff, ObjectRef& src) const = 0;
         virtual Res<Object, ErrMoveConstruct> move_construct(Buffer&& buff, ObjectRef& src) const = 0;
         
         virtual Res<void, ErrDestruct> can_destruct(const ObjectRef& obj) const = 0;
+        virtual Res<void, ErrDestruct> dealloc_destruct(Object&& obj) const = 0;
         virtual Res<BufferRef, ErrDestruct> destruct(ObjectRef&& obj) const = 0;
         virtual Res<Buffer, ErrDestruct> destruct(Object&& obj) const = 0;
         
+        virtual Res<void, ErrCopy> can_copy_assign(const ObjectRef& dst, const ObjectRef& src) const = 0;
         virtual Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const = 0;
+
+        virtual Res<void, ErrMove> can_move_assign(const ObjectRef& dst, const ObjectRef& src) const = 0;
         virtual Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const = 0;
 
     private:
