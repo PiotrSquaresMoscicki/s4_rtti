@@ -173,10 +173,10 @@ namespace rtti {
     }; // class TemplateInstancePtr
 
     template <typename TYPE>
-    class static_type_trait;
+    class static_type;
 
     template <typename CLASS>
-    class static_class_trait;
+    class static_class;
 
     template <typename CLASS>
     class dynamic_class_trait;

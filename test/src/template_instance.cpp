@@ -75,26 +75,26 @@
 //     ITestInterface* test_obj 
 //        = reinterpret_cast<ITestInterface*(*)()>(lib.symbol("create_test_interface").ok())();
         
-//     REQUIRE( static_type_trait<DynamicallyLoadedLibTemplate<int>>::get() == test_obj->get_test_template_type() );
+//     REQUIRE( static_type<DynamicallyLoadedLibTemplate<int>>::get() == test_obj->get_test_template_type() );
 // }
 
 // // // *************************************************************************************************
 // // TEST_CASE( "rtti::TemplateInstance::members", "[rtti::Template]" ) {
-// //     REQUIRE( static_class_trait<TestTemplate1>::get()->members().size() == 3 );
+// //     REQUIRE( static_class<TestTemplate1>::get()->members().size() == 3 );
 // //     TestTemplate2<int> ss;
 // //     TestTemplate2<int>::m_char_init_field_info();
-// //     REQUIRE( static_class_trait<TestTemplate2<int>>::get()->members().size() == 4 );
+// //     REQUIRE( static_class<TestTemplate2<int>>::get()->members().size() == 4 );
 // // }
 
 // // // *************************************************************************************************
 // // TEST_CASE( "rtti::TemplateInstance::methods", "[rtti::Template]" ) {
-// //     REQUIRE( static_class_trait<TestTemplate1>::get()->methods().size() == 1 );
-// //     REQUIRE( static_class_trait<TestTemplate2<int>>::get()->methods().size() == 2 );
+// //     REQUIRE( static_class<TestTemplate1>::get()->methods().size() == 1 );
+// //     REQUIRE( static_class<TestTemplate2<int>>::get()->methods().size() == 2 );
 // // }
 
 // //*************************************************************************************************
 // // TEST_CASE( "rtti::TemplateInstance::name", "[rtti::Template]" ) {
-// //     //REQUIRE( static_type_trait<TestTemplate1>::get()->name() == "test::TestTemplate1" );
-// //     //REQUIRE( static_type_trait<TestTemplate2<int>>::get()->name() == "TestTemplate2<int>" );
-// //     static_type_trait<TestTemplate2<int>>::get();
+// //     //REQUIRE( static_type<TestTemplate1>::get()->name() == "test::TestTemplate1" );
+// //     //REQUIRE( static_type<TestTemplate2<int>>::get()->name() == "TestTemplate2<int>" );
+// //     static_type<TestTemplate2<int>>::get();
 // // }

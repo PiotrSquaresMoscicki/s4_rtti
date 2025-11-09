@@ -53,23 +53,23 @@ using namespace rtti::test::method;
 //     ITestInterface* test_obj 
 //        = reinterpret_cast<ITestInterface*(*)()>(lib.symbol("create_test_interface").ok())();
         
-//     REQUIRE( static_type_trait<DynamicallyLoadedLibClass>::get() == test_obj->get_test_class_type() );
+//     REQUIRE( static_type<DynamicallyLoadedLibClass>::get() == test_obj->get_test_class_type() );
 // }
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Method::==", "[rtti::Method]" ) {
-    //REQUIRE( static_class_trait<TestClass2>::get()->method );
+    //REQUIRE( static_class<TestClass2>::get()->method );
 }
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Class::methods", "[rtti::Class]" ) {
-    REQUIRE( static_class_trait<TestClass1>::get()->methods().size() == 1 );
-    REQUIRE( static_class_trait<TestClass2>::get()->methods().size() == 2 );
+    REQUIRE( static_class<TestClass1>::get()->methods().size() == 1 );
+    REQUIRE( static_class<TestClass2>::get()->methods().size() == 2 );
 }
 
 //*************************************************************************************************
 // TEST_CASE( "rtti::Class::name", "[rtti::Fundamental]" ) {
-//     REQUIRE( static_type_trait<TestClass1>::get()->name() == "test::TestClass1" );
-//     REQUIRE( static_type_trait<TestClass2>::get()->name() == "TestClass2" );
+//     REQUIRE( static_type<TestClass1>::get()->name() == "test::TestClass1" );
+//     REQUIRE( static_type<TestClass2>::get()->name() == "TestClass2" );
 // }
 

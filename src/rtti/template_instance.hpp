@@ -128,7 +128,7 @@
 //             std::string result = generate_params_for_name<IDX - 1>();
 
 //             std::string next_param
-//                 = static_type_trait<typename std::tuple_element_t<IDX, typename DECLARING_CLASS::ParamsTuple>>::get()
+//                 = static_type<typename std::tuple_element_t<IDX, typename DECLARING_CLASS::ParamsTuple>>::get()
 //                     ->name();
 
 //                 result = result + ", " + next_param;
@@ -138,7 +138,7 @@
 
 //         template<>
 //         static std::string generate_params_for_name<0>() {
-//             return static_type_trait<
+//             return static_type<
 //                     typename std::tuple_element_t<0, typename DECLARING_CLASS::ParamsTuple>
 //                 >()->name();
 //         }*/
@@ -149,7 +149,7 @@
 //         {
 //             //assert(params_names.size() == 1);
 //             //TemplateParam param(params_names[IDX]
-//             //    , static_type_trait<typename std::tuple_element<IDX, typename DECLARING_CLASS::ParamsTuple>::type>::get());
+//             //    , static_type<typename std::tuple_element<IDX, typename DECLARING_CLASS::ParamsTuple>::type>::get());
 //             std::vector<TemplateParam> result;
 //             //result.push_back(std::move(param));
 

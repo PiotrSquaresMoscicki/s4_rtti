@@ -15,18 +15,18 @@ using namespace test;
 class TestInterfaceImpl : public ITestInterface {
 public:
     rtti::EnumPtr get_test_enum_type() const override {
-        return rtti::static_type_trait<DynamicallyLoadedLibEnum>::get()->as_enum().ok(); 
+        return rtti::static_type<DynamicallyLoadedLibEnum>::get()->as_enum().ok(); 
     }
 
     rtti::ClassPtr get_test_class_type() const override { 
-        return rtti::static_class_trait<DynamicallyLoadedLibClass>::get(); 
+        return rtti::static_class<DynamicallyLoadedLibClass>::get(); 
     }
 
     // rtti::ClassPtr get_test_template_type() const override { 
-    //     return rtti::static_class_trait<DynamicallyLoadedLibTemplate<int>>::get(); 
+    //     return rtti::static_class<DynamicallyLoadedLibTemplate<int>>::get(); 
     // }
 
-    rtti::TypePtr get_bool_type() const override { return rtti::static_type_trait<bool>::get().get(); }
+    rtti::TypePtr get_bool_type() const override { return rtti::static_type<bool>::get().get(); }
     
 }; // TestInterfaceImpl
 
