@@ -25,22 +25,29 @@ namespace test {
     //     int m_val = 0;
     // };
 
-    // class TestClassNotCopyConstructible {
-    // public:
-    //     CLASS(TestClassNotCopyConstructible)
-    //     END_CLASS
+    class TestClassNotCopyConstructible {
+    public:
+        CLASS(test::TestClassNotCopyConstructible)
+        END_CLASS
 
-    //     TestClassNotCopyConstructible() = default;
-    //     TestClassNotCopyConstructible(const TestClassNotCopyConstructible& other) = delete;
-    // };
+        TestClassNotCopyConstructible() = default;
+        TestClassNotCopyConstructible(const TestClassNotCopyConstructible& other) = delete; // DELETE
+        TestClassNotCopyConstructible(TestClassNotCopyConstructible&& other) = default;
+        TestClassNotCopyConstructible& operator=(const TestClassNotCopyConstructible& other) = default;
+        TestClassNotCopyConstructible& operator=(TestClassNotCopyConstructible&& other) = default;
+    };
 
-    // class TestClassNotMoveConstructible {
-    // public:
-    //     CLASS(TestClassNotMoveConstructible)
-    //     END_CLASS
-    //     TestClassNotMoveConstructible() = default;
-    //     TestClassNotMoveConstructible(TestClassNotMoveConstructible&& other) = delete;
-    // };
+    class TestClassNotMoveConstructible {
+    public:
+        CLASS(test::TestClassNotMoveConstructible)
+        END_CLASS
+
+        TestClassNotMoveConstructible() = default;
+        TestClassNotMoveConstructible(const TestClassNotMoveConstructible& other) = default;
+        TestClassNotMoveConstructible(TestClassNotMoveConstructible&& other) = delete; // DELETE
+        TestClassNotMoveConstructible& operator=(const TestClassNotMoveConstructible& other) = default;
+        TestClassNotMoveConstructible& operator=(TestClassNotMoveConstructible&& other) = default;
+    };
 }
 
 REGISTER_CLASS(test, TestClass1)
@@ -120,7 +127,63 @@ TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
     REQUIRE( static_type<TestClass2>()->name() == "TestClass2" );
 }
 
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::copy_construct", "[rtti::Class]" ) {
+    char src_array[30];
+    BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
+    Object src = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
+    src.value_as<TestClassNotMoveAssignable>().ok()->m_int_val = 57;
+    ObjectRef obj_ref = static_type<TestClassNotMoveAssignable>()->copy_construct(std::move(buff_ref), src).ok();
+    REQUIRE( obj_ref.is_valid() == true );
+    REQUIRE( obj_ref.type().ok() == static_type<TestClassNotMoveAssignable>() );
+    REQUIRE( obj_ref.size().ok() == 30 );
+    REQUIRE( obj_ref.value().ok() == reinterpret_cast<void*>(src_array) );
+    REQUIRE( obj_ref.value_as<TestClassNotMoveAssignable>().ok()->m_int_val == 57 );
 
+    Buffer buff = Buffer(sizeof(TestClassNotMoveAssignable));
+    Object obj = static_type<TestClassNotMoveAssignable>()->copy_construct(std::move(buff), src).ok();
+    REQUIRE( obj.is_valid() == true );
+    REQUIRE( obj.type().ok() == static_type<TestClassNotMoveAssignable>() );
+    REQUIRE( obj.size().ok() == sizeof(TestClassNotMoveAssignable) );
+    REQUIRE( obj.value_as<TestClassNotMoveAssignable>().ok()->m_int_val == 57 );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::can_move_construct", "[rtti::Class]" ) {
+    Buffer buff;
+    Object src;
+    
+    REQUIRE( 
+        static_type<TestClassNotMoveConstructible>()->can_move_construct(buff, src).err() 
+        == 
+        Type::ErrMoveConstruct::NOT_MOVE_CONSTRUCTIBLE );
+    
+    REQUIRE( 
+        static_type<TestClassNotCopyConstructible>()->can_move_construct(buff, src).err() 
+        == 
+        Type::ErrMoveConstruct::INVALID_BUFFER );
+
+    buff = Buffer(1);
+    REQUIRE( 
+        static_type<TestClassNotCopyConstructible>()->can_move_construct(buff, src).err() 
+        == 
+        Type::ErrMoveConstruct::BUFFER_TOO_SMALL );
+
+    buff = Buffer(sizeof(TestClassNotCopyConstructible));
+    REQUIRE( 
+        static_type<TestClassNotCopyConstructible>()->can_move_construct(buff, src).err() 
+        == 
+        Type::ErrMoveConstruct::NOT_VALID_SOURCE );
+
+    src = static_type<TestClassNotMoveConstructible>()->alloc_construct().ok();
+    REQUIRE( 
+        static_type<TestClassNotCopyConstructible>()->can_move_construct(buff, src).err() 
+        == 
+        Type::ErrMoveConstruct::INCORRECT_SOURCE_TYPE );
+
+    src = static_type<TestClassNotCopyConstructible>()->alloc_construct().ok();
+    REQUIRE( static_type<TestClassNotCopyConstructible>()->can_move_construct(buff, src).is_ok() == true );
+}
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Class::move_construct", "[rtti::Class]" ) {
