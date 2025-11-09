@@ -79,6 +79,8 @@ namespace rtti {
 
         Type(std::string name, size_t size, Meta meta);
 
+// TODO virtual destructor?
+
         const std::string& name() const { return m_name; }
         size_t size() const { return m_size; }
         const Meta& meta() const { return m_attributes; }

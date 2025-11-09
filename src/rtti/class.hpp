@@ -49,6 +49,10 @@ namespace rtti {
             return Err(ErrAsTemplateInstance::NOT_A_TEMPLATE_INSTANCE); 
         }
 
+        ContainerIterator begin(ObjectRef& obj) const { return {}; }
+        ContainerIterator end(ObjectRef& obj) const { return {}; }
+        size_t length(const ObjectRef& obj) const { return 0; }
+
     private:
         std::vector<const Member*> m_members;
         std::vector<const Method*> m_methods;
