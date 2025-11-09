@@ -129,6 +129,23 @@ TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
 
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Class::construct", "[rtti::Class]" ) {
+    char src_array[30];
+    BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
+    ObjectRef obj_ref = static_type<TestClassNotMoveConstructible>()->construct(std::move(buff_ref)).ok();
+    REQUIRE( obj_ref.is_valid() == true );
+    REQUIRE( obj_ref.type().ok() == static_type<TestClassNotMoveConstructible>() );
+    REQUIRE( obj_ref.value().ok() == reinterpret_cast<void*>(src_array) );
+    REQUIRE( obj_ref.size().ok() == 30 );
+
+    Buffer buff = Buffer(sizeof(TestClassNotMoveConstructible));
+    Object obj = static_type<TestClassNotMoveConstructible>()->construct(std::move(buff)).ok();
+    REQUIRE( obj.is_valid() == true );
+    REQUIRE( obj.type().ok() == static_type<TestClassNotMoveConstructible>() );
+    REQUIRE( obj.size().ok() == sizeof(TestClassNotMoveConstructible) );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Class::can_copy_construct", "[rtti::Class]" ) {
     Buffer buff;
     Object src;
