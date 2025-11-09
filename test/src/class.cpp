@@ -65,6 +65,15 @@ public:
     virtual ~TestClass2() = default;
 };
 
+class TestClassNotDestructible {
+public:
+    CLASS(TestClassNotDestructible)
+    END_CLASS
+
+private:
+    ~TestClassNotDestructible() {}
+};
+
 class TestClassNotMoveAssignable {
 public:
     CLASS(TestClassNotMoveAssignable)
@@ -362,6 +371,12 @@ TEST_CASE( "rtti::Class::move_construct", "[rtti::Class]" ) {
 //*************************************************************************************************
 TEST_CASE( "rtti::Class::can_destruct", "[rtti::Class]" ) {
     Object obj;
+
+    REQUIRE( 
+        static_type<TestClassNotDestructible>()->can_destruct(obj).err() 
+        == 
+        Type::ErrDestruct::NOT_DESTRUCTIBLE );
+
     REQUIRE( 
         static_type<TestClassNotMoveAssignable>()->can_destruct(obj).err() 
         == 
