@@ -39,7 +39,7 @@ namespace rtti {
     //*********************************************************************************************
     template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
     FieldInstance<CLASS, DECLARING_CLASS, FIELD>::FieldInstance(std::string name, FIELD CLASS::*const)
-        : Field(std::move(name), static_type<FIELD>(), static_class<CLASS>(), {}) 
+        : Field(std::move(name), static_type_trait<FIELD>::get(), static_type_trait<CLASS>::get(), {}) 
     {
         const_cast<Class*>(DECLARING_CLASS::static_class())->m_members.push_back(this);
     }
@@ -48,7 +48,7 @@ namespace rtti {
     template <typename CLASS, typename DECLARING_CLASS, typename FIELD>
     FieldInstance<CLASS, DECLARING_CLASS, FIELD>::FieldInstance(std::string name, FIELD CLASS::*const
         , Meta meta)
-        : Field(std::move(name), static_type<FIELD>(), static_class<CLASS>(), std::move(meta)) 
+        : Field(std::move(name), static_type_trait<FIELD>::get(), static_type_trait<CLASS>::get(), std::move(meta)) 
     {}
 
     //*********************************************************************************************

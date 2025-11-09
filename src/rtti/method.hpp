@@ -82,8 +82,8 @@ namespace rtti {
         , const std::string& name_no_params, const std::string& params_names, MethodType method
         , Meta meta) 
 
-        : Method(name_no_params, static_type<RET>(), generate_params<PARAMS...>(params_names)
-            , static_class<CLASS>(), std::move(meta))
+        : Method(name_no_params, static_type_trait<RET>::get(), generate_params<PARAMS...>(params_names)
+            , static_class_trait<CLASS>::get(), std::move(meta))
         , m_method(method)
     {
         instance->m_methods.push_back(this);

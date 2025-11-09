@@ -23,15 +23,7 @@ namespace rtti {
     inline ClassPtr::operator TypePtr() const { return TypePtr(m_type); }
     // inline TemplateInstancePtr::operator TypePtr() const { return TypePtr(m_type); }
     // inline TemplateInstancePtr::operator ClassPtr() const { return ClassPtr(m_type); }
-
-    // template <template <typename...> typename TEMPLATE, typename... PARAMS>
-    // class RegisteredTypeInstance {
-    // };
-
-    // template <typename TYPE>
-    // class RegisteredTypeInstance {
-    // };
-
+    
     template <typename TYPE>
     class static_type_trait {
     public:
@@ -54,67 +46,70 @@ namespace rtti {
         }
     };
 
-    // template <template <typename...> typename TEMPLATE, typename... PARAMS>
-    // inline TypePtr static_type() {
-    //         return RegisteredTypeInstance<TEMPLATE<PARAMS...>>::static_type();
-    // }
-
-    template <typename TYPE>
-    inline TypePtr static_type() {
-            return TYPE::static_class();
-    }
-
-    // template <template <typename...> typename TEMPLATE, typename... PARAMS>
-    // inline ClassPtr static_class() {
-    //         return RegisteredTypeInstance<TEMPLATE<PARAMS...>>::static_class();
-    // }
-
     template <typename CLASS>
-    inline ClassPtr static_class() {
+    class static_class_trait {
+    public:
+        static ClassPtr get() {
             return CLASS::static_class();
-    }
-    
-    template <typename CLASS>
-    inline ClassPtr dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
+        }
+    };
 
+    template <typename CLASS>
+    class dynamic_class_trait {
+    public:
+        static ClassPtr get(CLASS& obj) {
+            return obj.dynamic_class(); 
+        }
+    };
 }
 
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
 #define REGISTER_FUNDAMENTAL(ARG_TYPE)\
-    template <> inline ::rtti::TypePtr rtti::static_type<ARG_TYPE>() {\
-        static ::rtti::TypePtr result = nullptr;\
-        static ::rtti::FundamentalInstance<ARG_TYPE> instance(#ARG_TYPE);\
-        if (result == nullptr)\
-            result = ::rtti::Database::register_type(&instance).ok();\
-        return result;\
+    namespace rtti {\
+        template <>\
+        class static_type_trait<ARG_TYPE> {\
+        public:\
+            static TypePtr get() {\
+                static ::rtti::TypePtr result = nullptr;\
+                static ::rtti::FundamentalInstance<ARG_TYPE> instance(#ARG_TYPE);\
+                if (result == nullptr)\
+                    result = ::rtti::Database::register_type(&instance).ok();\
+                return result;\
+            }\
+        };\
     }
 
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
 #define REGISTER_ENUM(ARG_ENUM)\
-    template <>\
-    inline ::rtti::TypePtr rtti::static_type<ARG_ENUM>() {\
-        using EnumType = ::ARG_ENUM;\
-        static ::rtti::EnumInstance<EnumType> instance = ::rtti::EnumInstance<EnumType>(#ARG_ENUM, \
-            std::vector<::rtti::EnumValue> {
+    namespace rtti {\
+        template <>\
+        class static_type_trait<ARG_ENUM> {\
+        public:\
+            static TypePtr get() {\
+                using EnumType = ::ARG_ENUM;\
+                static ::rtti::EnumInstance<EnumType> instance = ::rtti::EnumInstance<EnumType>(#ARG_ENUM, \
+                    std::vector<::rtti::EnumValue> {
 
 //*************************************************************************************************
 #define ENUM_VALUE(ARG_VALUE)\
-     ::rtti::EnumValue(#ARG_VALUE, static_cast<size_t>(EnumType::ARG_VALUE)),
+                ::rtti::EnumValue(#ARG_VALUE, static_cast<size_t>(EnumType::ARG_VALUE)),
 
 //*************************************************************************************************
 #define END_ENUM\
-             ::rtti::EnumValue() /* dummy enum value so we can use , in ENUM_VALUE macro */\
-        });\
-        static ::rtti::TypePtr result = nullptr;\
-        if (result == nullptr) {\
-            result = ::rtti::Database::register_type(&instance).ok();\
-        }\
-        return result; \
-    }\
+                    ::rtti::EnumValue() /* dummy enum value so we can use , in ENUM_VALUE macro */\
+                });\
+                static ::rtti::TypePtr result = nullptr;\
+                if (result == nullptr) {\
+                    result = ::rtti::Database::register_type(&instance).ok();\
+                }\
+                return result; \
+            }\
+        };\
+    }
 
 //*************************************************************************************************
 //*************************************************************************************************
@@ -147,15 +142,24 @@ namespace rtti {
         class ARG_CLASS##TypeImpl_internal;\
     }\
     \
-    template<>\
-    ::rtti::TypePtr rtti::static_type<::NAMESPACE::ARG_CLASS>() {\
-        return ::rtti::static_type<::NAMESPACE::ARG_CLASS##TypeImpl_internal>();\
+    namespace rtti {\
+        template <>\
+        class static_type_trait<::NAMESPACE::ARG_CLASS> {\
+        public:\
+            static TypePtr get() {\
+                return ::rtti::static_type_trait<::NAMESPACE::ARG_CLASS##TypeImpl_internal>::get();\
+            }\
+        };\
+        \
+        template <>\
+        class static_class_trait<::NAMESPACE::ARG_CLASS> {\
+        public:\
+            static ClassPtr get() {\
+                return ::rtti::static_class_trait<::NAMESPACE::ARG_CLASS##TypeImpl_internal>::get();\
+            }\
+        };\
+        \
     }\
-    template<>\
-    ::rtti::ClassPtr rtti::static_class<::NAMESPACE::ARG_CLASS>() {\
-        return ::rtti::static_class<::NAMESPACE::ARG_CLASS##TypeImpl_internal>();\
-    }\
-    \
     namespace NAMESPACE {\
         class ARG_CLASS##TypeImpl_internal {\
         public:\
@@ -172,7 +176,7 @@ namespace rtti {
 #define REGISTER_CONTAINER(ARG_CONTAINER)\
     namespace rtti {\
         template <typename... PARAMS>\
-        class RegisteredTypeInstance<ARG_CONTAINER<PARAMS...>> {\
+        class static_type_trait<ARG_CONTAINER<PARAMS...>> {\
         public:\
             static TypePtr static_type() {\
                 return static_class();\
@@ -304,7 +308,7 @@ namespace rtti {
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-template <> inline ::rtti::TypePtr rtti::static_type<void>() {
+template <> inline ::rtti::TypePtr rtti::static_type_trait<void>::get() {
     return nullptr;
 }
 

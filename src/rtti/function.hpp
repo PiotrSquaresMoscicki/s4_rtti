@@ -95,7 +95,7 @@ namespace rtti {
     FunctionInstance<RET, PARAMS...>::FunctionInstance(const std::string& name_no_params
         , const std::string& params_names, FunctionType function, Meta meta)
     
-        : Function(name_no_params, static_type<RET>(), generate_params<PARAMS...>(params_names)
+        : Function(name_no_params, static_type_trait<RET>::get(), generate_params<PARAMS...>(params_names)
             , std::move(meta))
         , m_function(function)
     {

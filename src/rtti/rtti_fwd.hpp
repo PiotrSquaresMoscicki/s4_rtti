@@ -173,13 +173,13 @@ namespace rtti {
     }; // class TemplateInstancePtr
 
     template <typename TYPE>
-    inline TypePtr static_type();
+    class static_type_trait;
 
     template <typename CLASS>
-    inline ClassPtr static_class();
-    
+    class static_class_trait;
+
     template <typename CLASS>
-    inline ClassPtr dynamic_class(CLASS& obj);
+    class dynamic_class_trait;
 
     enum class ErrFunction {
         NOT_FOUND

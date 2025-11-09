@@ -39,7 +39,7 @@ TEST_CASE( "Initialized ObjectRef", "[ObjectRef]" ) {
     REQUIRE( ref.is_valid() == true );
     REQUIRE( ref.value().ok() == &test_variable );
     REQUIRE( *reinterpret_cast<const int*>(ref.value().ok()) == test_variable );
-    REQUIRE( ref.type().ok() == static_type<int>() );
+    REQUIRE( ref.type().ok() == static_type_trait<int>::get() );
 }
 
 //*************************************************************************************************
@@ -70,7 +70,7 @@ TEST_CASE( "Initialized Object", "[Object]" ) {
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.value().ok() == test_variable );
     REQUIRE( *reinterpret_cast<const int*>(obj.value().ok()) == *test_variable );
-    REQUIRE( obj.type().ok() == static_type<int>() );
+    REQUIRE( obj.type().ok() == static_type_trait<int>::get() );
 }
 
 //*************************************************************************************************

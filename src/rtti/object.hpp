@@ -37,10 +37,10 @@ namespace rtti {
         ObjectRef& operator=(ObjectRef&& other);
 
         template <typename TYPE>
-        ObjectRef(TYPE* obj) : ObjectRef(reinterpret_cast<void*>(obj), static_type<TYPE>()) {}
+        ObjectRef(TYPE* obj) : ObjectRef(reinterpret_cast<void*>(obj), static_type_trait<TYPE>::get()) {}
         template <typename TYPE>
         ObjectRef(TYPE* obj, size_t size) 
-            : ObjectRef(reinterpret_cast<void*>(obj), static_type<TYPE>(), size) {}
+            : ObjectRef(reinterpret_cast<void*>(obj), static_type_trait<TYPE>::get(), size) {}
         ObjectRef(void* obj, TypePtr type) : ObjectRef(obj, type, type->size()) {}
         ObjectRef(void* obj, TypePtr type, size_t size);
         virtual ~ObjectRef() = default;
@@ -99,14 +99,14 @@ namespace rtti {
     //*********************************************************************************************
     template <typename T>
     Res<T*, ObjectRef::ErrValue> ObjectRef::value_as() {
-        assert(static_type<T>() == m_type); 
+        assert(static_type_trait<T>::get() == m_type); 
         return Ok(reinterpret_cast<T*>(m_value));
     }
 
     //*********************************************************************************************
     template <typename T>
     Res<const T*, ObjectRef::ErrValue> ObjectRef::value_as() const {
-        assert(static_type<T>() == m_type); 
+        assert(static_type_trait<T>::get() == m_type); 
         return Ok(reinterpret_cast<const T*>(const_cast<const void*>(m_value)));
     }
 
@@ -115,7 +115,7 @@ namespace rtti {
     //*********************************************************************************************
     template <typename TYPE>
     void Object::change_pointed_object(TYPE* obj) {
-        change_pointed_object(static_cast<void*>(obj), static_type<TYPE>());
+        change_pointed_object(static_cast<void*>(obj), static_type_trait<TYPE>::get());
     }
 
 } // namespace rtti
