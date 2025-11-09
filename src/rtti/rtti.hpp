@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tuple>
+#include <array>
 
 #include "ctti/ctti.hpp"
 
@@ -119,6 +120,10 @@ namespace rtti {
             END_CLASS_INTERNAL\
         };\
     } // namespace NAMESPACE
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+#define REGISTER_CONTAINER(ARG_CONTAINER, ARG_PARAMS)
 
 //*************************************************************************************************
 //*************************************************************************************************
@@ -261,4 +266,6 @@ REGISTER_FUNDAMENTAL(unsigned long long int)
 REGISTER_FUNDAMENTAL(float)
 REGISTER_FUNDAMENTAL(double)
 REGISTER_FUNDAMENTAL(long double)
+
+REGISTER_CONTAINER(std::array, <typename T COMMA size_t N>)
 

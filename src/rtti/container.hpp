@@ -33,6 +33,7 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     class S4_RTTI_EXPORT Container : public virtual Type {
+        // class, c-array, tuple, array
         virtual ContainerIterator begin(ObjectRef& obj) const = 0;
         virtual ContainerIterator end(ObjectRef& obj) const = 0;
         virtual size_t length(const ObjectRef& obj) const = 0;
@@ -43,6 +44,7 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT DynamicContainer : public virtual Container {
     public:
+        // map, set
         virtual void erase(ObjectRef& obj, ContainerIterator& it) const = 0;
         virtual void clear(ObjectRef& obj) const = 0;
         virtual void add_copy(ObjectRef& obj, const ObjectRef& value) const = 0;
@@ -54,6 +56,7 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT DynamicSequentialContainer : public virtual DynamicContainer {
     public:
+        // vector
         virtual void insert_copy(ObjectRef& obj, ContainerIterator& it, const ObjectRef& value) const = 0;
         virtual void insert_move(ObjectRef& obj, ContainerIterator& it, ObjectRef&& value) const = 0;
     }; // class DynamicSequentialContainer
