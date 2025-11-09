@@ -60,6 +60,9 @@ public:
     END_CLASS
 
     TestClassNotMoveAssignable() = default;
+    ~TestClassNotMoveAssignable() {
+        m_int_val = 0xDEADBEEF;
+    }
     TestClassNotMoveAssignable(const TestClassNotMoveAssignable& other) = default;
     TestClassNotMoveAssignable(TestClassNotMoveAssignable&& other) = default;
     TestClassNotMoveAssignable& operator=(const TestClassNotMoveAssignable& other) = default;
@@ -112,6 +115,35 @@ TEST_CASE( "rtti::Class::== from differend dll", "[rtti::Class]" ) {
 TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
     REQUIRE( static_type<TestClass1>()->name() == "test::TestClass1" );
     REQUIRE( static_type<TestClass2>()->name() == "TestClass2" );
+}
+
+
+//*************************************************************************************************
+// TEST_CASE( "rtti::Fundamental::can_destruct", "[rtti::Fundamental]" ) {
+//     Object obj;
+//     REQUIRE( static_type<int>()->can_destruct(obj).err() == Type::ErrDestruct::NOT_VALID_OBJECT );
+    
+//     obj = static_type<long>()->new_default().ok();
+//     REQUIRE( static_type<int>()->can_destruct(obj).err() == Type::ErrDestruct::INCORRECT_OBJECT_TYPE );
+    
+//     obj = static_type<int>()->new_default().ok();
+//     REQUIRE( static_type<int>()->can_destruct(obj).is_ok() == true );
+// }
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::destruct", "[rtti::Class]" ) {
+    char src_array[30];
+    BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
+    ObjectRef obj_ref = static_type<TestClassNotMoveAssignable>()->construct(std::move(buff_ref)).ok();
+    buff_ref = static_type<TestClassNotMoveAssignable>()->destruct(std::move(obj_ref)).ok();
+    REQUIRE( buff_ref.data().ok() == reinterpret_cast<void*>(src_array) );
+    REQUIRE( reinterpret_cast<TestClassNotMoveAssignable*>(src_array)->m_int_val == 0xDEADBEEF );
+
+    Object obj = static_type<TestClassNotMoveAssignable>()->new_default().ok();
+    const void* obj_value_ptr = obj.value().ok();
+    Buffer buff = static_type<TestClassNotMoveAssignable>()->destruct(std::move(obj)).ok();
+    REQUIRE( buff.data().ok() == obj_value_ptr );
+    REQUIRE( reinterpret_cast<TestClassNotMoveAssignable*>(const_cast<void*>(obj_value_ptr))->m_int_val == 0xDEADBEEF );
 }
 
 //*************************************************************************************************
