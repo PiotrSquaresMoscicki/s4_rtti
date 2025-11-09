@@ -14,16 +14,20 @@ namespace test {
     public:
     };
 
-    // class TestClassNotDefaultConstructible {
-    // public:
-    //     CLASS(TestClassNotDefaultConstructible)
-    //     END_CLASS
+    class TestClassNotDefaultConstructible {
+    public:
+        CLASS(test::TestClassNotDefaultConstructible)
+        END_CLASS
         
-    //     TestClassNotDefaultConstructible(int val) : m_val(val) {}
-        
-    // private:
-    //     int m_val = 0;
-    // };
+        TestClassNotDefaultConstructible(int val) : m_val(val) {}
+        TestClassNotDefaultConstructible(const TestClassNotDefaultConstructible& other) = default;
+        TestClassNotDefaultConstructible(TestClassNotDefaultConstructible&& other) = default;
+        TestClassNotDefaultConstructible& operator=(const TestClassNotDefaultConstructible& other) = default;
+        TestClassNotDefaultConstructible& operator=(TestClassNotDefaultConstructible&& other) = default;
+
+    private:
+        int m_val = 0;
+    };
 
     class TestClassNotCopyConstructible {
     public:
@@ -127,6 +131,39 @@ TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
     REQUIRE( static_type<TestClass2>()->name() == "TestClass2" );
 }
 
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::can_construct", "[rtti::Class]" ) {
+    Buffer src;
+
+    REQUIRE( 
+        static_type<TestClassNotDefaultConstructible>()->can_construct(src).err() 
+        == 
+        Type::ErrConstruct::NOT_DEFAULT_CONSTRUCTIBLE );
+    
+    REQUIRE( 
+        static_type<TestClassNotMoveAssignable>()->can_construct(src).err() 
+        == 
+        Type::ErrConstruct::INVALID_BUFFER );
+
+    src = Buffer(1);
+    REQUIRE( 
+        static_type<TestClassNotMoveAssignable>()->can_construct(src).err() 
+        == 
+        Type::ErrConstruct::BUFFER_TOO_SMALL );
+
+    src = Buffer(sizeof(TestClassNotMoveAssignable));
+    REQUIRE( 
+        static_type<TestClassNotMoveAssignable>()->can_construct(src).is_ok() 
+        == 
+        true );
+
+    src = Buffer(sizeof(TestClassNotMoveAssignable) + 20);
+    REQUIRE( 
+        static_type<TestClassNotMoveAssignable>()->can_construct(src).is_ok() 
+        == 
+        true );
+}
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Class::construct", "[rtti::Class]" ) {
