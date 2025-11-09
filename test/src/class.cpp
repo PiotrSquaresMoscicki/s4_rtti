@@ -62,6 +62,8 @@ public:
     TestClassNotMoveAssignable() = default;
     ~TestClassNotMoveAssignable() {
         m_int_val = 0xDEADBEEF;
+        if (deleted)
+            *deleted = true;
     }
     TestClassNotMoveAssignable(const TestClassNotMoveAssignable& other) = default;
     TestClassNotMoveAssignable(TestClassNotMoveAssignable&& other) = default;
@@ -69,6 +71,7 @@ public:
     TestClassNotMoveAssignable& operator=(TestClassNotMoveAssignable&& other) = delete; // DELETE
     
     unsigned int m_int_val = 0;
+    bool* deleted = nullptr;
 };
 
 class TestClassNotCopyAssignable {
@@ -118,17 +121,34 @@ TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
 }
 
 
+
 //*************************************************************************************************
-// TEST_CASE( "rtti::Fundamental::can_destruct", "[rtti::Fundamental]" ) {
-//     Object obj;
-//     REQUIRE( static_type<int>()->can_destruct(obj).err() == Type::ErrDestruct::NOT_VALID_OBJECT );
+TEST_CASE( "rtti::Class::can_destruct", "[rtti::Class]" ) {
+    Object obj;
+    REQUIRE( 
+        static_type<TestClassNotMoveAssignable>()->can_destruct(obj).err() 
+        == 
+        Type::ErrDestruct::NOT_VALID_OBJECT );
     
-//     obj = static_type<long>()->alloc_construct().ok();
-//     REQUIRE( static_type<int>()->can_destruct(obj).err() == Type::ErrDestruct::INCORRECT_OBJECT_TYPE );
+    obj = static_type<TestClassNotCopyAssignable>()->alloc_construct().ok();
+    REQUIRE( 
+        static_type<TestClassNotMoveAssignable>()->can_destruct(obj).err() 
+        == 
+        Type::ErrDestruct::INCORRECT_OBJECT_TYPE );
     
-//     obj = static_type<int>()->alloc_construct().ok();
-//     REQUIRE( static_type<int>()->can_destruct(obj).is_ok() == true );
-// }
+    obj = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
+    REQUIRE( static_type<TestClassNotMoveAssignable>()->can_destruct(obj).is_ok() == true );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Class::dealloc_destruct", "[rtti::Class]" ) {
+    Object obj = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
+    const void* obj_value_ptr = obj.value().ok();
+    bool deleted = false;
+    obj.value_as<TestClassNotMoveAssignable>().ok()->deleted = &deleted;
+    REQUIRE( static_type<TestClassNotMoveAssignable>()->dealloc_destruct(std::move(obj)).is_ok() == true );
+    REQUIRE( deleted == true );
+}
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Class::destruct", "[rtti::Class]" ) {

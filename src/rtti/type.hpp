@@ -131,6 +131,7 @@ namespace rtti {
         virtual Res<void, ErrCopy> can_copy_assign(const ObjectRef& dst, const ObjectRef& src) const = 0;
         virtual Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const = 0;
 
+// TODO add tests for can move assign and can move assign
         virtual Res<void, ErrMove> can_move_assign(const ObjectRef& dst, const ObjectRef& src) const = 0;
         virtual Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const = 0;
 
