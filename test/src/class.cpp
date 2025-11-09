@@ -60,7 +60,10 @@ public:
 //     END_CLASS
 
 //     TestClassNotMoveAssignable() = default;
+//     TestClassNotMoveAssignable(const TestClassNotMoveAssignable& other) = default;
 //     TestClassNotMoveAssignable(TestClassNotMoveAssignable&& other) = delete;
+//     TestClassNotMoveAssignable& operator=(const TestClassNotMoveAssignable& other) = default;
+//     TestClassNotMoveAssignable& operator=(TestClassNotMoveAssignable&& other) = default;
 // };
 
 // class TestClassNotCopyAssignable {

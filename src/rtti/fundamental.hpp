@@ -54,26 +54,26 @@ namespace rtti {
         Res<Object, ErrNewCopy> new_copy(const ObjectRef& src) const override;
         Res<Object, ErrNewMove> new_move(ObjectRef& src) const override;
         Res<void, ErrDeleteObject> can_delete_object(const ObjectRef& obj) const override;
-        void delete_object(Object&& obj) const override;
+        Res<void, ErrDeleteObject> delete_object(Object&& obj) const override;
 
         Res<void, ErrConstruct> can_construct(const BufferRef& buff) const override;
-        ObjectRef construct(BufferRef&& buff) const override;
-        Object construct(Buffer&& buff) const override;
+        Res<ObjectRef, ErrConstruct> construct(BufferRef&& buff) const override;
+        Res<Object, ErrConstruct> construct(Buffer&& buff) const override;
 
         Res<void, ErrCopyConstruct> can_copy_construct(const BufferRef& buff
             , const ObjectRef& src) const override;
-        ObjectRef copy_construct(BufferRef&& buff, const ObjectRef& src) const override;
-        Object copy_construct(Buffer&& buff, const ObjectRef& src) const override;
+        Res<ObjectRef, ErrCopyConstruct> copy_construct(BufferRef&& buff, const ObjectRef& src) const override;
+        Res<Object, ErrCopyConstruct> copy_construct(Buffer&& buff, const ObjectRef& src) const override;
         
         Res<void, ErrMoveConstruct> can_move_construct(const BufferRef& buff
             , const ObjectRef& src) const override;
-        ObjectRef move_construct(BufferRef&& buff, ObjectRef& src) const override;
-        Object move_construct(Buffer&& buff, ObjectRef& src) const override;
+        Res<ObjectRef, ErrMoveConstruct> move_construct(BufferRef&& buff, ObjectRef& src) const override;
+        Res<Object, ErrMoveConstruct> move_construct(Buffer&& buff, ObjectRef& src) const override;
         
         Res<void, ErrDestruct> can_destruct(const ObjectRef& obj) const override;
-        BufferRef destruct(ObjectRef&& obj) const override;
-        Buffer destruct(Object&& obj) const override;
-        
+        Res<BufferRef, ErrDestruct> destruct(ObjectRef&& obj) const override;
+        Res<Buffer, ErrDestruct> destruct(Object&& obj) const override;
+
         Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const override;
         Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const override;
 
@@ -169,11 +169,13 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    void FundamentalInstance<FUNDAMENTAL>::delete_object(Object&& obj) const {
+    Res<void, Type::ErrDeleteObject> FundamentalInstance<FUNDAMENTAL>::delete_object(Object&& obj) const {
         assert(can_delete_object(obj).is_ok());
         delete reinterpret_cast<FUNDAMENTAL*>(obj.m_value);
         obj.m_value = nullptr;
         obj.m_type = nullptr;
+
+        return Ok();
     }
 
     //*********************************************************************************************
@@ -193,18 +195,18 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    ObjectRef FundamentalInstance<FUNDAMENTAL>::construct(BufferRef&& buff) const {
+    Res<ObjectRef, Type::ErrConstruct> FundamentalInstance<FUNDAMENTAL>::construct(BufferRef&& buff) const {
         assert(can_construct(buff).is_ok());
-        return ObjectRef(new(buff.data().ok()) FUNDAMENTAL, buff.size().ok());
+        return Ok(ObjectRef(new(buff.data().ok()) FUNDAMENTAL, buff.size().ok()));
     }
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    Object FundamentalInstance<FUNDAMENTAL>::construct(Buffer&& buff) const {
+    Res<Object, Type::ErrConstruct> FundamentalInstance<FUNDAMENTAL>::construct(Buffer&& buff) const {
         assert(can_construct(buff).is_ok());
         Object res(new(buff.data().ok()) FUNDAMENTAL, buff.size().ok());
         std::move(buff).steal_data();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************
@@ -228,24 +230,24 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    ObjectRef FundamentalInstance<FUNDAMENTAL>::copy_construct(BufferRef&& buff
+    Res<ObjectRef, Type::ErrCopyConstruct> FundamentalInstance<FUNDAMENTAL>::copy_construct(BufferRef&& buff
         , const ObjectRef& src) const 
     {
         assert(can_copy_construct(buff, src).is_ok());
-        return ObjectRef(
-            new(buff.data().ok()) FUNDAMENTAL(*src.value_as<FUNDAMENTAL>().ok()), buff.size().ok());
+        return Ok(ObjectRef(
+            new(buff.data().ok()) FUNDAMENTAL(*src.value_as<FUNDAMENTAL>().ok()), buff.size().ok()));
     }
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    Object FundamentalInstance<FUNDAMENTAL>::copy_construct(Buffer&& buff
+    Res<Object, Type::ErrCopyConstruct> FundamentalInstance<FUNDAMENTAL>::copy_construct(Buffer&& buff
         , const ObjectRef& src) const 
     {
         assert(can_copy_construct(buff, src).is_ok());
         Object res(
             new(buff.data().ok()) FUNDAMENTAL(*src.value_as<FUNDAMENTAL>().ok()), buff.size().ok());
         std::move(buff).steal_data();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************
@@ -269,18 +271,18 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    ObjectRef FundamentalInstance<FUNDAMENTAL>::move_construct(BufferRef&& buff
+    Res<ObjectRef, Type::ErrMoveConstruct> FundamentalInstance<FUNDAMENTAL>::move_construct(BufferRef&& buff
         , ObjectRef& src) const 
     {
         assert(can_move_construct(buff, src).is_ok());
-        return ObjectRef(
+        return Ok(ObjectRef(
             new(buff.data().ok()) 
-            FUNDAMENTAL(std::move(*src.value_as<FUNDAMENTAL>().ok())), buff.size().ok());
+            FUNDAMENTAL(std::move(*src.value_as<FUNDAMENTAL>().ok())), buff.size().ok()));
     }
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    Object FundamentalInstance<FUNDAMENTAL>::move_construct(Buffer&& buff
+    Res<Object, Type::ErrMoveConstruct> FundamentalInstance<FUNDAMENTAL>::move_construct(Buffer&& buff
         , ObjectRef& src) const 
     {
         assert(can_move_construct(buff, src).is_ok());
@@ -288,7 +290,7 @@ namespace rtti {
             new(buff.data().ok()) 
             FUNDAMENTAL(std::move(*src.value_as<FUNDAMENTAL>().ok())), buff.size().ok());
         std::move(buff).steal_data();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************
@@ -306,22 +308,22 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    BufferRef FundamentalInstance<FUNDAMENTAL>::destruct(ObjectRef&& obj) const {
+    Res<BufferRef, Type::ErrDestruct> FundamentalInstance<FUNDAMENTAL>::destruct(ObjectRef&& obj) const {
         assert(can_destruct(obj).is_ok());
         reinterpret_cast<FUNDAMENTAL*>(obj.value().ok())->~FUNDAMENTAL();
         BufferRef res(obj.value().ok(), obj.size().ok());
         std::move(obj).steal_value();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************
     template <typename FUNDAMENTAL>
-    Buffer FundamentalInstance<FUNDAMENTAL>::destruct(Object&& obj) const {
+    Res<Buffer, Type::ErrDestruct> FundamentalInstance<FUNDAMENTAL>::destruct(Object&& obj) const {
         assert(can_destruct(obj).is_ok());
         reinterpret_cast<FUNDAMENTAL*>(obj.value().ok())->~FUNDAMENTAL();
         Buffer res(obj.value().ok(), obj.size().ok());
         std::move(obj).steal_value();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************

@@ -82,6 +82,12 @@
         "memory_resource": "cpp",
         "string_view": "cpp",
         "ranges": "cpp",
-        "stop_token": "cpp"
+        "stop_token": "cpp",
+        "span": "cpp",
+        "charconv": "cpp",
+        "csignal": "cpp",
+        "format": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp"
     }
 }

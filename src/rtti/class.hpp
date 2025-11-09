@@ -77,25 +77,25 @@ namespace rtti {
         Res<Object, ErrNewCopy> new_copy(const ObjectRef& src) const override;
         Res<Object, ErrNewMove> new_move(ObjectRef& src) const override;
         Res<void, ErrDeleteObject> can_delete_object(const ObjectRef& obj) const override;
-        void delete_object(Object&& obj) const override;
+        Res<void, ErrDeleteObject> delete_object(Object&& obj) const override;
 
         Res<void, ErrConstruct> can_construct(const BufferRef& buff) const override;
-        ObjectRef construct(BufferRef&& buff) const override;
-        Object construct(Buffer&& buff) const override;
+        Res<ObjectRef, ErrConstruct> construct(BufferRef&& buff) const override;
+        Res<Object, ErrConstruct> construct(Buffer&& buff) const override;
 
         Res<void, ErrCopyConstruct> can_copy_construct(const BufferRef& buff
             , const ObjectRef& src) const override;
-        ObjectRef copy_construct(BufferRef&& buff, const ObjectRef& src) const override;
-        Object copy_construct(Buffer&& buff, const ObjectRef& src) const override;
+        Res<ObjectRef, ErrCopyConstruct> copy_construct(BufferRef&& buff, const ObjectRef& src) const override;
+        Res<Object, ErrCopyConstruct> copy_construct(Buffer&& buff, const ObjectRef& src) const override;
         
         Res<void, ErrMoveConstruct> can_move_construct(const BufferRef& buff
             , const ObjectRef& src) const override;
-        ObjectRef move_construct(BufferRef&& buff, ObjectRef& src) const override;
-        Object move_construct(Buffer&& buff, ObjectRef& src) const override;
+        Res<ObjectRef, ErrMoveConstruct> move_construct(BufferRef&& buff, ObjectRef& src) const override;
+        Res<Object, ErrMoveConstruct> move_construct(Buffer&& buff, ObjectRef& src) const override;
         
         Res<void, ErrDestruct> can_destruct(const ObjectRef& obj) const override;
-        BufferRef destruct(ObjectRef&& obj) const override;
-        Buffer destruct(Object&& obj) const override;
+        Res<BufferRef, ErrDestruct> destruct(ObjectRef&& obj) const override;
+        Res<Buffer, ErrDestruct> destruct(Object&& obj) const override;
         
         Res<void, ErrCopy> copy_assign(ObjectRef& dst, const ObjectRef& src) const override;
         Res<void, ErrMove> move_assign(ObjectRef& dst, ObjectRef& src) const override;
@@ -173,7 +173,7 @@ namespace rtti {
     Res<Object, Type::ErrNewMove> ClassInstance<CLASS>::new_move(
         ObjectRef& src) const 
     {
-        if (!is_copy_constructible())
+        if constexpr (!std::is_move_constructible_v<CLASS>)
             return Err(ErrNewMove::NOT_MOVE_CONSTRUCTIBLE);
         else if (!src.is_valid())
             return Err(ErrNewMove::NOT_VALID_SOURCE);
@@ -198,11 +198,18 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    void ClassInstance<CLASS>::delete_object(Object&& obj) const {
+    Res<void, Type::ErrDeleteObject> ClassInstance<CLASS>::delete_object(Object&& obj) const {
         assert(can_delete_object(obj).is_ok());
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
         delete reinterpret_cast<CLASS*>(obj.m_value);
+#pragma GCC diagnostic pop
+
         obj.m_value = nullptr;
         obj.m_type = nullptr;
+
+        return Ok();
     }
 
     //*********************************************************************************************
@@ -222,18 +229,18 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    ObjectRef ClassInstance<CLASS>::construct(BufferRef&& buff) const {
+    Res<ObjectRef, Type::ErrConstruct> ClassInstance<CLASS>::construct(BufferRef&& buff) const {
         assert(can_construct(buff).is_ok());
-        return ObjectRef(new(buff.data().ok()) CLASS, buff.size().ok());
+        return Ok(ObjectRef(new(buff.data().ok()) CLASS, buff.size().ok()));
     }
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance<CLASS>::construct(Buffer&& buff) const {
+    Res<Object, Type::ErrConstruct> ClassInstance<CLASS>::construct(Buffer&& buff) const {
         assert(can_construct(buff).is_ok());
         Object res(new(buff.data().ok()) CLASS, buff.size().ok());
         std::move(buff).steal_data();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************
@@ -257,24 +264,24 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    ObjectRef ClassInstance<CLASS>::copy_construct(BufferRef&& buff
+    Res<ObjectRef, Type::ErrCopyConstruct> ClassInstance<CLASS>::copy_construct(BufferRef&& buff
         , const ObjectRef& src) const 
     {
         assert(can_copy_construct(buff, src).is_ok());
-        return ObjectRef(
-            new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok());
+        return Ok(ObjectRef(
+            new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok()));
     }
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance<CLASS>::copy_construct(Buffer&& buff
+    Res<Object, Type::ErrCopyConstruct> ClassInstance<CLASS>::copy_construct(Buffer&& buff
         , const ObjectRef& src) const 
     {
         assert(can_copy_construct(buff, src).is_ok());
         Object res(
             new(buff.data().ok()) CLASS(*src.value_as<CLASS>().ok()), buff.size().ok());
         std::move(buff).steal_data();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************
@@ -298,18 +305,18 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    ObjectRef ClassInstance<CLASS>::move_construct(BufferRef&& buff
+    Res<ObjectRef, Type::ErrMoveConstruct> ClassInstance<CLASS>::move_construct(BufferRef&& buff
         , ObjectRef& src) const 
     {
         assert(can_move_construct(buff, src).is_ok());
-        return ObjectRef(
+        return Ok(ObjectRef(
             new(buff.data().ok()) 
-            CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok());
+            CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok()));
     }
 
     //*********************************************************************************************
     template <typename CLASS>
-    Object ClassInstance<CLASS>::move_construct(Buffer&& buff
+    Res<Object, Type::ErrMoveConstruct> ClassInstance<CLASS>::move_construct(Buffer&& buff
         , ObjectRef& src) const 
     {
         assert(can_move_construct(buff, src).is_ok());
@@ -317,7 +324,7 @@ namespace rtti {
             new(buff.data().ok()) 
             CLASS(std::move(*src.value_as<CLASS>().ok())), buff.size().ok());
         std::move(buff).steal_data();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************
@@ -335,22 +342,22 @@ namespace rtti {
 
     //*********************************************************************************************
     template <typename CLASS>
-    BufferRef ClassInstance<CLASS>::destruct(ObjectRef&& obj) const {
+    Res<BufferRef, Type::ErrDestruct> ClassInstance<CLASS>::destruct(ObjectRef&& obj) const {
         assert(can_destruct(obj).is_ok());
         reinterpret_cast<CLASS*>(obj.value().ok())->~CLASS();
         BufferRef res(obj.value().ok(), obj.size().ok());
         std::move(obj).steal_value();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************
     template <typename CLASS>
-    Buffer ClassInstance<CLASS>::destruct(Object&& obj) const {
+    Res<Buffer, Type::ErrDestruct> ClassInstance<CLASS>::destruct(Object&& obj) const {
         assert(can_destruct(obj).is_ok());
         reinterpret_cast<CLASS*>(obj.value().ok())->~CLASS();
         Buffer res(obj.value().ok(), obj.size().ok());
         std::move(obj).steal_value();
-        return res;
+        return Ok(std::move(res));
     }
 
     //*********************************************************************************************

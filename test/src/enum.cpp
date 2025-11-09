@@ -223,14 +223,14 @@ TEST_CASE( "rtti::Enum::can_construct", "[rtti::Enum]" ) {
 TEST_CASE( "rtti::Enum::construct", "[rtti::Enum]" ) {
     char src_array[30];
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
-    ObjectRef obj_ref = static_type<TestEnum2>()->construct(std::move(buff_ref));
+    ObjectRef obj_ref = static_type<TestEnum2>()->construct(std::move(buff_ref)).ok();
     REQUIRE( obj_ref.is_valid() == true );
     REQUIRE( obj_ref.type().ok() == static_type<TestEnum2>() );
     REQUIRE( obj_ref.value().ok() == reinterpret_cast<void*>(src_array) );
     REQUIRE( obj_ref.size().ok() == 30 );
 
     Buffer buff = Buffer(sizeof(TestEnum1));
-    Object obj = static_type<TestEnum1>()->construct(std::move(buff));
+    Object obj = static_type<TestEnum1>()->construct(std::move(buff)).ok();
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.type().ok() == static_type<TestEnum1>() );
     REQUIRE( obj.size().ok() == sizeof(TestEnum1) );
@@ -273,7 +273,7 @@ TEST_CASE( "rtti::Enum::copy_construct", "[rtti::Enum]" ) {
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
     Object src = static_type<TestEnum2>()->new_default().ok();
     *src.value_as<TestEnum2>().ok() = TestEnum2::VAL_4;
-    ObjectRef obj_ref = static_type<TestEnum2>()->copy_construct(std::move(buff_ref), src);
+    ObjectRef obj_ref = static_type<TestEnum2>()->copy_construct(std::move(buff_ref), src).ok();
     REQUIRE( obj_ref.is_valid() == true );
     REQUIRE( obj_ref.type().ok() == static_type<TestEnum2>() );
     REQUIRE( obj_ref.size().ok() == 30 );
@@ -281,7 +281,7 @@ TEST_CASE( "rtti::Enum::copy_construct", "[rtti::Enum]" ) {
     REQUIRE( *obj_ref.value_as<TestEnum2>().ok() == TestEnum2::VAL_4 );
 
     Buffer buff = Buffer(sizeof(TestEnum2));
-    Object obj = static_type<TestEnum2>()->copy_construct(std::move(buff), src);
+    Object obj = static_type<TestEnum2>()->copy_construct(std::move(buff), src).ok();
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.type().ok() == static_type<TestEnum2>() );
     REQUIRE( obj.size().ok() == sizeof(TestEnum2) );
@@ -325,7 +325,7 @@ TEST_CASE( "rtti::Enum::move_construct", "[rtti::Enum]" ) {
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
     Object src = static_type<TestEnum2>()->new_default().ok();
     *src.value_as<TestEnum2>().ok() = TestEnum2::VAL_4;
-    ObjectRef obj_ref = static_type<TestEnum2>()->move_construct(std::move(buff_ref), src);
+    ObjectRef obj_ref = static_type<TestEnum2>()->move_construct(std::move(buff_ref), src).ok();
     REQUIRE( obj_ref.is_valid() == true );
     REQUIRE( obj_ref.type().ok() == static_type<TestEnum2>() );
     REQUIRE( obj_ref.size().ok() == 30 );
@@ -333,7 +333,7 @@ TEST_CASE( "rtti::Enum::move_construct", "[rtti::Enum]" ) {
     REQUIRE( *obj_ref.value_as<TestEnum2>().ok() == TestEnum2::VAL_4 );
 
     Buffer buff = Buffer(sizeof(TestEnum2));
-    Object obj = static_type<TestEnum2>()->move_construct(std::move(buff), src);
+    Object obj = static_type<TestEnum2>()->move_construct(std::move(buff), src).ok();
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.type().ok() == static_type<TestEnum2>() );
     REQUIRE( obj.size().ok() == sizeof(TestEnum2) );
@@ -356,13 +356,13 @@ TEST_CASE( "rtti::Enum::can_destruct", "[rtti::Enum]" ) {
 TEST_CASE( "rtti::Enum::destruct", "[rtti::Enum]" ) {
     char src_array[30];
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
-    ObjectRef obj_ref = static_type<TestEnum1>()->construct(std::move(buff_ref));
-    buff_ref = static_type<TestEnum1>()->destruct(std::move(obj_ref));
+    ObjectRef obj_ref = static_type<TestEnum1>()->construct(std::move(buff_ref)).ok();
+    buff_ref = static_type<TestEnum1>()->destruct(std::move(obj_ref)).ok();
     REQUIRE( buff_ref.data().ok() == reinterpret_cast<void*>(src_array) );
 
     Object obj = static_type<TestEnum1>()->new_default().ok();
     const void* obj_value_ptr = obj.value().ok();
-    Buffer buff = static_type<TestEnum1>()->destruct(std::move(obj));
+    Buffer buff = static_type<TestEnum1>()->destruct(std::move(obj)).ok();
     REQUIRE( buff.data().ok() == obj_value_ptr );
 }
 

@@ -177,14 +177,14 @@ TEST_CASE( "rtti::Fundamental::can_construct", "[rtti::Fundamental]" ) {
 TEST_CASE( "rtti::Fundamental::construct", "[rtti::Fundamental]" ) {
     char src_array[30];
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
-    ObjectRef obj_ref = static_type<long>()->construct(std::move(buff_ref));
+    ObjectRef obj_ref = static_type<long>()->construct(std::move(buff_ref)).ok();
     REQUIRE( obj_ref.is_valid() == true );
     REQUIRE( obj_ref.type().ok() == static_type<long>() );
     REQUIRE( obj_ref.value().ok() == reinterpret_cast<void*>(src_array) );
     REQUIRE( obj_ref.size().ok() == 30 );
 
     Buffer buff = Buffer(sizeof(int));
-    Object obj = static_type<int>()->construct(std::move(buff));
+    Object obj = static_type<int>()->construct(std::move(buff)).ok();
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.type().ok() == static_type<int>() );
     REQUIRE( obj.size().ok() == sizeof(int) );
@@ -227,7 +227,7 @@ TEST_CASE( "rtti::Fundamental::copy_construct", "[rtti::Fundamental]" ) {
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
     Object src = static_type<long>()->new_default().ok();
     *src.value_as<long>().ok() = 57;
-    ObjectRef obj_ref = static_type<long>()->copy_construct(std::move(buff_ref), src);
+    ObjectRef obj_ref = static_type<long>()->copy_construct(std::move(buff_ref), src).ok();
     REQUIRE( obj_ref.is_valid() == true );
     REQUIRE( obj_ref.type().ok() == static_type<long>() );
     REQUIRE( obj_ref.size().ok() == 30 );
@@ -235,7 +235,7 @@ TEST_CASE( "rtti::Fundamental::copy_construct", "[rtti::Fundamental]" ) {
     REQUIRE( *obj_ref.value_as<long>().ok() == 57 );
 
     Buffer buff = Buffer(sizeof(long));
-    Object obj = static_type<long>()->copy_construct(std::move(buff), src);
+    Object obj = static_type<long>()->copy_construct(std::move(buff), src).ok();
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.type().ok() == static_type<long>() );
     REQUIRE( obj.size().ok() == sizeof(long) );
@@ -279,7 +279,7 @@ TEST_CASE( "rtti::Fundamental::move_construct", "[rtti::Fundamental]" ) {
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
     Object src = static_type<long>()->new_default().ok();
     *src.value_as<long>().ok() = 57;
-    ObjectRef obj_ref = static_type<long>()->move_construct(std::move(buff_ref), src);
+    ObjectRef obj_ref = static_type<long>()->move_construct(std::move(buff_ref), src).ok();
     REQUIRE( obj_ref.is_valid() == true );
     REQUIRE( obj_ref.type().ok() == static_type<long>() );
     REQUIRE( obj_ref.size().ok() == 30 );
@@ -287,7 +287,7 @@ TEST_CASE( "rtti::Fundamental::move_construct", "[rtti::Fundamental]" ) {
     REQUIRE( *obj_ref.value_as<long>().ok() == 57 );
 
     Buffer buff = Buffer(sizeof(long));
-    Object obj = static_type<long>()->move_construct(std::move(buff), src);
+    Object obj = static_type<long>()->move_construct(std::move(buff), src).ok();
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.type().ok() == static_type<long>() );
     REQUIRE( obj.size().ok() == sizeof(long) );
@@ -310,13 +310,13 @@ TEST_CASE( "rtti::Fundamental::can_destruct", "[rtti::Fundamental]" ) {
 TEST_CASE( "rtti::Fundamental::destruct", "[rtti::Fundamental]" ) {
     char src_array[30];
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
-    ObjectRef obj_ref = static_type<int>()->construct(std::move(buff_ref));
-    buff_ref = static_type<int>()->destruct(std::move(obj_ref));
+    ObjectRef obj_ref = static_type<int>()->construct(std::move(buff_ref)).ok();
+    buff_ref = static_type<int>()->destruct(std::move(obj_ref)).ok();
     REQUIRE( buff_ref.data().ok() == reinterpret_cast<void*>(src_array) );
 
     Object obj = static_type<int>()->new_default().ok();
     const void* obj_value_ptr = obj.value().ok();
-    Buffer buff = static_type<int>()->destruct(std::move(obj));
+    Buffer buff = static_type<int>()->destruct(std::move(obj)).ok();
     REQUIRE( buff.data().ok() == obj_value_ptr );
 }
 
