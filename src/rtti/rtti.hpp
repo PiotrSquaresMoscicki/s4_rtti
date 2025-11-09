@@ -1,7 +1,7 @@
 #pragma once
 
 #include <tuple>
-#include <array>
+#include <vector>
 
 #include "ctti/ctti.hpp"
 
@@ -28,41 +28,50 @@ namespace rtti {
     // class RegisteredTypeInstance {
     // };
 
-    template <typename TYPE>
-    class RegisteredTypeInstance {
-    };
-
-    // template <typename... PARAMS>
-    // class RegisteredTypeInstance<std::array<PARAMS...>> {
-    // public:
-    //     static TypePtr static_type() {
-    //         return static_class();
-    //     }
-    //     static ClassPtr static_class() {
-    //         using This = std::array<PARAMS...>;
-    //         static ClassPtr result = nullptr;
-    //         static ContainerInstance<This> instance;
-    //         if (result == nullptr) {
-    //             result = Database::register_type(&instance).ok()->as_class().ok();
-    //         }
-    //         return result;
-    //     }
+    // template <typename TYPE>
+    // class RegisteredTypeInstance {
     // };
 
     template <typename TYPE>
-    inline TypePtr static_type() {
-        if constexpr (requires { TYPE::static_class(); })
+    class static_type_trait {
+    public:
+        static TypePtr get() {
             return TYPE::static_class();
-        else
-            return RegisteredTypeInstance<TYPE>::static_type();
+        }
+    };
+
+    template <typename... PARAMS>
+    class static_type_trait<std::vector<PARAMS...>> {
+    public:
+        static TypePtr get() {
+            using This = std::vector<PARAMS...>;
+            static ClassPtr result = nullptr;
+            static ContainerInstance<This> instance;
+            if (result == nullptr) {
+                result = Database::register_type(&instance).ok()->as_class().ok();
+            }
+            return result;
+        }
+    };
+
+    // template <template <typename...> typename TEMPLATE, typename... PARAMS>
+    // inline TypePtr static_type() {
+    //         return RegisteredTypeInstance<TEMPLATE<PARAMS...>>::static_type();
+    // }
+
+    template <typename TYPE>
+    inline TypePtr static_type() {
+            return TYPE::static_class();
     }
+
+    // template <template <typename...> typename TEMPLATE, typename... PARAMS>
+    // inline ClassPtr static_class() {
+    //         return RegisteredTypeInstance<TEMPLATE<PARAMS...>>::static_class();
+    // }
 
     template <typename CLASS>
     inline ClassPtr static_class() {
-        if constexpr (requires { CLASS::static_class(); })
             return CLASS::static_class();
-        else
-            return RegisteredTypeInstance<CLASS>::static_class();
     }
     
     template <typename CLASS>
@@ -322,5 +331,5 @@ REGISTER_FUNDAMENTAL(float)
 REGISTER_FUNDAMENTAL(double)
 REGISTER_FUNDAMENTAL(long double)
 
-//REGISTER_CONTAINER(std::array)
+//REGISTER_CONTAINER(std::vector)
 

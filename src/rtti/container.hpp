@@ -33,6 +33,25 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     class S4_RTTI_EXPORT Container : public virtual Type {
+
+        bool is_fundamental() const override { return false; }
+        bool is_enum() const override { return false; }
+        bool is_class() const override { return false; }
+        bool is_template_instance() const override { return false; }
+
+        Res<FundamentalPtr, ErrAsFundamental> as_fundamental() const override { 
+            return Err(ErrAsFundamental::NOT_A_FUNDAMENTAL); 
+        }
+        Res<EnumPtr, ErrAsEnum> as_enum() const override { 
+            return Err(ErrAsEnum::NOT_AN_ENUM); 
+        }
+        Res<ClassPtr, ErrAsClass> as_class() const override { 
+            return Err(ErrAsClass::NOT_A_CLASS);
+        }
+        Res<TemplateInstancePtr, ErrAsTemplateInstance> as_template_instance() const override { 
+            return Err(ErrAsTemplateInstance::NOT_A_TEMPLATE_INSTANCE); 
+        }
+
         // class, c-array, tuple, array
         virtual ContainerIterator begin(ObjectRef& obj) const = 0;
         virtual ContainerIterator end(ObjectRef& obj) const = 0;
@@ -70,6 +89,13 @@ namespace rtti {
         , public virtual Container 
     {
     public:
+        ContainerInstance() 
+            : Type("", sizeof(TYPE), {}) 
+        {}
+
+        ContainerIterator begin(ObjectRef& obj) const override { return {}; }
+        ContainerIterator end(ObjectRef& obj) const override { return {}; }
+        size_t length(const ObjectRef& obj) const override { return 0; }
     }; // class ContainerInstance
 
 } // namespace rtti

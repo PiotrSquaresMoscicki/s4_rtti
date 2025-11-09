@@ -31,22 +31,10 @@ namespace rtti {
         const std::vector<const Method*>& methods() const { return m_methods; }
         Res<const Method*, ErrMethod> method(StringId name) const;
 
-        bool is_fundamental() const override { return false; }
-        bool is_enum() const override { return false; }
         bool is_class() const override { return true; }
-        bool is_template_instance() const override { return false; }
 
-        Res<FundamentalPtr, ErrAsFundamental> as_fundamental() const override { 
-            return Err(ErrAsFundamental::NOT_A_FUNDAMENTAL); 
-        }
-        Res<EnumPtr, ErrAsEnum> as_enum() const override { 
-            return Err(ErrAsEnum::NOT_AN_ENUM); 
-        }
         Res<ClassPtr, ErrAsClass> as_class() const override { 
             return Ok(ClassPtr(this)); 
-        }
-        Res<TemplateInstancePtr, ErrAsTemplateInstance> as_template_instance() const override { 
-            return Err(ErrAsTemplateInstance::NOT_A_TEMPLATE_INSTANCE); 
         }
 
         ContainerIterator begin(ObjectRef& obj) const { return {}; }
