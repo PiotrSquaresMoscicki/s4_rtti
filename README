@@ -1,16 +1,48 @@
 Setup guide
 
-1. Clone the repo
-  git clone https://github.com/PiotrMoscicki/s4_rtti.git
-2. Change dircectory
-  cd s4_rtti
-3. Create the build dircectory
-  mkdir build
-4. Change dircectory
-  cd build
-5. Generate build files (example is for make)
-  cmake ..
-6. Build the project
-  cmake --build .
-7. Run tests
-  ctest --output-on-failure
+1. Create github codespace from this repo
+2. Run `./cbt.sh` (cmake, build, test)
+
+Features
+- Build system on modern CMake with dependencies declared on Catch2 and s4_core using FetchContent functionality
+- Compile time type information
+    - Using constexpr tuple of attributes describing the type (see `src/ctti/type.hpp`)
+- Runtime type information
+    - 
+
+ 
+- info
+    - size
+    - name
+    - values
+- converters
+    - as_fundamental
+    - as_enum
+    - as_class
+- destruction
+    - can_delete_object
+    - can_destruct
+    - destruct
+- construction
+    - default
+        - is_default_constructible
+        - can_construct
+        - construct
+        - new_default
+    - move
+        - is_move_constructible
+        - can_move_construct
+        - new_move
+        - move_construct
+    - copy
+        - new_copy
+        - can_copy_construct
+        - copy_construct
+- assignment
+    - move
+        - is_move_assignable
+        - move_assign
+    - copy
+        - is_copy_assignable
+        - copy_assign
+- equals type instantiated in different dll
