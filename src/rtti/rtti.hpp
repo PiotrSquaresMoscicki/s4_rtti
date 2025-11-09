@@ -11,6 +11,7 @@
 #include "fundamental.hpp"
 #include "enum.hpp"
 #include "class.hpp"
+#include "container.hpp"
 #include "template_instance.hpp"
 #include "field.hpp"
 #include "method.hpp"
@@ -23,11 +24,46 @@ namespace rtti {
     // inline TemplateInstancePtr::operator TypePtr() const { return TypePtr(m_type); }
     // inline TemplateInstancePtr::operator ClassPtr() const { return ClassPtr(m_type); }
 
+    // template <template <typename...> typename TEMPLATE, typename... PARAMS>
+    // class RegisteredTypeInstance {
+    // };
+
     template <typename TYPE>
-    inline TypePtr static_type() { return TYPE::static_class(); }
+    class RegisteredTypeInstance {
+    };
+
+    // template <typename... PARAMS>
+    // class RegisteredTypeInstance<std::array<PARAMS...>> {
+    // public:
+    //     static TypePtr static_type() {
+    //         return static_class();
+    //     }
+    //     static ClassPtr static_class() {
+    //         using This = std::array<PARAMS...>;
+    //         static ClassPtr result = nullptr;
+    //         static ContainerInstance<This> instance;
+    //         if (result == nullptr) {
+    //             result = Database::register_type(&instance).ok()->as_class().ok();
+    //         }
+    //         return result;
+    //     }
+    // };
+
+    template <typename TYPE>
+    inline TypePtr static_type() {
+        if constexpr (requires { TYPE::static_class(); })
+            return TYPE::static_class();
+        else
+            return RegisteredTypeInstance<TYPE>::static_type();
+    }
 
     template <typename CLASS>
-    inline ClassPtr static_class() { return CLASS::static_class(); }
+    inline ClassPtr static_class() {
+        if constexpr (requires { CLASS::static_class(); })
+            return CLASS::static_class();
+        else
+            return RegisteredTypeInstance<CLASS>::static_class();
+    }
     
     template <typename CLASS>
     inline ClassPtr dynamic_class(CLASS& obj) { return obj.dynamic_class(); }
@@ -120,10 +156,29 @@ namespace rtti {
             END_CLASS_INTERNAL\
         };\
     } // namespace NAMESPACE
+
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-#define REGISTER_CONTAINER(ARG_CONTAINER, ARG_PARAMS)
+#define REGISTER_CONTAINER(ARG_CONTAINER)\
+    namespace rtti {\
+        template <typename... PARAMS>\
+        class RegisteredTypeInstance<ARG_CONTAINER<PARAMS...>> {\
+        public:\
+            static TypePtr static_type() {\
+                return static_class();\
+            }\
+            static ClassPtr static_class() {\
+                using This = ARG_CONTAINER<PARAMS...>;\
+                static ClassPtr result = nullptr;\
+                static ContainerInstance<This> instance(#ARG_CONTAINER "<...>");\
+                if (result == nullptr) {\
+                    result = Database::register_type(&instance).ok()->as_class().ok();\
+                }\
+                return result;\
+            }\
+        };\
+    }
 
 //*************************************************************************************************
 //*************************************************************************************************
@@ -267,5 +322,5 @@ REGISTER_FUNDAMENTAL(float)
 REGISTER_FUNDAMENTAL(double)
 REGISTER_FUNDAMENTAL(long double)
 
-REGISTER_CONTAINER(std::array, <typename T COMMA size_t N>)
+//REGISTER_CONTAINER(std::array)
 

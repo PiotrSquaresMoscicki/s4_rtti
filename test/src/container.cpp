@@ -8,3 +8,7 @@
 using namespace rtti;
 using namespace core::lib;
 
+//*************************************************************************************************
+// TEST_CASE( "rtti::Container::==", "[rtti::Container]" ) {
+//     REQUIRE( static_type<std::array<int, 5>>() == static_type<std::array<int, 5>>() );
+// }
