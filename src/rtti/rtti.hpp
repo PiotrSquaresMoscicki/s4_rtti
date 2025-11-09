@@ -19,8 +19,8 @@ namespace rtti {
     inline FundamentalPtr::operator TypePtr() const { return TypePtr(m_type); }
     inline EnumPtr::operator TypePtr() const { return TypePtr(m_type); }
     inline ClassPtr::operator TypePtr() const { return TypePtr(m_type); }
-    inline TemplateInstancePtr::operator TypePtr() const { return TypePtr(m_type); }
-    inline TemplateInstancePtr::operator ClassPtr() const { return ClassPtr(m_type); }
+    // inline TemplateInstancePtr::operator TypePtr() const { return TypePtr(m_type); }
+    // inline TemplateInstancePtr::operator ClassPtr() const { return ClassPtr(m_type); }
 
     template <typename TYPE>
     inline TypePtr static_type() { return TYPE::static_class(); }
@@ -123,31 +123,32 @@ namespace rtti {
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-#define TEMPLATE_INTERNAL(ARG_TEMPLATE, ARG_DECLARING_TEMPLATE, ARG_PARAMS, ...)\
-        using This = ARG_TEMPLATE ARG_PARAMS;\
-        using DeclaringClass = ARG_DECLARING_TEMPLATE ARG_PARAMS;\
-        using ParamsTuple = ::std::tuple ARG_PARAMS;\
-        virtual ::rtti::ClassPtr dynamic_class() const { return static_class(); }\
-        static ::rtti::ClassPtr static_class() {\
-            static bool initialized = false;\
-            std::vector<std::string> out_params_names;\
-            static ::rtti::ClassPtr result = nullptr;\
-            static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(\
-                STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);\
-            if (result == nullptr) {\
-                result = ::rtti::Database::register_type(&instance).ok()->as_class().ok();
 
-#define END_TEMPLATE_INTERNAL\
-            }\
-            return result;\
-        }
+// #define TEMPLATE_INTERNAL(ARG_TEMPLATE, ARG_DECLARING_TEMPLATE, ARG_PARAMS, ...)
+//         using This = ARG_TEMPLATE ARG_PARAMS;
+//         using DeclaringClass = ARG_DECLARING_TEMPLATE ARG_PARAMS;
+//         using ParamsTuple = ::std::tuple ARG_PARAMS;
+//         virtual ::rtti::ClassPtr dynamic_class() const { return static_class(); }
+//         static ::rtti::ClassPtr static_class() {
+//             static bool initialized = false;
+//             std::vector<std::string> out_params_names;
+//             static ::rtti::ClassPtr result = nullptr;
+//             static ::rtti::TemplateInstanceInstance<This, DeclaringClass> instance(
+//                 STR(ARG_TEMPLATE ARG_PARAMS), out_params_names __VA_OPT__(,) __VA_ARGS__);
+//             if (result == nullptr) {
+//                 result = ::rtti::Database::register_type(&instance).ok()->as_class().ok();
 
-//*************************************************************************************************
-#define TEMPLATE(ARG_TEMPLATE, ARG_PARAMS, ...)\
-    TEMPLATE_INTERNAL(ARG_TEMPLATE, ARG_TEMPLATE, ARG_PARAMS, __VA_OPT__(,) __VA_ARGS__)
+// #define END_TEMPLATE_INTERNAL
+//             }
+//             return result;
+//         }
 
-#define END_TEMPLATE\
-    END_TEMPLATE_INTERNAL
+// //*************************************************************************************************
+// #define TEMPLATE(ARG_TEMPLATE, ARG_PARAMS, ...)
+//     TEMPLATE_INTERNAL(ARG_TEMPLATE, ARG_TEMPLATE, ARG_PARAMS, __VA_OPT__(,) __VA_ARGS__)
+
+// #define END_TEMPLATE
+//     END_TEMPLATE_INTERNAL
 
 //*************************************************************************************************
 //*************************************************************************************************

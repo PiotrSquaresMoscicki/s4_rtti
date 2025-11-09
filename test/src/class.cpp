@@ -123,10 +123,10 @@ TEST_CASE( "rtti::Class::name", "[rtti::Class]" ) {
 //     Object obj;
 //     REQUIRE( static_type<int>()->can_destruct(obj).err() == Type::ErrDestruct::NOT_VALID_OBJECT );
     
-//     obj = static_type<long>()->new_default().ok();
+//     obj = static_type<long>()->alloc_construct().ok();
 //     REQUIRE( static_type<int>()->can_destruct(obj).err() == Type::ErrDestruct::INCORRECT_OBJECT_TYPE );
     
-//     obj = static_type<int>()->new_default().ok();
+//     obj = static_type<int>()->alloc_construct().ok();
 //     REQUIRE( static_type<int>()->can_destruct(obj).is_ok() == true );
 // }
 
@@ -139,7 +139,7 @@ TEST_CASE( "rtti::Class::destruct", "[rtti::Class]" ) {
     REQUIRE( buff_ref.data().ok() == reinterpret_cast<void*>(src_array) );
     REQUIRE( reinterpret_cast<TestClassNotMoveAssignable*>(src_array)->m_int_val == 0xDEADBEEF );
 
-    Object obj = static_type<TestClassNotMoveAssignable>()->new_default().ok();
+    Object obj = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
     const void* obj_value_ptr = obj.value().ok();
     Buffer buff = static_type<TestClassNotMoveAssignable>()->destruct(std::move(obj)).ok();
     REQUIRE( buff.data().ok() == obj_value_ptr );
@@ -161,25 +161,25 @@ TEST_CASE( "rtti::Class::copy_assign", "[rtti::Class]" ) {
         == 
         Type::ErrCopy::INVALID_DESTINATION_OBJECT);
 
-    dst = static_type<TestClassNotCopyAssignable>()->new_default().ok();
+    dst = static_type<TestClassNotCopyAssignable>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestClassNotMoveAssignable>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INCORRECT_DESTINATION_OBJECT_TYPE );
 
-    dst = static_type<TestClassNotMoveAssignable>()->new_default().ok();
+    dst = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestClassNotMoveAssignable>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INVALID_SOURCE_OBJECT );
 
-    src = static_type<TestClassNotCopyAssignable>()->new_default().ok();
+    src = static_type<TestClassNotCopyAssignable>()->alloc_construct().ok();
     REQUIRE(
         static_type<TestClassNotMoveAssignable>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INCORRECT_SOURCE_OBJECT_TYPE );
 
-    src = static_type<TestClassNotMoveAssignable>()->new_default().ok();
+    src = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
     src.value_as<TestClassNotMoveAssignable>().ok()->m_int_val = 6565656;
     REQUIRE( static_type<TestClassNotMoveAssignable>()->copy_assign(dst, src).is_ok() == true );
     REQUIRE( dst.value_as<TestClassNotMoveAssignable>().ok()->m_int_val == 6565656 );
@@ -200,25 +200,25 @@ TEST_CASE( "rtti::Class::move_assign", "[rtti::Class]" ) {
         == 
         Type::ErrMove::INVALID_DESTINATION_OBJECT);
         
-    dst = static_type<TestClassNotMoveAssignable>()->new_default().ok();
+    dst = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestClassNotCopyAssignable>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INCORRECT_DESTINATION_OBJECT_TYPE );
     
-    dst = static_type<TestClassNotCopyAssignable>()->new_default().ok();
+    dst = static_type<TestClassNotCopyAssignable>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestClassNotCopyAssignable>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INVALID_SOURCE_OBJECT );
         
-    src = static_type<TestClassNotMoveAssignable>()->new_default().ok();
+    src = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestClassNotCopyAssignable>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INCORRECT_SOURCE_OBJECT_TYPE );
         
-    src = static_type<TestClassNotCopyAssignable>()->new_default().ok();
+    src = static_type<TestClassNotCopyAssignable>()->alloc_construct().ok();
     src.value_as<TestClassNotCopyAssignable>().ok()->m_int_val = 6565656;
     REQUIRE( static_type<TestClassNotCopyAssignable>()->move_assign(dst, src).is_ok() == true );
     REQUIRE( dst.value_as<TestClassNotCopyAssignable>().ok()->m_int_val == 6565656 );

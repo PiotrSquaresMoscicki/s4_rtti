@@ -83,5 +83,5 @@ Res<size_t, ObjectRef::ErrSize> ObjectRef::size() const {
 //*************************************************************************************************
 Object::~Object() {
     if (is_valid())
-        m_type->delete_object(std::move(*this));
+        m_type->dealloc_destruct(std::move(*this));
 }

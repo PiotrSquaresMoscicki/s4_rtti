@@ -22,9 +22,9 @@ public:
         return rtti::static_class<DynamicallyLoadedLibClass>(); 
     }
 
-    rtti::ClassPtr get_test_template_type() const override { 
-        return rtti::static_class<DynamicallyLoadedLibTemplate<int>>(); 
-    }
+    // rtti::ClassPtr get_test_template_type() const override { 
+    //     return rtti::static_class<DynamicallyLoadedLibTemplate<int>>(); 
+    // }
 
     rtti::TypePtr get_bool_type() const override { return rtti::static_type<bool>().get(); }
     

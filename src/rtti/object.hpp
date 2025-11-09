@@ -28,10 +28,7 @@ namespace rtti {
             INVALID_OBJECT
         };
 
-        template <typename FUNDAMENTAL> friend class FundamentalInstance;
-        template <typename ENUM> friend class EnumInstance;
-        template <typename CLASS> friend class ClassInstance;
-        template <typename CLASS, typename DECLARING_CLASS> friend class TemplateInstanceInstance;
+        template <typename TYPE> friend class TypeInstance;
 
         ObjectRef() = default;
         ObjectRef(const ObjectRef& other) = delete;
@@ -77,9 +74,7 @@ namespace rtti {
     //*********************************************************************************************
     class S4_RTTI_EXPORT Object : public ObjectRef {
     public:
-        template <typename FUNDAMENTAL> friend class FundamentalInstance;
-        template <typename ENUM> friend class EnumInstance;
-        template <typename CLASS> friend class ClassInstance;
+        template <typename TYPE> friend class TypeInstance;
 
         Object() = default;
         Object(const Object& other) = delete;
@@ -94,7 +89,7 @@ namespace rtti {
         void change_pointed_object(TYPE* obj);
         void change_pointed_object(void* obj, TypePtr type);
 
-        void delete_object() &&;
+        void dealloc_destruct() &&;
         BufferRef call_destructor() &&;
 
     }; // class Object

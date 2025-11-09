@@ -32,7 +32,7 @@ Features
         - fundamental
         - enum
 - destruction
-    - can_delete_object
+    - can_destruct
         - fundamental
         - enum
     - can_destruct
@@ -52,7 +52,7 @@ Features
         - construct
             - fundamental
             - enum
-        - new_default
+        - alloc_construct
             - fundamental
             - enum
     - move
@@ -62,14 +62,14 @@ Features
         - can_move_construct
             - fundamental
             - enum
-        - new_move
+        - alloc_move_construct
             - fundamental
             - enum
         - move_construct
             - fundamental
             - enum
     - copy
-        - new_copy
+        - alloc_copy_construct
             - fundamental
             - enum
         - can_copy_construct

@@ -5,8 +5,7 @@ using namespace rtti;
 //*************************************************************************************************
 //*************************************************************************************************
 //*************************************************************************************************
-Enum::Enum(std::string name, size_t size, std::vector<EnumValue> values) 
-    : Type(std::move(name), size, {})
+Enum::Enum(std::vector<EnumValue> values)
 {
     values.pop_back();
     m_values = std::move(values);

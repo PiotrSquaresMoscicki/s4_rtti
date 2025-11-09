@@ -139,68 +139,50 @@ TEST_CASE( "rtti::Enum::is_move_assignable", "[rtti::Enum]" ) {
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Enum::new_default", "[rtti::Enum]" ) {
-    Object obj = static_type<TestEnum1>()->new_default().ok();
+TEST_CASE( "rtti::Enum::alloc_construct", "[rtti::Enum]" ) {
+    Object obj = static_type<TestEnum1>()->alloc_construct().ok();
     REQUIRE( obj.is_valid() == true );
     REQUIRE( obj.type().ok() == static_type<TestEnum1>() );
     REQUIRE( obj.size().ok() == sizeof(TestEnum1) );
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Enum::new_copy", "[rtti::Enum]" ) {
-    Object src = static_type<TestEnum1>()->new_default().ok();
+TEST_CASE( "rtti::Enum::alloc_copy_construct", "[rtti::Enum]" ) {
+    Object src = static_type<TestEnum1>()->alloc_construct().ok();
     *src.value_as<TestEnum1>().ok() = TestEnum1::VAL_1;
-    Object dst = static_type<TestEnum1>()->new_copy(src).ok();
+    Object dst = static_type<TestEnum1>()->alloc_copy_construct(src).ok();
     REQUIRE( dst.is_valid() == true );
     REQUIRE( dst.type().ok() == static_type<TestEnum1>() );
     REQUIRE( dst.size().ok() == sizeof(TestEnum1) );
     REQUIRE( *dst.value_as<TestEnum1>().ok() == TestEnum1::VAL_1 );
 
-    REQUIRE( static_type<TestEnum1>()->new_copy(Object()).err() == Type::ErrNewCopy::NOT_VALID_SOURCE );
+    REQUIRE( static_type<TestEnum1>()->alloc_copy_construct(Object()).err() == Type::ErrCopyConstruct::NOT_VALID_SOURCE );
 
-    src = static_type<TestEnum2>()->new_default().ok();
-    REQUIRE( static_type<TestEnum1>()->new_copy(src).err() == Type::ErrNewCopy::INCORRECT_SOURCE_TYPE );
+    src = static_type<TestEnum2>()->alloc_construct().ok();
+    REQUIRE( static_type<TestEnum1>()->alloc_copy_construct(src).err() == Type::ErrCopyConstruct::INCORRECT_SOURCE_TYPE );
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Enum::new_move", "[rtti::Enum]" ) {
-    Object src = static_type<TestEnum1>()->new_default().ok();
+TEST_CASE( "rtti::Enum::alloc_move_construct", "[rtti::Enum]" ) {
+    Object src = static_type<TestEnum1>()->alloc_construct().ok();
     *src.value_as<TestEnum1>().ok() = TestEnum1::VAL_3;
-    Object dst = static_type<TestEnum1>()->new_move(src).ok();
+    Object dst = static_type<TestEnum1>()->alloc_move_construct(src).ok();
     REQUIRE( dst.is_valid() == true );
     REQUIRE( dst.type().ok() == static_type<TestEnum1>() );
     REQUIRE( dst.size().ok() == sizeof(TestEnum1) );
     REQUIRE( *dst.value_as<TestEnum1>().ok() == TestEnum1::VAL_3 );
 
     Object invalid_src;
-    REQUIRE( static_type<TestEnum1>()->new_move(invalid_src).err() == Type::ErrNewMove::NOT_VALID_SOURCE );
+    REQUIRE( static_type<TestEnum1>()->alloc_move_construct(invalid_src).err() == Type::ErrMoveConstruct::NOT_VALID_SOURCE );
 
-    src = static_type<TestEnum2>()->new_default().ok();
-    REQUIRE( static_type<TestEnum1>()->new_move(src).err() == Type::ErrNewMove::INCORRECT_SOURCE_TYPE );
+    src = static_type<TestEnum2>()->alloc_construct().ok();
+    REQUIRE( static_type<TestEnum1>()->alloc_move_construct(src).err() == Type::ErrMoveConstruct::INCORRECT_SOURCE_TYPE );
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Enum::can_delete_object", "[rtti::Enum]" ) {
-    Object src = static_type<TestEnum1>()->new_default().ok();
-    REQUIRE( static_type<TestEnum1>()->can_delete_object(src).is_ok() == true );
-
-    Object invalid_src;
-    REQUIRE( 
-        static_type<TestEnum1>()->can_delete_object(invalid_src).err() 
-        == 
-        Type::ErrDeleteObject::NOT_VALID_SOURCE );
-
-    src = static_type<float>()->new_default().ok();
-    REQUIRE( 
-        static_type<TestEnum1>()->can_delete_object(src).err() 
-        == 
-        Type::ErrDeleteObject::INCORRECT_SOURCE_TYPE );
-}
-
-//*************************************************************************************************
-TEST_CASE( "rtti::Enum::delete_object", "[rtti::Enum]" ) {
-    Object src = static_type<TestEnum1>()->new_default().ok();
-    static_type<TestEnum1>()->delete_object(std::move(src));
+TEST_CASE( "rtti::Enum::dealloc_destruct", "[rtti::Enum]" ) {
+    Object src = static_type<TestEnum1>()->alloc_construct().ok();
+    static_type<TestEnum1>()->dealloc_destruct(std::move(src));
     REQUIRE( src.is_valid() == false );
 }
 
@@ -257,13 +239,13 @@ TEST_CASE( "rtti::Enum::can_copy_construct", "[rtti::Enum]" ) {
         == 
         Type::ErrCopyConstruct::NOT_VALID_SOURCE );
 
-    src = static_type<float>()->new_default().ok();
+    src = static_type<float>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestEnum1>()->can_copy_construct(buff, src).err() 
         == 
         Type::ErrCopyConstruct::INCORRECT_SOURCE_TYPE );
 
-    src = static_type<TestEnum1>()->new_default().ok();
+    src = static_type<TestEnum1>()->alloc_construct().ok();
     REQUIRE( static_type<TestEnum1>()->can_copy_construct(buff, src).is_ok() == true );
 }
 
@@ -271,7 +253,7 @@ TEST_CASE( "rtti::Enum::can_copy_construct", "[rtti::Enum]" ) {
 TEST_CASE( "rtti::Enum::copy_construct", "[rtti::Enum]" ) {
     char src_array[30];
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
-    Object src = static_type<TestEnum2>()->new_default().ok();
+    Object src = static_type<TestEnum2>()->alloc_construct().ok();
     *src.value_as<TestEnum2>().ok() = TestEnum2::VAL_4;
     ObjectRef obj_ref = static_type<TestEnum2>()->copy_construct(std::move(buff_ref), src).ok();
     REQUIRE( obj_ref.is_valid() == true );
@@ -309,13 +291,13 @@ TEST_CASE( "rtti::Enum::can_move_construct", "[rtti::Enum]" ) {
         == 
         Type::ErrMoveConstruct::NOT_VALID_SOURCE );
 
-    src = static_type<float>()->new_default().ok();
+    src = static_type<float>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestEnum1>()->can_move_construct(buff, src).err() 
         == 
         Type::ErrMoveConstruct::INCORRECT_SOURCE_TYPE );
 
-    src = static_type<TestEnum1>()->new_default().ok();
+    src = static_type<TestEnum1>()->alloc_construct().ok();
     REQUIRE( static_type<TestEnum1>()->can_move_construct(buff, src).is_ok() == true );
 }
 
@@ -323,7 +305,7 @@ TEST_CASE( "rtti::Enum::can_move_construct", "[rtti::Enum]" ) {
 TEST_CASE( "rtti::Enum::move_construct", "[rtti::Enum]" ) {
     char src_array[30];
     BufferRef buff_ref(reinterpret_cast<void*>(src_array), 30);
-    Object src = static_type<TestEnum2>()->new_default().ok();
+    Object src = static_type<TestEnum2>()->alloc_construct().ok();
     *src.value_as<TestEnum2>().ok() = TestEnum2::VAL_4;
     ObjectRef obj_ref = static_type<TestEnum2>()->move_construct(std::move(buff_ref), src).ok();
     REQUIRE( obj_ref.is_valid() == true );
@@ -345,11 +327,26 @@ TEST_CASE( "rtti::Enum::can_destruct", "[rtti::Enum]" ) {
     Object obj;
     REQUIRE( static_type<TestEnum1>()->can_destruct(obj).err() == Type::ErrDestruct::NOT_VALID_OBJECT );
     
-    obj = static_type<TestEnum2>()->new_default().ok();
+    obj = static_type<TestEnum2>()->alloc_construct().ok();
     REQUIRE( static_type<TestEnum1>()->can_destruct(obj).err() == Type::ErrDestruct::INCORRECT_OBJECT_TYPE );
     
-    obj = static_type<TestEnum1>()->new_default().ok();
+    obj = static_type<TestEnum1>()->alloc_construct().ok();
     REQUIRE( static_type<TestEnum1>()->can_destruct(obj).is_ok() == true );
+    
+    Object src = static_type<TestEnum1>()->alloc_construct().ok();
+    REQUIRE( static_type<TestEnum1>()->can_destruct(src).is_ok() == true );
+
+    Object invalid_src;
+    REQUIRE( 
+        static_type<TestEnum1>()->can_destruct(invalid_src).err() 
+        == 
+        Type::ErrDestruct::NOT_VALID_OBJECT );
+
+    src = static_type<float>()->alloc_construct().ok();
+    REQUIRE( 
+        static_type<TestEnum1>()->can_destruct(src).err() 
+        == 
+        Type::ErrDestruct::INCORRECT_OBJECT_TYPE );
 }
 
 //*************************************************************************************************
@@ -360,7 +357,7 @@ TEST_CASE( "rtti::Enum::destruct", "[rtti::Enum]" ) {
     buff_ref = static_type<TestEnum1>()->destruct(std::move(obj_ref)).ok();
     REQUIRE( buff_ref.data().ok() == reinterpret_cast<void*>(src_array) );
 
-    Object obj = static_type<TestEnum1>()->new_default().ok();
+    Object obj = static_type<TestEnum1>()->alloc_construct().ok();
     const void* obj_value_ptr = obj.value().ok();
     Buffer buff = static_type<TestEnum1>()->destruct(std::move(obj)).ok();
     REQUIRE( buff.data().ok() == obj_value_ptr );
@@ -375,25 +372,25 @@ TEST_CASE( "rtti::Enum::copy_assign", "[rtti::Enum]" ) {
         == 
         Type::ErrCopy::INVALID_DESTINATION_OBJECT );
         
-    dst = static_type<TestEnum2>()->new_default().ok();
+    dst = static_type<TestEnum2>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestEnum1>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INCORRECT_DESTINATION_OBJECT_TYPE );
     
-    dst = static_type<TestEnum1>()->new_default().ok();
+    dst = static_type<TestEnum1>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestEnum1>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INVALID_SOURCE_OBJECT );
         
-    src = static_type<TestEnum2>()->new_default().ok();
+    src = static_type<TestEnum2>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestEnum1>()->copy_assign(dst, src).err() 
         == 
         Type::ErrCopy::INCORRECT_SOURCE_OBJECT_TYPE );
         
-    src = static_type<TestEnum1>()->new_default().ok();
+    src = static_type<TestEnum1>()->alloc_construct().ok();
     *src.value_as<TestEnum1>().ok() = TestEnum1::VAL_3;
     REQUIRE( static_type<TestEnum1>()->copy_assign(dst, src).is_ok() == true );
     REQUIRE( *dst.value_as<TestEnum1>().ok() == TestEnum1::VAL_3 );
@@ -408,25 +405,25 @@ TEST_CASE( "rtti::Enum::move_assign", "[rtti::Enum]" ) {
         == 
         Type::ErrMove::INVALID_DESTINATION_OBJECT );
         
-    dst = static_type<TestEnum2>()->new_default().ok();
+    dst = static_type<TestEnum2>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestEnum1>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INCORRECT_DESTINATION_OBJECT_TYPE );
     
-    dst = static_type<TestEnum1>()->new_default().ok();
+    dst = static_type<TestEnum1>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestEnum1>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INVALID_SOURCE_OBJECT );
         
-    src = static_type<TestEnum2>()->new_default().ok();
+    src = static_type<TestEnum2>()->alloc_construct().ok();
     REQUIRE( 
         static_type<TestEnum1>()->move_assign(dst, src).err() 
         == 
         Type::ErrMove::INCORRECT_SOURCE_OBJECT_TYPE );
         
-    src = static_type<TestEnum1>()->new_default().ok();
+    src = static_type<TestEnum1>()->alloc_construct().ok();
     *src.value_as<TestEnum1>().ok() = TestEnum1::VAL_2;
     REQUIRE( static_type<TestEnum1>()->move_assign(dst, src).is_ok() == true );
     REQUIRE( *dst.value_as<TestEnum1>().ok() == TestEnum1::VAL_2 );

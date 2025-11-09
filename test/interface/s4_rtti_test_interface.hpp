@@ -16,14 +16,14 @@ namespace test {
         virtual ~DynamicallyLoadedLibClass() = default;
     };
 
-    template <typename T>
-    class DynamicallyLoadedLibTemplate {
-    public:
-        TEMPLATE(test::DynamicallyLoadedLibTemplate, <T>)
-        END_TEMPLATE
+    // template <typename T>
+    // class DynamicallyLoadedLibTemplate {
+    // public:
+    //     TEMPLATE(test::DynamicallyLoadedLibTemplate, <T>)
+    //     END_TEMPLATE
 
-        virtual ~DynamicallyLoadedLibTemplate() = default;
-    };
+    //     virtual ~DynamicallyLoadedLibTemplate() = default;
+    // };
 
     //*********************************************************************************************
     //*********************************************************************************************
@@ -34,7 +34,7 @@ namespace test {
 
         virtual rtti::EnumPtr get_test_enum_type() const = 0;
         virtual rtti::ClassPtr get_test_class_type() const = 0;
-        virtual rtti::ClassPtr get_test_template_type() const = 0;
+        // virtual rtti::ClassPtr get_test_template_type() const = 0;
         virtual rtti::TypePtr get_bool_type() const = 0;
 
     }; // class ITestInterface
