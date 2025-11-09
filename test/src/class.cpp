@@ -203,6 +203,14 @@ TEST_CASE( "rtti::Class::is_move_assignable", "[rtti::Class]" ) {
 }
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Class::alloc_construct", "[rtti::Class]" ) {
+    Object obj = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
+    REQUIRE( obj.is_valid() == true );
+    REQUIRE( obj.type().ok() == static_type<TestClassNotMoveAssignable>() );
+    REQUIRE( obj.size().ok() == sizeof(TestClassNotMoveAssignable) );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Class::alloc_copy_construct", "[rtti::Class]" ) {
     Object src = static_type<TestClassNotMoveAssignable>()->alloc_construct().ok();
     src.value_as<TestClassNotMoveAssignable>().ok()->m_int_val = 4;
