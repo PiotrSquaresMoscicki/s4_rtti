@@ -45,6 +45,7 @@ namespace rtti {
         FundamentalInstance(std::string name);
 
         bool is_default_constructible() const override;
+        bool is_destructible() const override;
         bool is_copy_constructible() const override;
         bool is_move_constructible() const override;
         bool is_copy_assignable() const override;
@@ -89,6 +90,12 @@ namespace rtti {
     template <typename FUNDAMENTAL>
     bool FundamentalInstance<FUNDAMENTAL>::is_default_constructible() const {
         return std::is_default_constructible_v<FUNDAMENTAL>;
+    }
+
+    //*********************************************************************************************
+    template <typename FUNDAMENTAL>
+    bool FundamentalInstance<FUNDAMENTAL>::is_destructible() const {
+        return std::is_destructible_v<FUNDAMENTAL>;
     }
 
     //*********************************************************************************************

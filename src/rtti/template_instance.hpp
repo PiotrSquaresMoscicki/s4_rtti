@@ -60,6 +60,7 @@ namespace rtti {
             , std::vector<std::string>& out_params_names, Meta meta);
 
         bool is_default_constructible() const override;
+        bool is_destructible() const override;
         bool is_copy_constructible() const override;
         bool is_move_constructible() const override;
         bool is_copy_assignable() const override;
@@ -181,6 +182,12 @@ namespace rtti {
     template <typename CLASS, typename DECLARING_CLASS>
     bool TemplateInstanceInstance<CLASS, DECLARING_CLASS>::is_default_constructible() const {
         return std::is_default_constructible_v<CLASS>;
+    }
+
+    //*********************************************************************************************
+    template <typename CLASS, typename DECLARING_CLASS>
+    bool TemplateInstanceInstance<CLASS, DECLARING_CLASS>::is_destructible() const {
+        return std::is_destructible_v<CLASS>;
     }
 
     //*********************************************************************************************

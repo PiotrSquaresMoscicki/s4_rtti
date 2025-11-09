@@ -68,6 +68,7 @@ namespace rtti {
         ClassInstance(std::string name, Meta meta);
 
         bool is_default_constructible() const override;
+        bool is_destructible() const override;
         bool is_copy_constructible() const override;
         bool is_move_constructible() const override;
         bool is_copy_assignable() const override;
@@ -118,6 +119,12 @@ namespace rtti {
     template <typename CLASS>
     bool ClassInstance<CLASS>::is_default_constructible() const {
         return std::is_default_constructible_v<CLASS>;
+    }
+
+    //*********************************************************************************************
+    template <typename CLASS>
+    bool ClassInstance<CLASS>::is_destructible() const {
+        return std::is_destructible_v<CLASS>;
     }
 
     //*********************************************************************************************
@@ -347,7 +354,9 @@ namespace rtti {
     Res<void, Type::ErrDestruct> ClassInstance<CLASS>::can_destruct(
         const ObjectRef& obj) const 
     {
-        if (!obj.is_valid())
+        if constexpr (!std::is_destructible_v<CLASS>)
+            return Err(ErrDestruct::NOT_DESTRUCTIBLE);
+        else if (!obj.is_valid())
             return Err(ErrDestruct::NOT_VALID_OBJECT);
         else if (obj.type().ok() != TypePtr(this))
             return Err(ErrDestruct::INCORRECT_OBJECT_TYPE);

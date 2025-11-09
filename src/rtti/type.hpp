@@ -77,6 +77,7 @@ namespace rtti {
         };
 
         enum class ErrDestruct {
+            NOT_DESTRUCTIBLE,
             NOT_VALID_OBJECT,
             INCORRECT_OBJECT_TYPE
         };
@@ -115,6 +116,7 @@ namespace rtti {
         virtual Res<TemplateInstancePtr, ErrAsTemplateInstance> as_template_instance() const = 0;
 
         virtual bool is_default_constructible() const = 0;
+        virtual bool is_destructible() const = 0;
         virtual bool is_copy_constructible() const = 0;
         virtual bool is_move_constructible() const = 0;
         virtual bool is_copy_assignable() const = 0;

@@ -76,6 +76,7 @@ namespace rtti {
         EnumInstance(std::string name, std::vector<EnumValue> values);
 
         bool is_default_constructible() const override;
+        bool is_destructible() const override;
         bool is_copy_constructible() const override;
         bool is_move_constructible() const override;
         bool is_copy_assignable() const override;
@@ -120,6 +121,12 @@ namespace rtti {
     template <typename ENUM>
     bool EnumInstance<ENUM>::is_default_constructible() const {
         return std::is_default_constructible_v<ENUM>;
+    }
+
+    //*********************************************************************************************
+    template <typename ENUM>
+    bool EnumInstance<ENUM>::is_destructible() const {
+        return std::is_destructible_v<ENUM>;
     }
 
     //*********************************************************************************************
