@@ -13,36 +13,84 @@ Features
  
 - info
     - size
+        - fundamental
+        - enum
     - name
+        - fundamental
+        - enum
+        - class
     - values
+        - enum
 - converters
     - as_fundamental
+        - fundamental
+        - enum
     - as_enum
+        - fundamental
+        - enum
     - as_class
+        - fundamental
+        - enum
 - destruction
     - can_delete_object
+        - fundamental
+        - enum
     - can_destruct
+        - fundamental
+        - enum
     - destruct
+        - fundamental
+        - enum
 - construction
     - default
         - is_default_constructible
+            - fundamental
+            - enum
         - can_construct
+            - fundamental
+            - enum
         - construct
+            - fundamental
+            - enum
         - new_default
+            - fundamental
+            - enum
     - move
         - is_move_constructible
+            - fundamental
+            - enum
         - can_move_construct
+            - fundamental
+            - enum
         - new_move
+            - fundamental
+            - enum
         - move_construct
+            - fundamental
+            - enum
     - copy
         - new_copy
+            - fundamental
+            - enum
         - can_copy_construct
+            - fundamental
+            - enum
         - copy_construct
+            - fundamental
+            - enum
 - assignment
     - move
         - is_move_assignable
+            - fundamental
+            - enum
         - move_assign
+            - fundamental
+            - enum
     - copy
         - is_copy_assignable
+            - fundamental
+            - enum
         - copy_assign
+            - fundamental
+            - enum
 - equals type instantiated in different dll
