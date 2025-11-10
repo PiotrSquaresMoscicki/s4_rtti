@@ -16,6 +16,7 @@ namespace rtti {
     class Enum;
     class EnumValue;
     class Fundamental;
+    class Container;
     class Class;
     class TemplateInstance;
 
@@ -34,6 +35,7 @@ namespace rtti {
     class FundamentalPtr;
     class EnumPtr;
     class ClassPtr;
+    class ContainerPtr;
     class TemplateInstancePtr;
 
     //*********************************************************************************************
@@ -116,6 +118,33 @@ namespace rtti {
         const Enum* m_type = nullptr;
 
     }; // class EnumPtr
+    
+    //*********************************************************************************************
+    //*********************************************************************************************
+    //*********************************************************************************************
+    class ContainerPtr {
+    public:
+        ContainerPtr() = default;
+        ContainerPtr(const Container* type) : m_type(type) {}
+        ContainerPtr(const ContainerPtr& other) : m_type(other.m_type) {}
+        ContainerPtr& operator=(const ContainerPtr& other) { m_type = other.m_type; return *this;}
+        
+        bool operator==(const ContainerPtr& other) const { return m_type == other.m_type; }
+        bool operator!=(const ContainerPtr& other) const { return m_type != other.m_type; }
+        bool operator<(const ContainerPtr& other) const { return m_type < other.m_type; }
+        bool operator>(const ContainerPtr& other) const { return m_type > other.m_type; }
+        bool operator>=(const ContainerPtr& other) const { return m_type >= other.m_type; }
+        const Container* operator->() const { return m_type; }
+        operator bool() const { return is_valid(); }
+        operator TypePtr() const;
+
+        bool is_valid() const { return m_type; }
+        const Container* get() const { return m_type; }
+
+    private:
+        const Container* m_type = nullptr;
+
+    }; // class ContainerPtr
     
     //*********************************************************************************************
     //*********************************************************************************************

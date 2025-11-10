@@ -23,6 +23,7 @@ namespace rtti {
         bool is_fundamental() const override { return false; }
         bool is_enum() const override { return true; }
         bool is_class() const override { return false; }
+        bool is_container() const override { return false; }
         bool is_template_instance() const override { return false; }
 
 
@@ -34,6 +35,9 @@ namespace rtti {
         }
         Res<ClassPtr, ErrAsClass> as_class() const override { 
             return Err(ErrAsClass::NOT_A_CLASS); 
+        }
+        Res<ContainerPtr, ErrAsContainer> as_container() const override { 
+            return Err(ErrAsContainer::NOT_A_CONTAINER); 
         }
         Res<TemplateInstancePtr, ErrAsTemplateInstance> as_template_instance() const override { 
             return Err(ErrAsTemplateInstance::NOT_A_TEMPLATE_INSTANCE); 

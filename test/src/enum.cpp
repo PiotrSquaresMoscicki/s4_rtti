@@ -104,6 +104,11 @@ TEST_CASE( "rtti::Enum::as_enum", "[rtti::Enum]" ) {
 }
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Enum::as_container", "[Enum]" ) {
+    REQUIRE( static_type<bool>::get()->as_container().is_err() );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Enum::as_class", "[Enum]" ) {
     REQUIRE( static_type<TestEnum1>::get()->as_class().is_err());
 }

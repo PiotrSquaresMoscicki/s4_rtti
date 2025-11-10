@@ -165,6 +165,14 @@ TEST_CASE( "rtti::Class::as_enum", "[rtti::Class]" ) {
 }
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Class::as_container", "[Enum]" ) {
+    REQUIRE( 
+        static_type<TestClassNotDefaultConstructible>::get()->as_container().ok()
+        == 
+        static_type<TestClassNotDefaultConstructible>::get() );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Class::as_class", "[Fundamental]" ) {
     REQUIRE( 
         static_type<TestClassNotDefaultConstructible>::get()->as_class().ok()

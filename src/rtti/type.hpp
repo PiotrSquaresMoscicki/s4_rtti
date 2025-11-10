@@ -29,6 +29,10 @@ namespace rtti {
             NOT_A_CLASS
         };
 
+        enum class ErrAsContainer {
+            NOT_A_CONTAINER
+        };
+
         enum class ErrAsTemplateInstance {
             NOT_A_TEMPLATE_INSTANCE
         };
@@ -88,12 +92,14 @@ namespace rtti {
 
         virtual bool is_fundamental() const = 0;
         virtual bool is_enum() const = 0;
+        virtual bool is_container() const = 0;
         virtual bool is_class() const = 0;
         virtual bool is_template_instance() const = 0;
 
         virtual Res<FundamentalPtr, ErrAsFundamental> as_fundamental() const = 0;
         virtual Res<EnumPtr, ErrAsEnum> as_enum() const = 0;
         virtual Res<ClassPtr, ErrAsClass> as_class() const = 0;
+        virtual Res<ContainerPtr, ErrAsContainer> as_container() const = 0;
         virtual Res<TemplateInstancePtr, ErrAsTemplateInstance> as_template_instance() const = 0;
 
         virtual bool is_default_constructible() const = 0;

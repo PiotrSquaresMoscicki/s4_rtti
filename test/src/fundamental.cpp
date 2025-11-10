@@ -58,6 +58,11 @@ TEST_CASE( "rtti::Fundamental::as_enum", "[rtti::Fundamental]" ) {
 }
 
 //*************************************************************************************************
+TEST_CASE( "rtti::Fundamental::as_container", "[Fundamental]" ) {
+    REQUIRE( static_type<bool>::get()->as_container().is_err() );
+}
+
+//*************************************************************************************************
 TEST_CASE( "rtti::Fundamental::as_class", "[Fundamental]" ) {
     REQUIRE( static_type<bool>::get()->as_class().is_err() );
 }

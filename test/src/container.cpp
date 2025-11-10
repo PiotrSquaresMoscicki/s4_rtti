@@ -58,3 +58,27 @@ TEST_CASE( "rtti::Container::name", "[rtti::Container]" ) {
         == 
         "std::map<int,float,std::less<int>,std::allocator<std::pair<int,float>>>" );
 }
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Container::size", "[rtti::Container]" ) {
+    REQUIRE( static_type<std::vector<int>>::get()->size() == sizeof(std::vector<int>) );
+    REQUIRE( static_type<std::map<int, float>>::get()->size() == sizeof(std::map<int, float>) );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Container::as_container", "[rtti::Container]" ) {
+    REQUIRE( 
+        static_type<std::vector<int>>::get()->as_container().ok() 
+        == 
+        static_type<std::vector<int>>::get() );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Container::as_enum", "[rtti::Container]" ) {
+    REQUIRE( static_type<std::vector<int>>::get()->as_enum().is_err() );
+}
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Container::as_class", "[Container]" ) {
+    REQUIRE( static_type<std::vector<int>>::get()->as_class().is_err() );
+}
