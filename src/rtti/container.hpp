@@ -83,14 +83,33 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    template <typename TYPE>
+    template<typename FIRST, typename... REST>
+    std::string convert_params_to_string() {
+        std::string result = static_type<FIRST>::get()->name();
+        if constexpr (sizeof...(REST) > 0) {
+            result += "," + convert_params_to_string<REST...>();
+        }
+        return result;
+    }
+    
+    class ContainerInstanceTemplateParameter {
+    public:
+        ContainerInstanceTemplateParameter(TypePtr type) : m_type(std::move(type)) {}
+        const TypePtr& type() const { return m_type; }
+
+    private:
+        TypePtr m_type;
+    };
+
+    template <typename FULL_TYPE, typename... PARAMS>
     class S4_RTTI_EXPORT ContainerInstance 
-        : public virtual TypeInstance<TYPE>
+        : public virtual TypeInstance<FULL_TYPE>
         , public virtual Container 
     {
     public:
-        ContainerInstance() 
-            : Type("", sizeof(TYPE), {}) 
+        ContainerInstance(std::string name) 
+            : Type(name + "<" + convert_params_to_string<PARAMS...>() + ">"
+            , sizeof(FULL_TYPE), {})
         {}
 
         ContainerIterator begin(ObjectRef& obj) const override { return {}; }

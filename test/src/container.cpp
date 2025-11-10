@@ -10,5 +10,6 @@ using namespace core::lib;
 
 //*************************************************************************************************
 TEST_CASE( "rtti::Container::==", "[rtti::Container]" ) {
-    // REQUIRE( static_type<std::vector<int>>::get() == static_type<std::vector<int>>::get() );
+    REQUIRE( static_type<std::vector<int>>::get() == static_type<std::vector<int>>::get() );
+    REQUIRE( static_type<std::vector<int>>::get() != static_type<std::vector<float>>::get() );
 }

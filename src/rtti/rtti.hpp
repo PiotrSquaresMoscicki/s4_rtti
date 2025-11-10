@@ -2,6 +2,8 @@
 
 #include <tuple>
 #include <vector>
+#include <sstream>
+#include <string>
 
 #include "ctti/ctti.hpp"
 
@@ -33,14 +35,28 @@ namespace rtti {
     };
 
     template <typename... PARAMS>
+    class static_type<std::allocator<PARAMS...>> {
+    public:
+        static TypePtr get() {
+            using This = std::allocator<PARAMS...>;
+            static TypePtr result = nullptr;
+            static ContainerInstance<This, PARAMS...> instance("std::allocator");
+            if (result == nullptr) {
+                result = Database::register_type(&instance).ok();
+            }
+            return result;
+        }
+    };
+
+    template <typename... PARAMS>
     class static_type<std::vector<PARAMS...>> {
     public:
         static TypePtr get() {
             using This = std::vector<PARAMS...>;
-            static ClassPtr result = nullptr;
-            static ContainerInstance<This> instance;
+            static TypePtr result = nullptr;
+            static ContainerInstance<This, PARAMS...> instance("std::vector");
             if (result == nullptr) {
-                result = Database::register_type(&instance).ok()->as_class().ok();
+                result = Database::register_type(&instance).ok();
             }
             return result;
         }
