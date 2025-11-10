@@ -127,3 +127,13 @@ TEST_CASE( "rtti::Container::iterator - map<int, float>", "[Container]" ) {
     REQUIRE( iterated_values[2].first == 3 );
     REQUIRE( iterated_values[2].second == 3.3f );
 }
+
+TEST_CASE( "rtti::Container::length", "[Container]" ) {
+    std::vector<int> vec = { 10, 20, 30, 40, 50 };
+    ObjectRef obj_ref(&vec);
+
+    ContainerPtr container_type = static_type<std::vector<int>>::get()->as_container().ok();
+    size_t length = container_type->length(obj_ref);
+
+    REQUIRE( length == 5 );
+}
