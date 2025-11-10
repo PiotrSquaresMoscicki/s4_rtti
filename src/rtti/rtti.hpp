@@ -33,12 +33,28 @@ namespace rtti {
             return TYPE::static_class();
         }
     };
+    
+    template <typename TYPE>
+    class static_type<const TYPE> {
+    public:
+        static TypePtr get() {
+            return static_type<TYPE>().get();
+        }
+    };
 
     template <typename CLASS>
     class static_class {
     public:
         static ClassPtr get() {
             return CLASS::static_class();
+        }
+    };
+    
+    template <typename CLASS>
+    class static_class<const CLASS> {
+    public:
+        static ClassPtr get() {
+            return static_class<CLASS>().get();
         }
     };
 
@@ -341,6 +357,9 @@ REGISTER_FUNDAMENTAL(double)
 REGISTER_FUNDAMENTAL(long double)
 
 REGISTER_TEMPLATE(std::allocator)
+REGISTER_TEMPLATE(std::pair)
+REGISTER_TEMPLATE(std::less)
 
 REGISTER_CONTAINER(std::vector)
+REGISTER_CONTAINER(std::map)
 
