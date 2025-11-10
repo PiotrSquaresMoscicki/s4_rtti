@@ -34,34 +34,6 @@ namespace rtti {
         }
     };
 
-    template <typename... PARAMS>
-    class static_type<std::allocator<PARAMS...>> {
-    public:
-        static TypePtr get() {
-            using This = std::allocator<PARAMS...>;
-            static TypePtr result = nullptr;
-            static TemplateInstance2<This, PARAMS...> instance("std::allocator");
-            if (result == nullptr) {
-                result = Database::register_type(&instance).ok();
-            }
-            return result;
-        }
-    };
-
-    template <typename... PARAMS>
-    class static_type<std::vector<PARAMS...>> {
-    public:
-        static TypePtr get() {
-            using This = std::vector<PARAMS...>;
-            static TypePtr result = nullptr;
-            static ContainerInstance<This, PARAMS...> instance("std::vector");
-            if (result == nullptr) {
-                result = Database::register_type(&instance).ok();
-            }
-            return result;
-        }
-    };
-
     template <typename CLASS>
     class static_class {
     public:
@@ -194,20 +166,37 @@ namespace rtti {
         template <typename... PARAMS>\
         class static_type<ARG_CONTAINER<PARAMS...>> {\
         public:\
-            static TypePtr static_type() {\
-                return static_class();\
-            }\
-            static ClassPtr static_class() {\
+            static TypePtr get() {\
                 using This = ARG_CONTAINER<PARAMS...>;\
-                static ClassPtr result = nullptr;\
-                static ContainerInstance<This> instance(#ARG_CONTAINER "<...>");\
+                static TypePtr result = nullptr;\
+                static ContainerInstance<This, PARAMS...> instance(#ARG_CONTAINER);\
                 if (result == nullptr) {\
-                    result = Database::register_type(&instance).ok()->as_class().ok();\
+                    result = Database::register_type(&instance).ok();\
                 }\
                 return result;\
             }\
         };\
-    }
+    } // namespace rtti
+
+//*************************************************************************************************
+//*************************************************************************************************
+//*************************************************************************************************
+#define REGISTER_TEMPLATE(ARG_TEMPLATE)\
+    namespace rtti {\
+        template <typename... PARAMS>\
+        class static_type<ARG_TEMPLATE<PARAMS...>> {\
+        public:\
+            static TypePtr get() {\
+                using This = ARG_TEMPLATE<PARAMS...>;\
+                static TypePtr result = nullptr;\
+                static TemplateInstance2<This, PARAMS...> instance(#ARG_TEMPLATE);\
+                if (result == nullptr) {\
+                    result = Database::register_type(&instance).ok();\
+                }\
+                return result;\
+            }\
+        };\
+    } // namespace rtti
 
 //*************************************************************************************************
 //*************************************************************************************************
@@ -351,5 +340,7 @@ REGISTER_FUNDAMENTAL(float)
 REGISTER_FUNDAMENTAL(double)
 REGISTER_FUNDAMENTAL(long double)
 
-//REGISTER_CONTAINER(std::vector)
+REGISTER_TEMPLATE(std::allocator)
+
+REGISTER_CONTAINER(std::vector)
 
