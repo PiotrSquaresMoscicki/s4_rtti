@@ -84,7 +84,7 @@ TEST_CASE( "rtti::Container::as_class", "[Container]" ) {
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Container::iterator", "[Container]" ) {
+TEST_CASE( "rtti::Container::iterator - vector<int>", "[Container]" ) {
     std::vector<int> vec = { 10, 20, 30 };
     ObjectRef obj_ref(&vec);
 
@@ -102,4 +102,28 @@ TEST_CASE( "rtti::Container::iterator", "[Container]" ) {
     REQUIRE( iterated_values[0] == 10 );
     REQUIRE( iterated_values[1] == 20 );
     REQUIRE( iterated_values[2] == 30 );
+}
+
+TEST_CASE( "rtti::Container::iterator - map<int, float>", "[Container]" ) {
+    std::map<int, float> my_map = { {1, 1.1f}, {2, 2.2f}, {3, 3.3f} };
+    ObjectRef obj_ref(&my_map);
+
+    ContainerPtr container_type = static_type<std::map<int, float>>::get()->as_container().ok();
+
+    ContainerIterator begin_it = container_type->begin(obj_ref);
+    ContainerIterator end_it = container_type->end(obj_ref);
+
+    std::vector<std::pair<int, float>> iterated_values;
+    for (ContainerIterator it = std::move(begin_it); it != end_it; ++it) {
+        auto& pair = *(*it).value_as<std::pair<int, float>>().ok();
+        iterated_values.push_back(pair);
+    }
+
+    REQUIRE( iterated_values.size() == 3 );
+    REQUIRE( iterated_values[0].first == 1 );
+    REQUIRE( iterated_values[0].second == 1.1f );
+    REQUIRE( iterated_values[1].first == 2 );
+    REQUIRE( iterated_values[1].second == 2.2f );
+    REQUIRE( iterated_values[2].first == 3 );
+    REQUIRE( iterated_values[2].second == 3.3f );
 }
