@@ -82,3 +82,24 @@ TEST_CASE( "rtti::Container::as_enum", "[rtti::Container]" ) {
 TEST_CASE( "rtti::Container::as_class", "[Container]" ) {
     REQUIRE( static_type<std::vector<int>>::get()->as_class().is_err() );
 }
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Container::iterator", "[Container]" ) {
+    std::vector<int> vec = { 10, 20, 30 };
+    ObjectRef obj_ref(&vec);
+
+    ContainerPtr container_type = static_type<std::vector<int>>::get()->as_container().ok();
+    ContainerIterator begin_it = container_type->begin(obj_ref);
+    ContainerIterator end_it = container_type->end(obj_ref);
+
+    std::vector<int> iterated_values;
+    for (ContainerIterator it = std::move(begin_it); it != end_it; ++it) {
+        int& val = *(*it).value_as<int>().ok();
+        iterated_values.push_back(val);
+    }
+
+    REQUIRE( iterated_values.size() == 3 );
+    REQUIRE( iterated_values[0] == 10 );
+    REQUIRE( iterated_values[1] == 20 );
+    REQUIRE( iterated_values[2] == 30 );
+}

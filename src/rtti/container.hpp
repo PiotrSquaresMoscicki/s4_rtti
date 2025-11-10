@@ -17,22 +17,53 @@ namespace rtti {
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
-    class S4_RTTI_EXPORT ContainerElementRef : public ObjectRef {};
+    class S4_RTTI_EXPORT ContainerIteratorInstanceBase {
+    public:
+        virtual ObjectRef operator*() = 0;
+        virtual ContainerIteratorInstanceBase& operator++() = 0;
+        virtual bool operator!=(const ContainerIteratorInstanceBase& other) const = 0;
+    };
 
     //*********************************************************************************************
-    //*********************************************************************************************
+    template <typename ITERATOR>
+    class ContainerIteratorInstance : public ContainerIteratorInstanceBase {
+    public:
+        ContainerIteratorInstance(ITERATOR&& it) : m_iterator(std::move(it)) {}
+
+        ObjectRef operator*() override { 
+            return ObjectRef(&(*m_iterator));
+        }
+        ContainerIteratorInstanceBase& operator++() override { ++m_iterator; return *this; }
+        bool operator!=(const ContainerIteratorInstanceBase& other) const override { 
+            return m_iterator 
+                != 
+                static_cast<const ContainerIteratorInstance<ITERATOR>&>(other).m_iterator;
+        }
+    private:
+        ITERATOR m_iterator;
+    };
+
     //*********************************************************************************************
     class S4_RTTI_EXPORT ContainerIterator {
     public:
-        ContainerElementRef operator*() { return {}; }
-        ContainerIterator& operator++() { return *this; }
-        bool operator!=(const ContainerIterator& other) const { return false; }
+        ContainerIterator() = default;
+        ContainerIterator(std::unique_ptr<ContainerIteratorInstanceBase>&& impl)
+            : m_impl(std::move(impl))
+        {}
+
+        ObjectRef operator*() { return *(*m_impl); }
+        ContainerIterator& operator++() { ++(*m_impl); return *this; }
+        bool operator!=(const ContainerIterator& other) const { return *m_impl != *other.m_impl; }
+
+    private:
+        std::unique_ptr<ContainerIteratorInstanceBase> m_impl;
     };
         
     //*********************************************************************************************
     //*********************************************************************************************
     //*********************************************************************************************
     class S4_RTTI_EXPORT Container : public virtual Type {
+    public:
         bool is_fundamental() const override { return false; }
         bool is_enum() const override { return false; }
         bool is_class() const override { return false; }
@@ -106,9 +137,23 @@ namespace rtti {
             , sizeof(FULL_TYPE), {})
         {}
 
-        ContainerIterator begin(ObjectRef& obj) const override { return {}; }
-        ContainerIterator end(ObjectRef& obj) const override { return {}; }
-        size_t length(const ObjectRef& obj) const override { return 0; }
+        ContainerIterator begin(ObjectRef& obj) const override {
+            return ContainerIterator(
+                std::make_unique<ContainerIteratorInstance<typename FULL_TYPE::iterator>>(
+                    obj.value_as<FULL_TYPE>().ok()->begin()
+                )
+            );
+        }
+        ContainerIterator end(ObjectRef& obj) const override {
+            return ContainerIterator(
+                std::make_unique<ContainerIteratorInstance<typename FULL_TYPE::iterator>>(
+                    obj.value_as<FULL_TYPE>().ok()->end()
+                )
+            );
+        }
+        size_t length(const ObjectRef& obj) const override { 
+            return obj.value_as<FULL_TYPE>().ok()->size();
+        }
     }; // class ContainerInstance
 
     
