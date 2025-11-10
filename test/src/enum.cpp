@@ -39,7 +39,7 @@ END_ENUM
 using namespace test;
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Enum::== from differend dll", "[rtti::Enum]" ) {
+TEST_CASE( "rtti::Enum::== from different dll", "[rtti::Enum]" ) {
     std::string shared_lib_path;
 
     #ifdef __APPLE__

@@ -26,7 +26,11 @@ public:
     //     return rtti::static_class<DynamicallyLoadedLibTemplate<int>>::get(); 
     // }
 
-    rtti::TypePtr get_bool_type() const override { return rtti::static_type<bool>::get().get(); }
+    rtti::TypePtr get_bool_type() const override { return rtti::static_type<bool>::get(); }
+
+    rtti::TypePtr get_std_vector_int_type() const override { 
+        return rtti::static_type<std::vector<int>>::get(); 
+    }
     
 }; // TestInterfaceImpl
 

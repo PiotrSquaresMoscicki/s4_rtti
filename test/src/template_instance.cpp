@@ -59,7 +59,7 @@
 // using namespace test;
 
 // //*************************************************************************************************
-// TEST_CASE( "rtti::TemplateInstance::== from differend dll", "[rtti::TemplateInstance]" ) {
+// TEST_CASE( "rtti::TemplateInstance::== from different dll", "[rtti::TemplateInstance]" ) {
 //     std::string shared_lib_path;
 
 //     #ifdef __APPLE__

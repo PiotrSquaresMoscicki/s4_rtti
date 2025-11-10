@@ -37,7 +37,7 @@ using namespace rtti::test::method;
 //using namespace test;
 
 //*************************************************************************************************
-// TEST_CASE( "rtti::Class::== from differend dll", "[rtti::Class]" ) {
+// TEST_CASE( "rtti::Class::== from different dll", "[rtti::Class]" ) {
 //     std::string shared_lib_path;
 
 //     #ifdef __APPLE__

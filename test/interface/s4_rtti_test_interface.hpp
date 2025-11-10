@@ -36,6 +36,7 @@ namespace test {
         virtual rtti::ClassPtr get_test_class_type() const = 0;
         // virtual rtti::ClassPtr get_test_template_type() const = 0;
         virtual rtti::TypePtr get_bool_type() const = 0;
+        virtual rtti::TypePtr get_std_vector_int_type() const = 0;
 
     }; // class ITestInterface
 

@@ -16,7 +16,7 @@ TEST_CASE( "rtti::Fundamental::==", "[rtti::Fundamental]" ) {
 }
 
 //*************************************************************************************************
-TEST_CASE( "rtti::Fundamental::== from differend dll", "[rtti::Fundamental]" ) {
+TEST_CASE( "rtti::Fundamental::== from different dll", "[rtti::Fundamental]" ) {
     std::string shared_lib_path;
 
     #ifdef __APPLE__
