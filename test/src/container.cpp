@@ -13,3 +13,16 @@ TEST_CASE( "rtti::Container::==", "[rtti::Container]" ) {
     REQUIRE( static_type<std::vector<int>>::get() == static_type<std::vector<int>>::get() );
     REQUIRE( static_type<std::vector<int>>::get() != static_type<std::vector<float>>::get() );
 }
+
+//*************************************************************************************************
+TEST_CASE( "rtti::Container::name", "[rtti::Container]" ) {
+    REQUIRE( 
+        static_type<std::vector<int>>::get()->name() 
+        == 
+        "std::vector<int,std::allocator<int>>" );
+
+    REQUIRE( 
+        static_type<std::vector<float>>::get()->name() 
+        == 
+        "std::vector<float,std::allocator<float>>" );
+}
