@@ -40,7 +40,7 @@ namespace rtti {
         static TypePtr get() {
             using This = std::allocator<PARAMS...>;
             static TypePtr result = nullptr;
-            static ContainerInstance<This, PARAMS...> instance("std::allocator");
+            static TemplateInstance2<This, PARAMS...> instance("std::allocator");
             if (result == nullptr) {
                 result = Database::register_type(&instance).ok();
             }
