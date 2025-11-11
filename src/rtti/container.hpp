@@ -10,6 +10,9 @@
 #include "buffer.hpp"
 #include "object.hpp"
 
+// TODO split into multiple files
+// TODO add error handling
+
 namespace rtti {
 
     using namespace core::str;
