@@ -90,6 +90,7 @@ namespace rtti {
         const Meta& meta() const { return m_attributes; }
         template <typename ATTRIBUTE> const ATTRIBUTE* attribute() const;
 
+// TODO add pointer support
         virtual bool is_fundamental() const = 0;
         virtual bool is_enum() const = 0;
         virtual bool is_container() const = 0;

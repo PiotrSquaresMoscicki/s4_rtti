@@ -1,8 +1,40 @@
 #pragma once
 
+#include <memory>
+
 #include "rtti/rtti_fwd.hpp"
+#include "rtti/buffer.hpp"
 
 namespace rtti {
+    //*********************************************************************************************
+    //*********************************************************************************************
+    //*********************************************************************************************
+    class S4_RTTI_EXPORT BufferInputStream {
+    public: 
+        BufferInputStream(const BufferRef& buff);
+
+        BufferInputStream& operator>>(BufferRef& buff_ref);
+        BufferInputStream& operator>>(ObjectRef& obj_ref);
+
+    private:
+        const BufferRef& m_buffer;
+        size_t m_read_offset = 0;
+    };
+
+    //*********************************************************************************************
+    //*********************************************************************************************
+    //*********************************************************************************************
+    class S4_RTTI_EXPORT BufferOutputStream {
+    public:
+        BufferOutputStream();
+
+        BufferOutputStream& operator<<(const BufferRef& buff_ref);
+        BufferOutputStream& operator<<(const ObjectRef& obj_ref);
+
+    private:
+        Buffer m_buffer;
+        size_t m_write_offset = 0;
+    };
 
     //*********************************************************************************************
     //*********************************************************************************************
@@ -27,18 +59,38 @@ namespace rtti {
             OUTPUT_STREAM // serializing - data flowing from the object into the stream
         };
 
+        Stream() = default;
         virtual ~Stream() = default;
         Mode mode() const { return m_mode; }
 
-        virtual Stream& operator<<(const ObjectRef& obj);
-        virtual Stream& operator>>(ObjectRef& obj);
+        virtual Stream& operator<<(const ObjectRef& obj) = 0;
+        virtual Stream& operator>>(ObjectRef& obj) = 0;
 
     private:
-        Stream(const BufferRef& buff); // INPUT_STREAM - deserializing from the const buffer
-        Stream(Buffer& buff);          // OUTPUT_STREAM - serializing into the buffer
-        
         const Mode m_mode;
-        const BufferRef* const m_input_buffer = nullptr;
-        Buffer* const m_output_buffer = nullptr;
     }; // class Stream
+
+    //*********************************************************************************************
+    //*********************************************************************************************
+    //*********************************************************************************************
+    class SerializationStream : public Stream {
+    public:
+        // INPUT_STREAM - deserializing from the const buffer
+        SerializationStream(std::unique_ptr<BufferInputStream> input_stream);
+
+        // OUTPUT_STREAM - serializing into the buffer
+        SerializationStream(std::unique_ptr<BufferOutputStream> output_stream);
+
+        virtual ~SerializationStream() = default;
+        
+        virtual Stream& operator<<(const ObjectRef& obj) override;
+        virtual Stream& operator>>(ObjectRef& obj) override;
+
+        std::unique_ptr<BufferOutputStream> steal_output_stream() &&;
+
+    private:
+        std::unique_ptr<BufferInputStream> m_input_stream;
+        std::unique_ptr<BufferOutputStream> m_output_stream;
+    }; // class SerializationStream
+
 } // namespace rtti
